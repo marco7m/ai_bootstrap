@@ -3,6 +3,9 @@
 This file is a temporary work queue for an AI agent.
 
 Follow every instruction still present in this file.
+This file must always reflect only the remaining work from the original instruction set.
+Rewrite it as progress is made.
+
 This file must contain only remaining actionable work.
 
 ## Self-pruning rules
@@ -14,6 +17,7 @@ These rules are mandatory:
 3. If a task does not apply to this repository, cannot be done, is unsafe, or no longer makes sense, remove it from this file.
 4. Do not keep completed, obsolete, impossible, or already-decided items here.
 5. When no actionable instructions remain, delete this file.
+6. If you cannot delete this file due to tool or permission limitations, reduce its contents to only the single remaining action needed to delete it.
 
 This file is successful only when it becomes unnecessary and is deleted.
 
@@ -31,13 +35,32 @@ This file is successful only when it becomes unnecessary and is deleted.
   - **Temporary assumption**
 - Prefer small, reversible changes.
 - Prefer improving existing project conventions over replacing them.
+- Prefer improving existing documentation over creating new files.
+- Do not create documentation that merely repeats existing documentation.
+- Do not duplicate large sections across documentation files.
+- Use each file for its specific purpose and keep cross-file overlap minimal.
+- Do not perform large refactors, architectural rewrites, dependency migrations, or project reorganizations unless they are clearly necessary to complete the instructions still present in this file.
 - Do not invent product behavior for sparse or empty repositories.
 - Do not stop at analysis only; make the repository operationally better.
 
 If work can continue safely without developer input:
 - continue,
 - use a clearly stated temporary assumption,
-- and record only meaningful unresolved questions in `docs/OPEN_QUESTIONS.md`.
+- record only meaningful unresolved questions in `docs/OPEN_QUESTIONS.md`,
+- and do not stop for interactive clarification.
+
+---
+
+## Priority order
+
+Work in this order unless repository evidence strongly justifies a different order:
+
+1. understand the repository,
+2. establish how to run and validate it,
+3. improve the minimal documentation needed for safe work,
+4. establish the open-questions workflow,
+5. improve long-term agent guidance in `AGENTS.md`,
+6. add optional supporting documentation only if still justified.
 
 ---
 
@@ -105,7 +128,12 @@ If the repository is new, sparse, or incomplete:
 Use the existing docs structure if it is already coherent.
 Otherwise create `docs/`.
 
-Create or improve these files when missing, weak, or outdated:
+Prefer improving existing documentation over creating new files.
+Only create a new documentation file if the information does not already exist in a reasonably good location.
+Treat an existing file as sufficient unless it is clearly missing critical information needed to operate, validate, or understand the project.
+Prefer small edits over full rewrites.
+
+Create or improve these files when missing, clearly insufficient, or outdated in ways that block safe understanding or operation:
 
 - `README.md`
 - `docs/PROJECT_OVERVIEW.md`
@@ -198,6 +226,9 @@ When a question is resolved:
 3. update code or workflow if needed,
 4. optionally record a durable decision,
 5. remove the question from `docs/OPEN_QUESTIONS.md`.
+
+Do not stop for interactive clarification if safe progress is possible.
+Record meaningful unresolved questions in `docs/OPEN_QUESTIONS.md`, state the temporary assumption, and continue.
 
 ---
 
