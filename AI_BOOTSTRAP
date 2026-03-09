@@ -1,0 +1,326 @@
+# AI Bootstrap Instructions (temporary file)
+
+This file is a temporary work queue for an AI agent.
+
+Follow every instruction still present in this file.
+This file must contain only remaining actionable work.
+
+## Self-pruning rules
+
+These rules are mandatory:
+
+1. As soon as a task is fully completed, remove that task from this file.
+2. If a task is only partially completed, rewrite it so it contains only the remaining work.
+3. If a task does not apply to this repository, cannot be done, is unsafe, or no longer makes sense, remove it from this file.
+4. Do not keep completed, obsolete, impossible, or already-decided items here.
+5. When no actionable instructions remain, delete this file.
+
+This file is successful only when it becomes unnecessary and is deleted.
+
+---
+
+## Working mode
+
+- Inspect the repository before making structural decisions.
+- Prefer evidence from code, tests, config, scripts, CI, and docs.
+- Do not guess silently.
+- When something is uncertain, mark it clearly as one of:
+  - **Observed**
+  - **Inferred**
+  - **Unknown**
+  - **Temporary assumption**
+- Prefer small, reversible changes.
+- Prefer improving existing project conventions over replacing them.
+- Do not invent product behavior for sparse or empty repositories.
+- Do not stop at analysis only; make the repository operationally better.
+
+If work can continue safely without developer input:
+- continue,
+- use a clearly stated temporary assumption,
+- and record only meaningful unresolved questions in `docs/OPEN_QUESTIONS.md`.
+
+---
+
+## Main objective
+
+Leave this repository easier to understand, easier to run, easier to validate, and better documented.
+
+You must:
+- understand the project,
+- identify how to work on it,
+- create or improve core documentation,
+- create or improve a command hub for common actions,
+- create or improve a project-specific `AGENTS.md`,
+- create or improve the open-questions workflow,
+- create or improve durable project memory,
+- and keep only remaining work inside this file until nothing remains.
+
+---
+
+## Discover the repository
+
+Inspect the repository and identify, when possible:
+
+- primary programming language(s),
+- package manager(s),
+- build system(s),
+- test framework(s),
+- lint / format / typecheck tools,
+- project type (library, CLI, API, service, web app, firmware, monorepo, hybrid, etc.),
+- important entrypoints,
+- important scripts,
+- environment configuration,
+- CI / automation clues,
+- major directories and boundaries,
+- the likely purpose of the project.
+
+Inspect relevant files when present, including things like:
+
+- `README*`
+- `AGENTS.md`
+- `Makefile`
+- `package.json`
+- `pyproject.toml`
+- `Cargo.toml`
+- `go.mod`
+- `pom.xml`
+- `build.gradle*`
+- `.github/workflows/*`
+- `Dockerfile*`
+- `.env.example`
+- `src/*`
+- `tests/*`
+- `scripts/*`
+- `docs/*`
+
+If the repository is new, sparse, or incomplete:
+- do not invent domain-specific behavior,
+- do create the minimal structure and docs needed for future work,
+- do make uncertainty explicit.
+
+---
+
+## Create or improve required documentation
+
+Use the existing docs structure if it is already coherent.
+Otherwise create `docs/`.
+
+Create or improve these files when missing, weak, or outdated:
+
+- `README.md`
+- `docs/PROJECT_OVERVIEW.md`
+- `docs/PROJECT_INTENT.md`
+- `docs/REPO_MAP.md`
+- `docs/ARCHITECTURE.md`
+- `docs/DEVELOPMENT.md`
+- `docs/TESTING.md`
+- `docs/PROJECT_MEMORY.md`
+- `docs/OPEN_QUESTIONS.md`
+- `docs/BOOTSTRAP_REPORT.md`
+
+### What each file should do
+
+`README.md`
+- Briefly explain what the project is.
+- Explain how to set it up, run it, and validate it.
+- Point to deeper docs.
+
+`docs/PROJECT_OVERVIEW.md`
+- Summarize what the project appears to be.
+- Distinguish observed facts from inferences.
+
+`docs/PROJECT_INTENT.md`
+- Capture explicit goals found in the repo.
+- Capture likely direction, non-goals if inferable, and important unknowns.
+
+`docs/REPO_MAP.md`
+- Map major directories, entrypoints, configs, scripts, and notable boundaries.
+
+`docs/ARCHITECTURE.md`
+- Describe the current architecture as it actually exists today.
+
+`docs/DEVELOPMENT.md`
+- Explain setup, install, run, env vars, and common developer workflows.
+
+`docs/TESTING.md`
+- Explain tests, lint, formatting, type-checking, static analysis, and validation order.
+
+`docs/PROJECT_MEMORY.md`
+- Keep durable knowledge for future agents and developers.
+- Store terminology, conventions, strong reference files, important developer answers, and active assumptions worth preserving.
+- Keep it curated, not noisy.
+
+`docs/OPEN_QUESTIONS.md`
+- Keep only unresolved questions that still need developer input.
+- Do not use it as backlog, brainstorming, or history.
+- Its ideal state is empty.
+
+`docs/BOOTSTRAP_REPORT.md`
+- Record what was found, what was changed, what remains uncertain, and what still needs improvement.
+
+---
+
+## Open questions workflow
+
+Create or improve `docs/OPEN_QUESTIONS.md` with these rules:
+
+- include only unresolved questions,
+- do not keep answered questions there,
+- remove resolved questions after propagating answers into permanent docs,
+- do not duplicate things already answered elsewhere,
+- keep the file lean.
+
+Add a question only if:
+1. repository evidence did not answer it,
+2. the answer materially affects architecture, behavior, conventions, workflow, or documentation quality,
+3. it is important enough to deserve developer input.
+
+Each open question should be concise and include:
+
+- ID
+- Status
+- Type
+- Priority
+- Context
+- Evidence
+- Question
+- Why it matters
+- Temporary assumption
+- Expected follow-up
+
+Allowed statuses in that file:
+- `open`
+- `blocked`
+
+When a question is resolved:
+1. update the relevant permanent docs,
+2. update `docs/PROJECT_MEMORY.md`,
+3. update code or workflow if needed,
+4. optionally record a durable decision,
+5. remove the question from `docs/OPEN_QUESTIONS.md`.
+
+---
+
+## Decision records
+
+If the project is non-trivial, create or improve:
+
+- `docs/DECISIONS/README.md`
+
+You may also create short ADRs in `docs/DECISIONS/` for durable, important project-level decisions.
+
+Good ADR topics:
+- architecture boundaries,
+- language or tooling choices,
+- storage strategy,
+- validation workflow policy,
+- project structure decisions.
+
+Do not create ADRs for trivial or one-off choices.
+
+---
+
+## Create or improve the command hub
+
+Prefer one obvious entrypoint for common commands.
+
+Order of preference:
+1. improve an existing `Makefile`,
+2. create a `Makefile`,
+3. use project-native scripts only when a `Makefile` is clearly inappropriate.
+
+If meaningful for the repository, expose targets such as:
+
+- `help`
+- `setup`
+- `run`
+- `dev`
+- `build`
+- `fmt`
+- `lint`
+- `typecheck`
+- `test`
+- `check`
+- `verify`
+- `clean`
+
+Rules:
+- use the project’s actual native commands,
+- keep commands readable,
+- do not hide confusing logic,
+- make `verify` run the most useful validation sequence.
+
+If helpful, also create `scripts/verify.sh`.
+
+If no tests exist, say so honestly in docs and command behavior.
+
+---
+
+## Adapt to the detected stack
+
+Use the ecosystem already present in the repository.
+
+- Rust: prefer existing cargo workflows.
+- Python: inspect `pyproject.toml` first and use the existing toolchain (`uv`, `poetry`, `pip`, etc.).
+- JS / TS: detect and follow the existing package manager and scripts.
+- Go: follow existing module and test conventions.
+- JVM: prefer the existing Maven or Gradle workflow and wrappers.
+- C / C++ / embedded: detect the actual build system and document the real build / flash / run flow.
+- Monorepo: document package boundaries and both repo-wide and local workflows.
+
+Do not introduce competing package managers, linters, or architectural patterns without a strong reason.
+
+---
+
+## Create or improve foundational files only when needed
+
+Create or improve these only if missing, weak, or clearly useful:
+
+- `.editorconfig`
+- `.gitignore`
+- `.env.example`
+- `CONTRIBUTING.md`
+
+Rules:
+- do not overwrite strong existing files just to match preference,
+- never place secrets in example env files.
+
+---
+
+## Create or improve the final project-specific AGENTS file
+
+Create or improve `AGENTS.md` so it becomes the normal long-term operational guide for future agents.
+
+The final `AGENTS.md` should be concise and repo-specific.
+It should usually include:
+
+- project overview,
+- real stack and tooling,
+- repo map,
+- development workflow,
+- validation checklist,
+- code and documentation rules,
+- open-questions workflow,
+- high-risk areas,
+- important reference files.
+
+Do not leave generic bootstrap text in the final `AGENTS.md`.
+
+If the repository already has a good `AGENTS.md`, improve it instead of replacing it unnecessarily.
+
+---
+
+## Validation and completion
+
+Before considering the work complete:
+
+- run the relevant checks for the areas you changed,
+- or state clearly why a check could not be run,
+- update relevant docs when behavior, workflow, or structure changed,
+- capture durable knowledge in `docs/PROJECT_MEMORY.md`,
+- ensure `docs/OPEN_QUESTIONS.md` contains only truly unresolved items,
+- ensure this file contains only remaining actionable work.
+
+When every remaining instruction has either been completed, removed as non-applicable, or reduced to only still-pending work, delete this file.
+
+---
