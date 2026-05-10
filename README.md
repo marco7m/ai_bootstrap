@@ -1,126 +1,191 @@
 # AI Bootstrap
 
-A simple repository for maintaining and evolving a single file: `AI_BOOTSTRAP`.
+Single-file Python bootstrap for setting up a repository with a guided Spec-Driven Development workflow.
 
-This file is meant to be copied into the root of a new or existing project and used as the initial instruction file for an AI to configure, organize, and document the repository.
+The intended usage is simple:
 
-## Goal
+1. Copy `bootstrap_sdd.py` into the root of a new or existing repository.
+2. Run it once.
+3. Start using the generated docs and prompts with Codex or Cursor.
 
-`AI_BOOTSTRAP` is intended to be **self-sufficient**.
+## What the script does
 
-That means it must contain, by itself, all the instructions needed for the AI to:
+When you run `bootstrap_sdd.py`, it inspects the target repository and generates a small working structure for AI-assisted development.
 
-- inspect the repository,
-- understand the stack and workflow,
-- create or improve the minimum necessary documentation,
-- create or improve the final project `AGENTS.md`,
-- record open questions in `docs/OPEN_QUESTIONS.md`,
-- record durable knowledge in `docs/PROJECT_MEMORY.md`,
-- create a clear validation path,
-- and delete itself when no actionable work remains.
+It creates:
 
-The bootstrap must not depend on templates, auxiliary files, or pre-existing structure.
+- `AGENTS.md`
+- `docs/SPEC_DRIVEN.md`
+- `docs/START_PROMPT.md`
+- `docs/changes/_templates/spec.md`
+- `docs/changes/_templates/plan.md`
+- `docs/changes/_templates/tasks.md`
+- `docs/changes/_templates/notes.md`
+- `docs/changes/_templates/open_questions.md`
+- `docs/changes/_templates/decisions.md`
+
+By default, it also creates:
+
+- `.cursor/rules/spec-driven-always.mdc`
+- `.cursor/plans/README.md`
+- `.agents/skills/spec-driven/SKILL.md`
+
+Optionally, with `--global-codex`, it also writes:
+
+- `~/.codex/AGENTS.md`
+
+## What it detects automatically
+
+The script profiles the repository before generating files.
+
+It detects things like:
+
+- project name from the folder name, unless `--project-name` is provided;
+- package manager such as `npm`, `pnpm`, `yarn`, `bun`, `uv`, or `poetry`;
+- stack hints from files such as `Makefile`, `package.json`, `Cargo.toml`, `go.mod`, `pyproject.toml`, and `requirements.txt`;
+- common commands such as build, test, lint, typecheck, fmt, check, and dev when they can be inferred.
+
+Those detections are written into `AGENTS.md` so the repository starts with project-specific guidance instead of a totally generic template.
 
 ## How to use it
 
-1. Copy `AI_BOOTSTRAP` into the root of the target project.
-2. Run your AI in that repository.
-3. Tell it something like:
+### In the current repository
 
-```text
-Follow the instructions in AI_BOOTSTRAP
+Copy `bootstrap_sdd.py` into the repo root and run:
+
+```bash
+python3 bootstrap_sdd.py
 ```
 
-4. As long as the `AI_BOOTSTRAP` file still exists, keep telling the AI to follow the instructions in it.
-5. When everything is complete, the file should delete itself.
+### Against another path
 
-## Expected behavior
+You can also point it at another repository directory:
 
-`AI_BOOTSTRAP` works as a temporary work queue.
+```bash
+python3 bootstrap_sdd.py /path/to/repo
+```
 
-The expected rules are:
+### Typical next steps
 
-- anything already completed should be removed from the file;
-- anything partially completed should be rewritten so it contains only the remaining work;
-- anything that does not apply, no longer makes sense, or cannot be done should be removed;
-- when no actions remain, the file should be deleted.
+After running it:
 
-In other words: **if the file still exists, there is still pending work**.
+1. Open the repository in Codex or Cursor.
+2. Read or paste the prompt from `docs/START_PROMPT.md`.
+3. Describe the change you want to build.
+4. Review and approve the generated spec before implementation.
 
-## When to use it
+## Useful options
 
-This file is useful for:
+Preview without writing files:
 
-- new projects that do not yet have structure;
-- existing projects with weak or inconsistent documentation;
-- standardizing AI onboarding across multiple repositories;
-- sharing a bootstrap workflow with other people;
-- reducing the chance that the AI silently assumes things without recording uncertainty.
+```bash
+python3 bootstrap_sdd.py --dry-run
+```
 
-## What it will usually cause the AI to create
+Overwrite previously generated files:
 
-Depending on the project, the AI may create or improve files such as:
+```bash
+python3 bootstrap_sdd.py --force
+```
 
-- `README.md`
-- `AGENTS.md`
-- `docs/PROJECT_OVERVIEW.md`
-- `docs/PROJECT_INTENT.md`
-- `docs/REPO_MAP.md`
-- `docs/ARCHITECTURE.md`
-- `docs/DEVELOPMENT.md`
-- `docs/TESTING.md`
-- `docs/PROJECT_MEMORY.md`
-- `docs/OPEN_QUESTIONS.md`
-- `docs/BOOTSTRAP_REPORT.md`
-- `docs/DECISIONS/README.md`
+Overwrite without creating backup files:
 
-These files do not need to exist beforehand. The bootstrap should decide what makes sense based on the actual repository.
+```bash
+python3 bootstrap_sdd.py --force --no-backup
+```
 
-## Philosophy
+Set an explicit project name in `AGENTS.md`:
 
-This repository exists to maintain a bootstrap that is:
+```bash
+python3 bootstrap_sdd.py --project-name "My Project"
+```
 
-- small enough for an AI to read,
-- strong enough to be useful,
-- generic enough to be reusable,
-- and specific enough to produce operational results.
+Skip Cursor-specific files:
 
-Core principles:
+```bash
+python3 bootstrap_sdd.py --no-cursor
+```
 
-- do not assume silently;
-- prefer repository evidence;
-- make small, reversible changes;
-- improve before replacing;
-- avoid redundant documentation;
-- keep open questions separate from durable knowledge;
-- make the bootstrap unnecessary by the end.
+Skip the local spec-driven skill:
 
-## Repository structure
+```bash
+python3 bootstrap_sdd.py --no-skill
+```
+
+Also install a small global Codex default:
+
+```bash
+python3 bootstrap_sdd.py --global-codex
+```
+
+## Generated structure
+
+The default generated layout looks like this:
 
 ```text
 .
-├── AI_BOOTSTRAP
-└── README.md
+├── AGENTS.md
+├── docs/
+│   ├── SPEC_DRIVEN.md
+│   ├── START_PROMPT.md
+│   └── changes/
+│       └── _templates/
+│           ├── decisions.md
+│           ├── notes.md
+│           ├── open_questions.md
+│           ├── plan.md
+│           ├── spec.md
+│           └── tasks.md
+├── .agents/
+│   └── skills/
+│       └── spec-driven/
+│           └── SKILL.md
+└── .cursor/
+    ├── plans/
+    │   └── README.md
+    └── rules/
+        └── spec-driven-always.mdc
 ```
 
-## Maintenance
+## Workflow the generated files enforce
 
-This repository serves as the canonical source of the `AI_BOOTSTRAP` file.
+The generated workflow is:
 
-As the file evolves, the goal is to improve:
+`idea -> clarification -> spec -> approval -> plan -> tasks -> implementation -> validation`
 
-- clarity,
-- robustness,
-- ability to work across different stacks,
-- and the quality of the outputs produced by the AI.
+For non-trivial work, the repository guidance tells the AI to:
 
-Changes should keep the bootstrap:
+- ask focused clarifying questions first;
+- draft a spec under `docs/changes/<short-change-name>/spec.md`;
+- wait for explicit approval;
+- create `plan.md` and `tasks.md` only after approval;
+- implement only after the plan exists;
+- validate the result against the approved spec.
 
-- self-sufficient,
-- minimal,
-- portable,
-- and independent from required templates.
+## Overwrite behavior
 
-## License
+If a generated file already exists:
 
-Use whatever license makes sense for your own use and for sharing it with other people.
+- the script leaves it untouched by default;
+- `--force` allows overwriting it;
+- backups are created automatically when overwriting, unless `--no-backup` is used.
+
+## When to use this
+
+This bootstrap is useful when you want a repo to start with:
+
+- an explicit AI working agreement;
+- a documented spec-first workflow;
+- reusable templates for changes under `docs/changes/`;
+- lightweight editor/agent integration for Codex and Cursor.
+
+## Repository purpose
+
+This repository is the source for `bootstrap_sdd.py` itself.
+
+The goal is to keep the bootstrap:
+
+- portable;
+- small enough to copy into another repository;
+- opinionated enough to produce consistent results;
+- grounded in the actual behavior of the script.

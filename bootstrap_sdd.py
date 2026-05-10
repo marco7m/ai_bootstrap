@@ -380,7 +380,7 @@ If risk is high or ambiguity remains, do not silently skip the process.
 
 ## Required artifacts
 For non-trivial work, create a change folder under:
-`changes/<short-change-name>/`
+`docs/changes/<short-change-name>/`
 
 Inside it, create:
 - `spec.md`
@@ -552,23 +552,23 @@ If the user already answered some of these, do not repeat them.
 
 For each non-trivial change, create:
 
-`changes/<short-change-name>/spec.md`
+`docs/changes/<short-change-name>/spec.md`
 
 After approval, create:
-- `changes/<short-change-name>/plan.md`
-- `changes/<short-change-name>/tasks.md`
+- `docs/changes/<short-change-name>/plan.md`
+- `docs/changes/<short-change-name>/tasks.md`
 
 Optional when useful:
-- `changes/<short-change-name>/notes.md`
-- `changes/<short-change-name>/open_questions.md`
-- `changes/<short-change-name>/decisions.md`
+- `docs/changes/<short-change-name>/notes.md`
+- `docs/changes/<short-change-name>/open_questions.md`
+- `docs/changes/<short-change-name>/decisions.md`
 
 Use kebab-case for the folder name.
 
 Examples:
-- `changes/add-auth-token-refresh/`
-- `changes/refactor-memory-store/`
-- `changes/fix-export-timezone-bug/`
+- `docs/changes/add-auth-token-refresh/`
+- `docs/changes/refactor-memory-store/`
+- `docs/changes/fix-export-timezone-bug/`
 
 ---
 
@@ -1135,7 +1135,7 @@ description: Use for non-trivial feature work, bug fixes, refactors, or ambiguou
 2. Decide whether the request is trivial or non-trivial.
 3. For non-trivial work, do not code immediately.
 4. Ask a small number of focused clarifying questions.
-5. Draft `changes/<short-change-name>/spec.md` using the repo template.
+5. Draft `docs/changes/<short-change-name>/spec.md` using the repo template.
 6. Include functional and non-functional requirements.
 7. Ask the user to approve the spec explicitly.
 8. Only after approval, create `plan.md` and `tasks.md`.
@@ -1161,7 +1161,7 @@ alwaysApply: true
 
 - Read `AGENTS.md` and `docs/SPEC_DRIVEN.md` before non-trivial work.
 - Prefer Plan Mode first for ambiguous or multi-step tasks.
-- Do not implement a non-trivial change before drafting and getting approval for `changes/<short-change-name>/spec.md`.
+- Do not implement a non-trivial change before drafting and getting approval for `docs/changes/<short-change-name>/spec.md`.
 - Include non-functional requirements in specs: maintainability, modularity, security, reliability, performance, observability, and simplicity.
 - After spec approval, create `plan.md` and `tasks.md` before implementation.
 - In plans, document existing conventions, module boundaries, architecture locality, security/privacy impact, dependency impact, risks, and validation strategy.
@@ -1260,7 +1260,7 @@ def bootstrap_repo(
     results: list[WriteResult] = []
 
     docs_dir = target / "docs"
-    changes_dir = target / "changes"
+    changes_dir = docs_dir / "changes"
     templates_dir = changes_dir / "_templates"
     cursor_rules_dir = target / ".cursor" / "rules"
     cursor_plans_dir = target / ".cursor" / "plans"

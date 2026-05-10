@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+*.bak-*
+
+# Generated if the bootstrap is run in this source repo.
+AGENTS.md
+.agents/
+.cursor/
+docs/SPEC_DRIVEN.md
+docs/START_PROMPT.md
+docs/changes/
