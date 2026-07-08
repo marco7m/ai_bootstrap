@@ -5,8 +5,6 @@
     { "path": "docs", "group": "spec-driven" },
     { "path": "docs/changes", "group": "spec-driven" },
     { "path": "docs/changes/_templates", "group": "spec-driven" },
-    { "path": ".cursor/rules", "group": "cursor" },
-    { "path": ".cursor/plans", "group": "cursor" },
     { "path": ".agents/skills/spec-driven", "group": "skill/spec-driven" },
     { "path": ".agents/skills/living-docs", "group": "skill/living-docs" }
   ],
@@ -30,9 +28,6 @@
     { "path": "docs/CANONICAL_DECISIONS.md", "template": "templates/docs/CANONICAL_DECISIONS.md", "group": "living-docs" },
     { "path": "docs/GLOSSARY.md", "template": "templates/docs/GLOSSARY.md", "group": "living-docs" },
     { "path": ".agents/skills/spec-driven/SKILL.md", "template": "templates/.agents/skills/spec-driven/SKILL.md", "group": "skill/spec-driven" },
-    { "path": ".agents/skills/living-docs/SKILL.md", "template": "templates/.agents/skills/living-docs/SKILL.md", "group": "skill/living-docs" },
-    { "path": ".cursor/rules/spec-driven-always.mdc", "template": "templates/.cursor/rules/spec-driven-always.mdc", "group": "cursor" },
-    { "path": ".cursor/plans/README.md", "template": "templates/.cursor/plans/README.md", "group": "cursor" },
-    { "path": "~/.codex/AGENTS.md", "template": "templates/global/AGENTS.md", "group": "global_codex" }
+    { "path": ".agents/skills/living-docs/SKILL.md", "template": "templates/.agents/skills/living-docs/SKILL.md", "group": "skill/living-docs" }
   ]
 }

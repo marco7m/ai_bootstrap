@@ -33,7 +33,6 @@ class BootstrapPlan:
     force: bool
     dry_run: bool
     backup_existing: bool
-    install_global_codex: bool
 
 
 def _resolve_output_path(target: Path, raw_path: str) -> Path:
@@ -112,7 +111,6 @@ def build_plan(
     force: bool,
     dry_run: bool,
     backup_existing: bool,
-    install_global_codex: bool,
 ) -> BootstrapPlan:
     results: list[WriteResult] = []
     context = _render_context(profile)
@@ -138,5 +136,4 @@ def build_plan(
         force=force,
         dry_run=dry_run,
         backup_existing=backup_existing,
-        install_global_codex=install_global_codex,
     )

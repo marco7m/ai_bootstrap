@@ -28,11 +28,10 @@ class ApplierTests(unittest.TestCase):
                 profile=profile,
                 pack=pack,
                 enabled_workflows=["spec-driven"],
-                enabled_groups={"spec-driven", "cursor", "skill/spec-driven"},
+                enabled_groups={"spec-driven", "skill/spec-driven"},
                 force=False,
                 dry_run=False,
                 backup_existing=True,
-                install_global_codex=False,
             )
 
             results = apply_plan(plan, dry_run=False, backup_existing=True)
@@ -58,11 +57,10 @@ class ApplierTests(unittest.TestCase):
                 profile=profile,
                 pack=pack,
                 enabled_workflows=["spec-driven"],
-                enabled_groups={"spec-driven", "cursor", "skill/spec-driven"},
+                enabled_groups={"spec-driven", "skill/spec-driven"},
                 force=True,
                 dry_run=False,
                 backup_existing=True,
-                install_global_codex=False,
             )
 
             results = apply_plan(plan, dry_run=False, backup_existing=True)

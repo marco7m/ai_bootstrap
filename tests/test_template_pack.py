@@ -35,11 +35,10 @@ class TemplatePackTests(unittest.TestCase):
                 profile=profile,
                 pack=pack,
                 enabled_workflows=["spec-driven", "living-docs"],
-                enabled_groups={"spec-driven", "living-docs", "cursor", "skill/spec-driven", "skill/living-docs"},
+                enabled_groups={"spec-driven", "living-docs", "skill/spec-driven", "skill/living-docs"},
                 force=False,
                 dry_run=True,
                 backup_existing=True,
-                install_global_codex=False,
             )
 
             planned = {str(item.path) for item in plan.results if item.kind == "file"}
@@ -49,8 +48,8 @@ class TemplatePackTests(unittest.TestCase):
             self.assertIn(str(target / "docs/LIVING_DOCUMENTATION.md"), planned)
             self.assertIn(str(target / ".agents/skills/spec-driven/SKILL.md"), planned)
             self.assertIn(str(target / ".agents/skills/living-docs/SKILL.md"), planned)
-            self.assertIn(str(target / ".cursor/rules/spec-driven-always.mdc"), planned)
-            self.assertIn(str(target / ".cursor/plans/README.md"), planned)
+            self.assertFalse(any(".cursor" in item.path.parts for item in plan.results))
+            self.assertFalse(any(".codex" in item.path.parts for item in plan.results))
 
     def test_no_living_docs_excludes_living_docs(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -69,11 +68,10 @@ class TemplatePackTests(unittest.TestCase):
                 profile=profile,
                 pack=pack,
                 enabled_workflows=["spec-driven"],
-                enabled_groups={"spec-driven", "cursor", "skill/spec-driven"},
+                enabled_groups={"spec-driven", "skill/spec-driven"},
                 force=False,
                 dry_run=True,
                 backup_existing=True,
-                install_global_codex=False,
             )
 
             planned = {str(item.path) for item in plan.results if item.kind == "file"}
@@ -83,8 +81,8 @@ class TemplatePackTests(unittest.TestCase):
             self.assertNotIn(str(target / "docs/LIVING_DOCUMENTATION.md"), planned)
             self.assertIn(str(target / ".agents/skills/spec-driven/SKILL.md"), planned)
             self.assertNotIn(str(target / ".agents/skills/living-docs/SKILL.md"), planned)
-            self.assertIn(str(target / ".cursor/rules/spec-driven-always.mdc"), planned)
-            self.assertIn(str(target / ".cursor/plans/README.md"), planned)
+            self.assertFalse(any(".cursor" in item.path.parts for item in plan.results))
+            self.assertFalse(any(".codex" in item.path.parts for item in plan.results))
 
     def test_living_docs_only_excludes_spec_driven(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -107,7 +105,6 @@ class TemplatePackTests(unittest.TestCase):
                 force=False,
                 dry_run=True,
                 backup_existing=True,
-                install_global_codex=False,
             )
 
             planned = {str(item.path) for item in plan.results if item.kind == "file"}
@@ -117,8 +114,8 @@ class TemplatePackTests(unittest.TestCase):
             self.assertNotIn(str(target / "docs/SPEC_DRIVEN.md"), planned)
             self.assertNotIn(str(target / ".agents/skills/spec-driven/SKILL.md"), planned)
             self.assertIn(str(target / ".agents/skills/living-docs/SKILL.md"), planned)
-            self.assertNotIn(str(target / ".cursor/rules/spec-driven-always.mdc"), planned)
-            self.assertNotIn(str(target / ".cursor/plans/README.md"), planned)
+            self.assertFalse(any(".cursor" in item.path.parts for item in plan.results))
+            self.assertFalse(any(".codex" in item.path.parts for item in plan.results))
 
     def test_no_skill_excludes_both_skills(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -137,11 +134,10 @@ class TemplatePackTests(unittest.TestCase):
                 profile=profile,
                 pack=pack,
                 enabled_workflows=["spec-driven", "living-docs"],
-                enabled_groups={"spec-driven", "living-docs", "cursor"},
+                enabled_groups={"spec-driven", "living-docs"},
                 force=False,
                 dry_run=True,
                 backup_existing=True,
-                install_global_codex=False,
             )
 
             planned = {str(item.path) for item in plan.results if item.kind == "file"}
@@ -149,48 +145,8 @@ class TemplatePackTests(unittest.TestCase):
             self.assertIn(str(target / "docs/AI_CONTEXT.md"), planned)
             self.assertNotIn(str(target / ".agents/skills/spec-driven/SKILL.md"), planned)
             self.assertNotIn(str(target / ".agents/skills/living-docs/SKILL.md"), planned)
-            self.assertIn(str(target / ".cursor/rules/spec-driven-always.mdc"), planned)
-            self.assertIn(str(target / ".cursor/plans/README.md"), planned)
-
-    def test_global_codex_template_is_only_planned_when_enabled(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp_home:
-            with tempfile.TemporaryDirectory() as tmp_target:
-                target = Path(tmp_target)
-                profile = RepoProfile(
-                    project_name="Example Project",
-                    repo_name="example-project",
-                    detected_stacks=[],
-                    commands={},
-                    top_dirs=[],
-                )
-                pack = load_default_template_pack()
-
-                import os
-                from unittest import mock
-
-                with mock.patch.dict(os.environ, {"HOME": tmp_home}):
-                    plan = build_plan(
-                        target,
-                        profile=profile,
-                        pack=pack,
-                        enabled_workflows=["spec-driven", "living-docs"],
-                        enabled_groups={
-                            "spec-driven",
-                            "living-docs",
-                            "cursor",
-                            "skill/spec-driven",
-                            "skill/living-docs",
-                            "global_codex",
-                        },
-                        force=False,
-                        dry_run=True,
-                        backup_existing=True,
-                        install_global_codex=True,
-                    )
-
-                global_paths = [item.path for item in plan.results if str(item.path).endswith(".codex/AGENTS.md")]
-                self.assertEqual(len(global_paths), 1)
-                self.assertFalse(global_paths[0].exists())
+            self.assertFalse(any(".cursor" in item.path.parts for item in plan.results))
+            self.assertFalse(any(".codex" in item.path.parts for item in plan.results))
 
 
 if __name__ == "__main__":

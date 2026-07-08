@@ -1,6 +1,9 @@
 __pycache__/
 *.py[cod]
 *.bak-*
+*.egg-info/
+build/
+dist/
 
 # Generated if the bootstrap is run in this source repo.
 AGENTS.md
@@ -10,17 +13,11 @@ docs/SPEC_DRIVEN.md
 docs/START_PROMPT.md
 docs/changes/
 
-# Allow bootstrap template pack files even when generated target files are ignored
-!template_packs/
-!template_packs/**
-!template_packs/default/templates/AGENTS.md
-!template_packs/default/templates/global/
-!template_packs/default/templates/global/AGENTS.md
-!template_packs/default/templates/.agents/
-!template_packs/default/templates/.agents/**
-!template_packs/default/templates/.cursor/
-!template_packs/default/templates/.cursor/**
-
-# Python cache files
-__pycache__/
-*.py[cod]
+# Allow packaged bootstrap templates even when generated target files are ignored.
+!ai_workflow_bootstrap/template_packs/
+!ai_workflow_bootstrap/template_packs/**
+ai_workflow_bootstrap/template_packs/**/__pycache__/
+ai_workflow_bootstrap/template_packs/**/*.py[cod]
+!ai_workflow_bootstrap/template_packs/default/templates/AGENTS.md
+!ai_workflow_bootstrap/template_packs/default/templates/.agents/
+!ai_workflow_bootstrap/template_packs/default/templates/.agents/**

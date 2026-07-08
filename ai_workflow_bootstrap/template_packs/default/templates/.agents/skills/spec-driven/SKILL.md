@@ -20,7 +20,6 @@ description: Use for non-trivial feature work, bug fixes, refactors, or ambiguou
 15. Summarize the final result, tests, remaining assumptions, and any architecture concerns.
 
 When the request is large, ambiguous, or likely to span multiple sessions:
-- prefer plan mode before coding;
+- prefer a planning step before coding;
 - keep the plan detailed and reviewable;
-- if using Cursor, save the plan to `.cursor/plans/` when that would help future sessions.
-
+- if a persistent plan would help future sessions, save it in a project-local planning document.

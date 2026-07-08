@@ -57,7 +57,6 @@ class StateTests(unittest.TestCase):
                 force=False,
                 dry_run=False,
                 backup_existing=True,
-                install_global_codex=True,
             )
             results = [
                 WriteResult(
@@ -68,10 +67,10 @@ class StateTests(unittest.TestCase):
                     template_hash="abc123",
                 ),
                 WriteResult(
-                    path=Path("/home/example/.codex/AGENTS.md"),
+                    path=Path("/tmp/example/AGENTS.md"),
                     status="written",
                     message="created/updated",
-                    template="templates/global/AGENTS.md",
+                    template="templates/AGENTS.md",
                     template_hash="def456",
                 ),
             ]
@@ -80,7 +79,7 @@ class StateTests(unittest.TestCase):
 
             self.assertTrue(os.path.isabs(state.target_path))
             self.assertIn("docs/AI_CONTEXT.md", state.files)
-            self.assertNotIn("/home/example/.codex/AGENTS.md", state.files)
+            self.assertNotIn("/tmp/example/AGENTS.md", state.files)
             self.assertTrue(all(not key.startswith("/") for key in state.files))
             self.assertEqual(state.files["docs/AI_CONTEXT.md"]["template_hash"], "abc123")
 

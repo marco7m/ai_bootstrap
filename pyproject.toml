@@ -9,6 +9,13 @@ description = "Modular bootstrap for guided Spec-Driven Development workflows"
 readme = "README.md"
 requires-python = ">=3.11"
 
+[project.optional-dependencies]
+tui = ["textual"]
+
+[project.scripts]
+ai-workflow-bootstrap = "ai_workflow_bootstrap.cli:main"
+ai-bootstrap = "ai_workflow_bootstrap.cli:main"
+
 [tool.setuptools]
 py-modules = ["bootstrap_sdd"]
 include-package-data = true

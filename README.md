@@ -1,14 +1,29 @@
 # ai-workflow-bootstrap
 
-`ai-workflow-bootstrap` is a modular Python bootstrap for repositories that use a guided Spec-Driven Development workflow.
+`ai-workflow-bootstrap` is a modular, AI-agnostic Python bootstrap for repositories that use a guided Spec-Driven Development workflow.
 
-The package provides a CLI entrypoint:
+The package provides a CLI entrypoint for your preferred AI assistant:
 
 ```bash
 python -m ai_workflow_bootstrap [path]
 ```
 
 The legacy `bootstrap_sdd.py` script still works as a compatibility entrypoint.
+
+For an interactive setup flow, install the optional TUI extra:
+
+```bash
+pip install -e ".[tui]"
+```
+
+Then open the TUI with either:
+
+```bash
+ai-workflow-bootstrap tui
+python -m ai_workflow_bootstrap tui
+```
+
+The TUI is the friendliest path for new contributors and interns. It explains the workflow in plain language, shows a preview before applying, and only writes files after explicit confirmation.
 
 ## Quick Start
 
@@ -34,12 +49,6 @@ Apply only living docs:
 
 ```bash
 python -m ai_workflow_bootstrap --living-docs-only .
-```
-
-Also update the global Codex default:
-
-```bash
-python -m ai_workflow_bootstrap --global-codex .
 ```
 
 ## What It Generates
@@ -68,8 +77,6 @@ By default, the new CLI generates:
 - `docs/changes/_templates/decisions.md`
 - `.agents/skills/spec-driven/SKILL.md`
 - `.agents/skills/living-docs/SKILL.md`
-- `.cursor/rules/spec-driven-always.mdc`
-- `.cursor/plans/README.md`
 - `.ai-bootstrap/state.json`
 
 With `--no-living-docs`, the bootstrap keeps the spec-driven workflow and skips the living docs files and living-docs skill.
@@ -82,7 +89,7 @@ The repository workflow is:
 
 `idea -> clarification -> spec -> approval -> plan -> tasks -> implementation -> validation`
 
-For non-trivial work, the generated docs tell the AI to:
+For non-trivial work, the generated docs tell the assistant to:
 
 - ask focused clarifying questions first;
 - draft a spec under `docs/changes/<short-change-name>/spec.md`;
@@ -101,6 +108,20 @@ The core set is included by default in the new CLI:
 - `docs/LIVING_DOCUMENTATION.md` defines the living-docs policy;
 - `docs/WORKFLOW_MODULES.md` explains optional module adoption;
 - `docs/PROJECT_SPEC.md`, `docs/IMPLEMENTATION_STATUS.md`, `docs/ROADMAP.md`, `docs/IDEA_INBOX.md`, `docs/CANONICAL_DECISIONS.md`, and `docs/GLOSSARY.md` hold durable project knowledge.
+
+Compatible assistants can also use the open Agent Skills under `.agents/skills/`.
+
+## TUI
+
+The interactive TUI is optional and only available when you install `textual`.
+
+It is useful when you want a guided flow that:
+
+- explains spec-driven development in simple terms;
+- explains living docs in simple terms;
+- previews the files before applying;
+- requires explicit confirmation before writing;
+- lets you choose the path, workflow mode, and whether to include `.agents/skills/`.
 
 ## Template Packs
 

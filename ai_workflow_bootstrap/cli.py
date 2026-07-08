@@ -10,12 +10,22 @@ from .core.planner import BootstrapPlan, WriteResult, build_plan
 from .core.scanner import detect_project_name, detect_repo_profile
 from .core.state import build_state, save_state, state_path
 from .core.template_pack import load_default_template_pack
+from .core.workflow import resolve_workflow_selection
 from . import __version__
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Bootstrap a repository for guided Spec-Driven Development.",
+        description="Bootstrap a repository for guided, AI-agnostic Spec-Driven Development.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "Examples:\n"
+            "  python -m ai_workflow_bootstrap --dry-run .\n"
+            "  python -m ai_workflow_bootstrap .\n"
+            "  python -m ai_workflow_bootstrap tui\n\n"
+            "Interactive TUI:\n"
+            "  python -m ai_workflow_bootstrap tui"
+        ),
     )
     parser.add_argument(
         "path",
@@ -38,24 +48,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Show what would be created or overwritten without writing files.",
     )
     parser.add_argument(
-        "--global-codex",
-        action="store_true",
-        help="Also create or update ~/.codex/AGENTS.md with a small global default.",
-    )
-    parser.add_argument(
         "--no-backup",
         action="store_true",
         help="Do not create backup files when overwriting with --force.",
     )
     parser.add_argument(
-        "--no-cursor",
-        action="store_true",
-        help="Do not create Cursor-specific files under .cursor/.",
-    )
-    parser.add_argument(
         "--no-skill",
         action="store_true",
-        help="Do not create the Codex skill under .agents/skills/spec-driven/.",
+        help="Do not create the spec-driven skill under .agents/skills/spec-driven/.",
     )
     parser.add_argument(
         "--no-living-docs",
@@ -91,42 +91,28 @@ def print_summary(results: list[WriteResult], *, target: Path, profile) -> None:
         print(f"- {rel.ljust(width)}  {result.status:9}  {result.message}")
 
     print("\nNext steps:")
-    print("1. Open the repository in Codex or Cursor.")
+    print("1. Open the repository in your AI assistant.")
     print("2. Read or paste the prompt from docs/START_PROMPT.md.")
     print("3. Describe the feature you want to build.")
-    print("4. Approve the generated spec before letting the agent implement.")
+    print("4. Approve the generated spec before letting the assistant implement.")
 
 
-def _resolve_groups(*, no_living_docs: bool, living_docs_only: bool, no_cursor: bool, no_skill: bool, global_codex: bool) -> tuple[list[str], set[str]]:
-    enabled_workflows = ["living-docs"] if living_docs_only else ["spec-driven"] if no_living_docs else ["spec-driven", "living-docs"]
-    enabled_groups: set[str] = set()
-
+def _resolve_groups(*, no_living_docs: bool, living_docs_only: bool, no_skill: bool) -> tuple[list[str], set[str]]:
     if living_docs_only:
-        enabled_groups.add("living-docs")
-        if not no_skill:
-            enabled_groups.add("skill/living-docs")
-        return enabled_workflows, enabled_groups
-
-    enabled_groups.add("spec-driven")
-    if not no_living_docs:
-        enabled_groups.add("living-docs")
-
-    if not no_skill:
-        enabled_groups.add("skill/spec-driven")
-        if not no_living_docs:
-            enabled_groups.add("skill/living-docs")
-
-    if not no_cursor:
-        enabled_groups.add("cursor")
-
-    if global_codex:
-        enabled_groups.add("global_codex")
-
-    return enabled_workflows, enabled_groups
+        return resolve_workflow_selection(mode="living-docs", include_skills=not no_skill)
+    if no_living_docs:
+        return resolve_workflow_selection(mode="spec-driven", include_skills=not no_skill)
+    return resolve_workflow_selection(mode="recommended", include_skills=not no_skill)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    args = build_parser().parse_args(list(argv) if argv is not None else sys.argv[1:])
+    raw_argv = list(argv) if argv is not None else sys.argv[1:]
+    if raw_argv and raw_argv[0] == "tui":
+        from .tui import main as tui_main
+
+        return tui_main(raw_argv[1:])
+
+    args = build_parser().parse_args(raw_argv)
     target = Path(args.path).expanduser()
 
     if target.exists() and not target.is_dir():
@@ -142,9 +128,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     enabled_workflows, enabled_groups = _resolve_groups(
         no_living_docs=args.no_living_docs,
         living_docs_only=args.living_docs_only,
-        no_cursor=args.no_cursor,
         no_skill=args.no_skill,
-        global_codex=args.global_codex and not args.living_docs_only,
     )
     plan: BootstrapPlan = build_plan(
         target,
@@ -155,7 +139,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         force=args.force,
         dry_run=args.dry_run,
         backup_existing=not args.no_backup,
-        install_global_codex=args.global_codex and not args.living_docs_only,
     )
     results = apply_plan(plan, dry_run=args.dry_run, backup_existing=not args.no_backup)
     if not args.dry_run:

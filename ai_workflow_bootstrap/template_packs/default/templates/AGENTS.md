@@ -140,7 +140,7 @@ For non-trivial work, follow this order:
 7. Validation
 8. Final summary
 
-Prefer planning first for difficult tasks. In Codex, use plan mode or `/plan`. In Cursor, use Plan Mode before coding when the task is ambiguous or multi-step.
+Prefer planning first for difficult tasks. Use a reviewable planning step before coding when the task is ambiguous or multi-step.
 
 Do not skip steps unless the user explicitly asks to compress the process and the risk is low.
 If risk is high or ambiguity remains, do not silently skip the process.
@@ -185,7 +185,7 @@ After the spec is approved, create `plan.md` with:
 - step-by-step execution order.
 
 Then create `tasks.md` as a practical checklist.
-For long or multi-session work, also create or update a living plan in `.cursor/plans/` or a `PLANS.md`-style document when that would help resume work later.
+For long or multi-session work, also create or update a living plan in `docs/changes/<short-change-name>/plan.md` or another project-local planning document when that would help resume work later.
 
 ## Implementation rule
 During implementation:

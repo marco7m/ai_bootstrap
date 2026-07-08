@@ -27,11 +27,10 @@ class PlannerTests(unittest.TestCase):
                 profile=profile,
                 pack=pack,
                 enabled_workflows=["spec-driven", "living-docs"],
-                enabled_groups={"spec-driven", "living-docs", "cursor", "skill/spec-driven", "skill/living-docs"},
+                enabled_groups={"spec-driven", "living-docs", "skill/spec-driven", "skill/living-docs"},
                 force=False,
                 dry_run=True,
                 backup_existing=True,
-                install_global_codex=False,
             )
 
             agents = next(item for item in plan.results if item.path.name == "AGENTS.md")
@@ -43,6 +42,8 @@ class PlannerTests(unittest.TestCase):
             self.assertTrue(any(item.path.name == "START_PROMPT.md" for item in plan.results))
             self.assertTrue(any(str(item.path).endswith(".agents/skills/spec-driven/SKILL.md") for item in plan.results))
             self.assertTrue(any(str(item.path).endswith(".agents/skills/living-docs/SKILL.md") for item in plan.results))
+            self.assertFalse(any(".cursor" in item.path.parts for item in plan.results))
+            self.assertFalse(any(".codex" in item.path.parts for item in plan.results))
 
 
 if __name__ == "__main__":

@@ -424,8 +424,7 @@ For ambiguous or multi-step work:
 - produce a reviewable plan;
 - only implement after the plan is accepted.
 
-In Cursor, save useful plans to `.cursor/plans/` so future sessions can resume from them.
-For longer-running or multi-session work, consider keeping a living `PLANS.md`-style document.
+For longer-running or multi-session work, consider keeping a living project-local planning document.
 
 ---
 
