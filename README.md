@@ -2,13 +2,11 @@
 
 `ai-workflow-bootstrap` is a modular, AI-agnostic Python bootstrap for repositories that use a guided Spec-Driven Development workflow.
 
-The package provides a CLI entrypoint for your preferred AI assistant:
+The package opens an interactive TUI by default:
 
 ```bash
-python -m ai_workflow_bootstrap [path]
+ai-bootstrap
 ```
-
-The legacy `bootstrap_sdd.py` script still works as a compatibility entrypoint.
 
 For an interactive setup flow, install the optional TUI extra:
 
@@ -20,7 +18,9 @@ Then open the TUI with either:
 
 ```bash
 ai-workflow-bootstrap tui
-python -m ai_workflow_bootstrap tui
+ai-bootstrap tui
+python -m ai_workflow_bootstrap
+python bootstrap_sdd.py
 ```
 
 The TUI is the friendliest path for new contributors and interns. It explains the workflow in plain language, shows a preview before applying, and only writes files after explicit confirmation.
@@ -30,25 +30,26 @@ The TUI is the friendliest path for new contributors and interns. It explains th
 Run a preview without writing files:
 
 ```bash
-python -m ai_workflow_bootstrap --dry-run .
+ai-bootstrap apply --dry-run .
+python bootstrap_sdd.py apply --dry-run .
 ```
 
 Apply the default bootstrap to the current repository:
 
 ```bash
-python -m ai_workflow_bootstrap .
+ai-bootstrap apply .
 ```
 
 Apply spec-driven files only:
 
 ```bash
-python -m ai_workflow_bootstrap --no-living-docs .
+ai-bootstrap apply --no-living-docs .
 ```
 
 Apply only living docs:
 
 ```bash
-python -m ai_workflow_bootstrap --living-docs-only .
+ai-bootstrap apply --living-docs-only .
 ```
 
 ## What It Generates
@@ -144,17 +145,15 @@ That file records:
 
 `--dry-run` does not write state.
 
-## Compatibility
+## Local Launcher
 
-`bootstrap_sdd.py` remains available for compatibility.
+`bootstrap_sdd.py` is a thin local launcher for the same CLI.
 
-It still behaves as the legacy entrypoint, so existing usage keeps working while the modular CLI becomes the preferred path.
-
-Legacy usage still works:
+Use it when you want a single-file entrypoint from the repository root:
 
 ```bash
-python bootstrap_sdd.py --dry-run .
-python bootstrap_sdd.py .
+python bootstrap_sdd.py
+python bootstrap_sdd.py apply --dry-run .
 ```
 
 ## Repository Purpose
