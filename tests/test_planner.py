@@ -26,20 +26,23 @@ class PlannerTests(unittest.TestCase):
                 target,
                 profile=profile,
                 pack=pack,
+                enabled_workflows=["spec-driven", "living-docs"],
+                enabled_groups={"spec-driven", "living-docs", "cursor", "skill/spec-driven", "skill/living-docs"},
                 force=False,
                 dry_run=True,
                 backup_existing=True,
                 install_global_codex=False,
-                with_cursor=True,
-                with_skill=True,
             )
 
             agents = next(item for item in plan.results if item.path.name == "AGENTS.md")
             self.assertEqual(plan.results[0].kind, "directory")
             self.assertEqual(plan.results[0].status, "written")
             self.assertIn("Project name: Example Project", agents.content)
+            self.assertIn("Project purpose", next(item for item in plan.results if item.path.name == "PROJECT_SPEC.md").content)
+            self.assertIn("Read on demand.", next(item for item in plan.results if item.path.name == "AI_CONTEXT.md").content)
             self.assertTrue(any(item.path.name == "START_PROMPT.md" for item in plan.results))
-            self.assertTrue(any(item.path.name == "SKILL.md" for item in plan.results))
+            self.assertTrue(any(str(item.path).endswith(".agents/skills/spec-driven/SKILL.md") for item in plan.results))
+            self.assertTrue(any(str(item.path).endswith(".agents/skills/living-docs/SKILL.md") for item in plan.results))
 
 
 if __name__ == "__main__":

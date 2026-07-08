@@ -1,0 +1,31 @@
+# Tasks: Refactor bootstrap_sdd.py into ai-workflow-bootstrap
+
+- [ ] Re-read the approved spec and this implementation plan
+- [ ] Create the `ai_workflow_bootstrap/` package skeleton without changing current behavior
+- [ ] Add `pyproject.toml`, `ai_workflow_bootstrap/__init__.py`, and `ai_workflow_bootstrap/__main__.py`
+- [ ] Add package entrypoint plumbing for `python -m ai_workflow_bootstrap [path]`
+- [ ] Extract small shared types and models from the monolithic script
+- [ ] Extract repository scanning into `ai_workflow_bootstrap/core/scanner.py`
+- [ ] Move bootstrap templates into `template_packs/default/manifest.json` and template files
+- [ ] Implement the minimal standard-library-friendly renderer
+- [ ] Implement `template_pack.py` for loading manifests and template assets
+- [ ] Implement `planner.py` for dry-run planning and file status classification
+- [ ] Implement `applier.py` for writing files according to the plan
+- [ ] Implement `backup.py` for backup naming and creation
+- [ ] Implement `state.py` for `.ai-bootstrap/state.json`
+- [ ] Wire the CLI to respect `--project-name`, `--dry-run`, `--force`, `--global-codex`, `--no-backup`, `--no-cursor`, `--no-skill`, `--no-living-docs`, and `--living-docs-only`
+- [ ] Preserve spec-driven output as the default workflow
+- [ ] Keep `bootstrap_sdd.py` functioning as the compatibility entrypoint, preferably as a temporary wrapper if behavior can be preserved exactly
+- [ ] Add living docs core outputs and the living-docs skill after the current bootstrap output is preserved through external templates
+- [ ] Add optional documentation modules as templates only, not default target outputs
+- [ ] Add scanner tests for basic stack and command detection using `unittest` or another standard-library-only path
+- [ ] Add planner tests for dry-run and file status classification using `unittest` or another standard-library-only path
+- [ ] Add applier tests proving files are not overwritten without `--force` using `unittest` or another standard-library-only path
+- [ ] Add backup tests proving overwrite creates backups with `--force` unless `--no-backup` using `unittest` or another standard-library-only path
+- [ ] Add state tests for `.ai-bootstrap/state.json` using `unittest` or another standard-library-only path
+- [ ] Add workflow-selection tests for `--no-living-docs` and `--living-docs-only` using `unittest` or another standard-library-only path
+- [ ] Run the current script and the new CLI in comparable temporary directories and compare generated files
+- [ ] Record intentional differences, especially living docs and `state.json`
+- [ ] Run a manual `--dry-run` validation in a temporary directory
+- [ ] Compare new output against the current baseline for compatibility issues
+- [ ] Record any compatibility gaps or architecture concerns before considering the refactor complete

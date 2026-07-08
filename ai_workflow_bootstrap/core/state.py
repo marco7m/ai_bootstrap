@@ -1,8 +1,7 @@
-"""State helpers for future bootstrap persistence.
+"""State helpers for bootstrap persistence.
 
-This module is prepared infrastructure. It is intentionally not wired into the
-CLI flow yet, so the current behavior remains focused on preserving the legacy
-bootstrap output while the rest of the engine is introduced incrementally.
+This module now supports the real `.ai-bootstrap/state.json` output used by the
+CLI, while staying small and explicit.
 """
 
 from __future__ import annotations
@@ -12,6 +11,8 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+from .planner import BootstrapPlan, WriteResult
 
 
 @dataclass
@@ -66,3 +67,39 @@ def save_state(path: Path, state: BootstrapState, *, dry_run: bool = False) -> N
         return
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(asdict(state), indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def build_state(
+    *,
+    plan: BootstrapPlan,
+    results: list[WriteResult],
+    tool_version: str,
+) -> BootstrapState:
+    files: dict[str, dict[str, Any]] = {}
+    for item in results:
+        if item.kind != "file":
+            continue
+        try:
+            relative_path = item.path.relative_to(plan.target)
+        except ValueError:
+            continue
+        status = item.status
+        if status == "written" and item.existing:
+            status = "overwritten"
+        entry: dict[str, Any] = {"status": status}
+        if item.template:
+            entry["template"] = item.template
+            entry["template_hash"] = item.template_hash
+        files[str(relative_path)] = entry
+
+    return BootstrapState(
+        tool_name="ai-workflow-bootstrap",
+        tool_version=tool_version,
+        template_pack=plan.pack.name,
+        template_pack_version=plan.pack.version,
+        applied_at=datetime.utcnow().isoformat(timespec="seconds") + "Z",
+        target_path=str(plan.target.resolve()),
+        enabled_workflows=plan.enabled_workflows,
+        files=files,
+        optional_modules=[],
+    )

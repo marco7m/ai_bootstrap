@@ -6,7 +6,7 @@ from pathlib import Path
 
 from .renderer import render_template
 from .scanner import RepoProfile, format_commands, format_detected_stack, format_repo_layout
-from .template_pack import TemplateDirectorySpec, TemplateFileSpec, TemplatePack
+from .template_pack import TemplatePack
 
 
 @dataclass
@@ -28,24 +28,12 @@ class BootstrapPlan:
     profile: RepoProfile
     pack: TemplatePack
     results: list[WriteResult]
+    enabled_workflows: list[str]
+    enabled_groups: set[str]
     force: bool
     dry_run: bool
     backup_existing: bool
     install_global_codex: bool
-    with_cursor: bool
-    with_skill: bool
-
-
-def _enabled(group: str, *, install_global_codex: bool, with_cursor: bool, with_skill: bool) -> bool:
-    if group in {"", "core"}:
-        return True
-    if group == "cursor":
-        return with_cursor
-    if group == "skill":
-        return with_skill
-    if group == "global_codex":
-        return install_global_codex
-    return False
 
 
 def _resolve_output_path(target: Path, raw_path: str) -> Path:
@@ -119,22 +107,22 @@ def build_plan(
     *,
     profile: RepoProfile,
     pack: TemplatePack,
+    enabled_workflows: list[str],
+    enabled_groups: set[str],
     force: bool,
     dry_run: bool,
     backup_existing: bool,
     install_global_codex: bool,
-    with_cursor: bool,
-    with_skill: bool,
 ) -> BootstrapPlan:
     results: list[WriteResult] = []
     context = _render_context(profile)
 
     for directory in pack.directories:
-        if _enabled(directory.group, install_global_codex=install_global_codex, with_cursor=with_cursor, with_skill=with_skill):
+        if directory.group in enabled_groups:
             results.append(_plan_directory(_resolve_output_path(target, directory.path)))
 
     for spec in pack.files:
-        if not _enabled(spec.group, install_global_codex=install_global_codex, with_cursor=with_cursor, with_skill=with_skill):
+        if spec.group not in enabled_groups:
             continue
         template_text = pack.read_template(spec.template)
         content = render_template(template_text, context)
@@ -145,10 +133,10 @@ def build_plan(
         profile=profile,
         pack=pack,
         results=results,
+        enabled_workflows=enabled_workflows,
+        enabled_groups=enabled_groups,
         force=force,
         dry_run=dry_run,
         backup_existing=backup_existing,
         install_global_codex=install_global_codex,
-        with_cursor=with_cursor,
-        with_skill=with_skill,
     )

@@ -8,7 +8,9 @@ from pathlib import Path
 from .core.applier import apply_plan
 from .core.planner import BootstrapPlan, WriteResult, build_plan
 from .core.scanner import detect_project_name, detect_repo_profile
+from .core.state import build_state, save_state, state_path
 from .core.template_pack import load_default_template_pack
+from . import __version__
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -55,6 +57,16 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Do not create the Codex skill under .agents/skills/spec-driven/.",
     )
+    parser.add_argument(
+        "--no-living-docs",
+        action="store_true",
+        help="Do not create living docs files or the living-docs skill.",
+    )
+    parser.add_argument(
+        "--living-docs-only",
+        action="store_true",
+        help="Create only living docs files and the living-docs skill.",
+    )
     return parser
 
 
@@ -85,6 +97,34 @@ def print_summary(results: list[WriteResult], *, target: Path, profile) -> None:
     print("4. Approve the generated spec before letting the agent implement.")
 
 
+def _resolve_groups(*, no_living_docs: bool, living_docs_only: bool, no_cursor: bool, no_skill: bool, global_codex: bool) -> tuple[list[str], set[str]]:
+    enabled_workflows = ["living-docs"] if living_docs_only else ["spec-driven"] if no_living_docs else ["spec-driven", "living-docs"]
+    enabled_groups: set[str] = set()
+
+    if living_docs_only:
+        enabled_groups.add("living-docs")
+        if not no_skill:
+            enabled_groups.add("skill/living-docs")
+        return enabled_workflows, enabled_groups
+
+    enabled_groups.add("spec-driven")
+    if not no_living_docs:
+        enabled_groups.add("living-docs")
+
+    if not no_skill:
+        enabled_groups.add("skill/spec-driven")
+        if not no_living_docs:
+            enabled_groups.add("skill/living-docs")
+
+    if not no_cursor:
+        enabled_groups.add("cursor")
+
+    if global_codex:
+        enabled_groups.add("global_codex")
+
+    return enabled_workflows, enabled_groups
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(list(argv) if argv is not None else sys.argv[1:])
     target = Path(args.path).expanduser()
@@ -99,17 +139,27 @@ def main(argv: Sequence[str] | None = None) -> int:
     project_name = detect_project_name(target, args.project_name)
     profile = detect_repo_profile(target, project_name)
     pack = load_default_template_pack()
+    enabled_workflows, enabled_groups = _resolve_groups(
+        no_living_docs=args.no_living_docs,
+        living_docs_only=args.living_docs_only,
+        no_cursor=args.no_cursor,
+        no_skill=args.no_skill,
+        global_codex=args.global_codex and not args.living_docs_only,
+    )
     plan: BootstrapPlan = build_plan(
         target,
         profile=profile,
         pack=pack,
+        enabled_workflows=enabled_workflows,
+        enabled_groups=enabled_groups,
         force=args.force,
         dry_run=args.dry_run,
         backup_existing=not args.no_backup,
-        install_global_codex=args.global_codex,
-        with_cursor=not args.no_cursor,
-        with_skill=not args.no_skill,
+        install_global_codex=args.global_codex and not args.living_docs_only,
     )
     results = apply_plan(plan, dry_run=args.dry_run, backup_existing=not args.no_backup)
+    if not args.dry_run:
+        state = build_state(plan=plan, results=results, tool_version=__version__)
+        save_state(state_path(target), state, dry_run=False)
     print_summary(results, target=target, profile=profile)
     return 0
