@@ -11,7 +11,10 @@ requires-python = ">=3.11"
 
 [tool.setuptools]
 py-modules = ["bootstrap_sdd"]
+include-package-data = true
 
 [tool.setuptools.packages.find]
 include = ["ai_workflow_bootstrap*"]
 
+[tool.setuptools.package-data]
+"ai_workflow_bootstrap.template_packs.default" = ["manifest.json", "templates/**/*"]

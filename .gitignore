@@ -20,3 +20,7 @@ docs/changes/
 !template_packs/default/templates/.agents/**
 !template_packs/default/templates/.cursor/
 !template_packs/default/templates/.cursor/**
+
+# Python cache files
+__pycache__/
+*.py[cod]

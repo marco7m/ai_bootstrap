@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from importlib import import_module
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -71,7 +72,8 @@ def load_template_pack(pack_root: Path) -> TemplatePack:
 
 
 def load_default_template_pack(base_path: Path | None = None) -> TemplatePack:
-    if base_path is None:
-        base_path = Path(__file__).resolve().parents[2]
-    return load_template_pack(base_path / "template_packs" / "default")
+    if base_path is not None:
+        return load_template_pack(base_path / "template_packs" / "default")
 
+    module = import_module("ai_workflow_bootstrap.template_packs.default")
+    return load_template_pack(Path(module.__file__).resolve().parent)
