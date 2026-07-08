@@ -349,6 +349,17 @@ Do not add a new dependency without explaining:
 
 Prefer small, mature, well-maintained dependencies when a dependency is justified.
 
+## Testing policy
+Tests should protect the contract defined by the spec and plan.
+
+Prefer a small number of high-signal tests that cover:
+- acceptance criteria;
+- public behavior and invariants;
+- regression cases that would break the contract.
+
+Avoid adding tests that only freeze implementation detail, internal call order, incidental text, or other behavior that the spec does not require.
+If no new test is justified, say so in the validation notes instead of adding a fragile test for coverage alone.
+
 ## Guided mode
 When the user starts describing a feature, bugfix, refactor, or change request, enter guided mode.
 
@@ -749,6 +760,8 @@ Technical or execution risks.
 ## 11. Validation Strategy
 How this will be verified.
 
+Include only the tests that actually protect the approved spec. If a test would mainly lock down implementation detail, leave it out and explain why.
+
 ## 12. Execution Steps
 Ordered implementation steps.
 
@@ -840,7 +853,7 @@ Before completion, the agent should validate:
 - do the acceptance criteria hold?
 - were relevant edge cases addressed?
 - are non-functional requirements still respected?
-- are tests sufficient for the risk level?
+- are tests sufficient for the risk level without freezing implementation details?
 - were docs/spec/tasks updated?
 - were relevant commands run?
 - were secrets and sensitive data kept out of code, logs, and docs?
@@ -1065,6 +1078,8 @@ PLAN_TEMPLATE = """\
 
 ## 11. Validation Strategy
 
+Include only the tests that actually protect the approved spec. If a test would mainly lock down implementation detail, leave it out and explain why.
+
 ## 12. Execution Steps
 
 ## 13. Rollback / Recovery
@@ -1080,7 +1095,8 @@ TASKS_TEMPLATE = """\
 - [ ] Inspect relevant code paths and conventions
 - [ ] Confirm module ownership and boundaries
 - [ ] Replace these generic items with concrete, ordered, checkable tasks
-- [ ] Add or update tests
+- [ ] Add only the tests justified by the spec and plan
+- [ ] Leave out fragile tests that only freeze implementation details
 - [ ] Validate acceptance criteria
 - [ ] Check whether changed files are conceptually related
 - [ ] Document architecture smell if the change is unexpectedly scattered
@@ -1137,14 +1153,15 @@ description: Use for non-trivial feature work, bug fixes, refactors, or ambiguou
 4. Ask a small number of focused clarifying questions.
 5. Draft `docs/changes/<short-change-name>/spec.md` using the repo template.
 6. Include functional and non-functional requirements.
-7. Ask the user to approve the spec explicitly.
-8. Only after approval, create `plan.md` and `tasks.md`.
-9. In `plan.md`, include existing conventions, module boundaries, architecture locality, security/privacy impact, dependency impact, risks, and validation.
-10. Implement according to the approved spec and plan.
-11. Do not force a smaller diff by putting code in the wrong place.
-12. If a simple conceptual change touches many unrelated areas, call it out as a possible architecture smell.
-13. Validate the result against the acceptance criteria and definition of done.
-14. Summarize the final result, tests, remaining assumptions, and any architecture concerns.
+7. Keep tests focused on contract-level behavior from the spec and plan, not implementation details.
+8. Ask the user to approve the spec explicitly.
+9. Only after approval, create `plan.md` and `tasks.md`.
+10. In `plan.md`, include existing conventions, module boundaries, architecture locality, security/privacy impact, dependency impact, risks, and validation.
+11. Implement according to the approved spec and plan.
+12. Do not force a smaller diff by putting code in the wrong place.
+13. If a simple conceptual change touches many unrelated areas, call it out as a possible architecture smell.
+14. Validate the result against the acceptance criteria and definition of done.
+15. Summarize the final result, tests, remaining assumptions, and any architecture concerns.
 
 When the request is large, ambiguous, or likely to span multiple sessions:
 - prefer plan mode before coding;
@@ -1169,7 +1186,7 @@ alwaysApply: true
 - Do not optimize for fewer changed files at the expense of architecture.
 - Preserve clear ownership and cohesive modules.
 - If a simple conceptual change touches many unrelated areas, call it out as a possible architecture smell.
-- Validate the final result against acceptance criteria, relevant tests, and the definition of done.
+- Validate the final result against acceptance criteria, the smallest useful set of contract-level tests, and the definition of done.
 - Save useful long-form plans to `.cursor/plans/` when that will help future sessions.
 """
 
