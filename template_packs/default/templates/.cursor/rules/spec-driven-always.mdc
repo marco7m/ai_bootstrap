@@ -1,0 +1,18 @@
+---
+description: Guided Spec-Driven Development workflow for non-trivial changes
+alwaysApply: true
+---
+
+- Read `AGENTS.md` and `docs/SPEC_DRIVEN.md` before non-trivial work.
+- Prefer Plan Mode first for ambiguous or multi-step tasks.
+- Do not implement a non-trivial change before drafting and getting approval for `docs/changes/<short-change-name>/spec.md`.
+- Include non-functional requirements in specs: maintainability, modularity, security, reliability, performance, observability, and simplicity.
+- After spec approval, create `plan.md` and `tasks.md` before implementation.
+- In plans, document existing conventions, module boundaries, architecture locality, security/privacy impact, dependency impact, risks, and validation strategy.
+- Keep changes scoped to the approved spec.
+- Do not optimize for fewer changed files at the expense of architecture.
+- Preserve clear ownership and cohesive modules.
+- If a simple conceptual change touches many unrelated areas, call it out as a possible architecture smell.
+- Validate the final result against acceptance criteria, the smallest useful set of contract-level tests, and the definition of done.
+- Save useful long-form plans to `.cursor/plans/` when that will help future sessions.
+

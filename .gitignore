@@ -9,3 +9,14 @@ AGENTS.md
 docs/SPEC_DRIVEN.md
 docs/START_PROMPT.md
 docs/changes/
+
+# Allow bootstrap template pack files even when generated target files are ignored
+!template_packs/
+!template_packs/**
+!template_packs/default/templates/AGENTS.md
+!template_packs/default/templates/global/
+!template_packs/default/templates/global/AGENTS.md
+!template_packs/default/templates/.agents/
+!template_packs/default/templates/.agents/**
+!template_packs/default/templates/.cursor/
+!template_packs/default/templates/.cursor/**

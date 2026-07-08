@@ -1,0 +1,28 @@
+{
+  "name": "default",
+  "version": "0.1.0",
+  "directories": [
+    { "path": "docs", "group": "core" },
+    { "path": "docs/changes", "group": "core" },
+    { "path": "docs/changes/_templates", "group": "core" },
+    { "path": ".cursor/rules", "group": "cursor" },
+    { "path": ".cursor/plans", "group": "cursor" },
+    { "path": ".agents/skills/spec-driven", "group": "skill" }
+  ],
+  "files": [
+    { "path": "AGENTS.md", "template": "templates/AGENTS.md", "group": "core" },
+    { "path": "docs/SPEC_DRIVEN.md", "template": "templates/docs/SPEC_DRIVEN.md", "group": "core" },
+    { "path": "docs/START_PROMPT.md", "template": "templates/docs/START_PROMPT.md", "group": "core" },
+    { "path": "docs/changes/_templates/spec.md", "template": "templates/docs/changes/_templates/spec.md", "group": "core" },
+    { "path": "docs/changes/_templates/plan.md", "template": "templates/docs/changes/_templates/plan.md", "group": "core" },
+    { "path": "docs/changes/_templates/tasks.md", "template": "templates/docs/changes/_templates/tasks.md", "group": "core" },
+    { "path": "docs/changes/_templates/notes.md", "template": "templates/docs/changes/_templates/notes.md", "group": "core" },
+    { "path": "docs/changes/_templates/open_questions.md", "template": "templates/docs/changes/_templates/open_questions.md", "group": "core" },
+    { "path": "docs/changes/_templates/decisions.md", "template": "templates/docs/changes/_templates/decisions.md", "group": "core" },
+    { "path": ".agents/skills/spec-driven/SKILL.md", "template": "templates/.agents/skills/spec-driven/SKILL.md", "group": "skill" },
+    { "path": ".cursor/rules/spec-driven-always.mdc", "template": "templates/.cursor/rules/spec-driven-always.mdc", "group": "cursor" },
+    { "path": ".cursor/plans/README.md", "template": "templates/.cursor/plans/README.md", "group": "cursor" },
+    { "path": "~/.codex/AGENTS.md", "template": "templates/global/AGENTS.md", "group": "global_codex" }
+  ]
+}
+
