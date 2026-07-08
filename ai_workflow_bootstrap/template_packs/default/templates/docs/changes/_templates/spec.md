@@ -16,8 +16,6 @@
 
 ## 8. Non-Functional Requirements
 
-### Maintainability
-
 ### Modularity / Architecture
 
 ### Security / Privacy

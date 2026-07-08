@@ -166,8 +166,6 @@ List the expected behaviors.
 ## 8. Non-Functional Requirements
 Document quality attributes that matter for this change.
 
-### Maintainability
-
 ## 9. Maintainability Impact
 - Does this change make future changes easier or harder?
 - Touched architecture:
@@ -282,7 +280,6 @@ What will be added, changed, removed, or refactored?
 - New boundaries introduced:
 - Existing boundaries preserved:
 - Why this is the smallest maintainable change:
-- Which files are expected to change, and why?
 - Are the affected files all part of the same conceptual area?
 - Does this change require edits across unrelated areas?
 - If yes, is that expected or a sign of weak boundaries?

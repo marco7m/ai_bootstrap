@@ -32,8 +32,6 @@
 - New boundaries introduced:
 - Existing boundaries preserved:
 - Why this is the smallest maintainable change:
-
-- Which files are expected to change, and why?
 - Are the affected files all part of the same conceptual area?
 - Does this change require edits across unrelated areas?
 - If yes, is that expected or a sign of weak boundaries?
