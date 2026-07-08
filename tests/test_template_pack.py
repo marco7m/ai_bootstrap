@@ -35,7 +35,13 @@ class TemplatePackTests(unittest.TestCase):
                 profile=profile,
                 pack=pack,
                 enabled_workflows=["spec-driven", "living-docs"],
-                enabled_groups={"spec-driven", "living-docs", "skill/spec-driven", "skill/living-docs"},
+                enabled_groups={
+                    "spec-driven",
+                    "living-docs",
+                    "skill/spec-driven",
+                    "skill/maintainability-audit",
+                    "skill/living-docs",
+                },
                 force=False,
                 dry_run=True,
                 backup_existing=True,
@@ -47,6 +53,7 @@ class TemplatePackTests(unittest.TestCase):
             self.assertIn(str(target / "docs/AI_CONTEXT.md"), planned)
             self.assertIn(str(target / "docs/LIVING_DOCUMENTATION.md"), planned)
             self.assertIn(str(target / ".agents/skills/spec-driven/SKILL.md"), planned)
+            self.assertIn(str(target / ".agents/skills/maintainability-audit/SKILL.md"), planned)
             self.assertIn(str(target / ".agents/skills/living-docs/SKILL.md"), planned)
             self.assertFalse(any(".cursor" in item.path.parts for item in plan.results))
             self.assertFalse(any(".codex" in item.path.parts for item in plan.results))
@@ -68,7 +75,7 @@ class TemplatePackTests(unittest.TestCase):
                 profile=profile,
                 pack=pack,
                 enabled_workflows=["spec-driven"],
-                enabled_groups={"spec-driven", "skill/spec-driven"},
+                enabled_groups={"spec-driven", "skill/spec-driven", "skill/maintainability-audit"},
                 force=False,
                 dry_run=True,
                 backup_existing=True,
@@ -80,6 +87,7 @@ class TemplatePackTests(unittest.TestCase):
             self.assertNotIn(str(target / "docs/AI_CONTEXT.md"), planned)
             self.assertNotIn(str(target / "docs/LIVING_DOCUMENTATION.md"), planned)
             self.assertIn(str(target / ".agents/skills/spec-driven/SKILL.md"), planned)
+            self.assertIn(str(target / ".agents/skills/maintainability-audit/SKILL.md"), planned)
             self.assertNotIn(str(target / ".agents/skills/living-docs/SKILL.md"), planned)
             self.assertFalse(any(".cursor" in item.path.parts for item in plan.results))
             self.assertFalse(any(".codex" in item.path.parts for item in plan.results))
@@ -113,6 +121,7 @@ class TemplatePackTests(unittest.TestCase):
             self.assertNotIn(str(target / "AGENTS.md"), planned)
             self.assertNotIn(str(target / "docs/SPEC_DRIVEN.md"), planned)
             self.assertNotIn(str(target / ".agents/skills/spec-driven/SKILL.md"), planned)
+            self.assertNotIn(str(target / ".agents/skills/maintainability-audit/SKILL.md"), planned)
             self.assertIn(str(target / ".agents/skills/living-docs/SKILL.md"), planned)
             self.assertFalse(any(".cursor" in item.path.parts for item in plan.results))
             self.assertFalse(any(".codex" in item.path.parts for item in plan.results))
@@ -144,6 +153,7 @@ class TemplatePackTests(unittest.TestCase):
             self.assertIn(str(target / "AGENTS.md"), planned)
             self.assertIn(str(target / "docs/AI_CONTEXT.md"), planned)
             self.assertNotIn(str(target / ".agents/skills/spec-driven/SKILL.md"), planned)
+            self.assertNotIn(str(target / ".agents/skills/maintainability-audit/SKILL.md"), planned)
             self.assertNotIn(str(target / ".agents/skills/living-docs/SKILL.md"), planned)
             self.assertFalse(any(".cursor" in item.path.parts for item in plan.results))
             self.assertFalse(any(".codex" in item.path.parts for item in plan.results))

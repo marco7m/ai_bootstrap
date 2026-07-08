@@ -37,6 +37,13 @@ Do not optimize for the smallest possible diff.
 A large diff is acceptable when the change genuinely crosses boundaries.
 A scattered diff for a simple conceptual change is a signal that the architecture may need improvement.
 
+When drafting a spec, also assess maintainability impact:
+- Does this change make future changes easier or harder?
+- What architecture is being touched?
+- Where could entropy increase?
+- Is a small local refactor needed before coding?
+- Is the right response a separate refactor spec?
+
 ---
 
 # 3. What the agent should do when the user says "I want to build X"
@@ -161,6 +168,13 @@ Document quality attributes that matter for this change.
 
 ### Maintainability
 
+## 9. Maintainability Impact
+- Does this change make future changes easier or harder?
+- Touched architecture:
+- Potential entropy:
+- Refactor needed before coding:
+- Refactor scope:
+
 ### Modularity / Architecture
 
 ### Security / Privacy
@@ -173,22 +187,22 @@ Document quality attributes that matter for this change.
 
 ### Simplicity
 
-## 9. User Flow / System Flow
+## 10. User Flow / System Flow
 Describe the main flow step by step.
 
-## 10. Edge Cases
+## 11. Edge Cases
 List important edge cases, invalid states, and error conditions.
 
-## 11. Constraints
+## 12. Constraints
 Technical, product, UX, data, compatibility, or time constraints.
 
-## 12. Assumptions
+## 13. Assumptions
 Important assumptions currently being made.
 
-## 13. Acceptance Criteria
+## 14. Acceptance Criteria
 Concrete statements that define when the work is done.
 
-## 14. Open Questions
+## 15. Open Questions
 Anything still unresolved.
 ```
 
@@ -261,7 +275,13 @@ What will be added, changed, removed, or refactored?
 - What interface or adapter boundary should be preserved?
 - What should remain decoupled?
 
-## 6. Architecture Locality Check
+## 6. Architecture Locality
+- Primary module or owner:
+- Files expected to change:
+- Files that should not be touched:
+- New boundaries introduced:
+- Existing boundaries preserved:
+- Why this is the smallest maintainable change:
 - Which files are expected to change, and why?
 - Are the affected files all part of the same conceptual area?
 - Does this change require edits across unrelated areas?
@@ -290,6 +310,12 @@ Technical or execution risks.
 How this will be verified.
 
 Include only the tests that actually protect the approved spec. If a test would mainly lock down implementation detail, leave it out and explain why.
+
+## 11.1 Test Strategy
+- Contract to protect:
+- Tests to add or update:
+- Tests intentionally not added:
+- Why these tests should survive internal refactors:
 
 ## 12. Execution Steps
 Ordered implementation steps.

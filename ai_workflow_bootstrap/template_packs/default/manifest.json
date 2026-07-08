@@ -6,6 +6,7 @@
     { "path": "docs/changes", "group": "spec-driven" },
     { "path": "docs/changes/_templates", "group": "spec-driven" },
     { "path": ".agents/skills/spec-driven", "group": "skill/spec-driven" },
+    { "path": ".agents/skills/maintainability-audit", "group": "skill/maintainability-audit" },
     { "path": ".agents/skills/living-docs", "group": "skill/living-docs" }
   ],
   "files": [
@@ -28,6 +29,7 @@
     { "path": "docs/CANONICAL_DECISIONS.md", "template": "templates/docs/CANONICAL_DECISIONS.md", "group": "living-docs" },
     { "path": "docs/GLOSSARY.md", "template": "templates/docs/GLOSSARY.md", "group": "living-docs" },
     { "path": ".agents/skills/spec-driven/SKILL.md", "template": "templates/.agents/skills/spec-driven/SKILL.md", "group": "skill/spec-driven" },
+    { "path": ".agents/skills/maintainability-audit/SKILL.md", "template": "templates/.agents/skills/maintainability-audit/SKILL.md", "group": "skill/maintainability-audit" },
     { "path": ".agents/skills/living-docs/SKILL.md", "template": "templates/.agents/skills/living-docs/SKILL.md", "group": "skill/living-docs" }
   ]
 }

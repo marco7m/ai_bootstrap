@@ -30,15 +30,21 @@
 
 ### Simplicity
 
-## 9. User Flow / System Flow
+## 9. Maintainability Impact
+- Does this change make future changes easier or harder?
+- Touched architecture:
+- Potential entropy:
+- Refactor needed before coding:
+- Refactor scope:
 
-## 10. Edge Cases
+## 10. User Flow / System Flow
 
-## 11. Constraints
+## 11. Edge Cases
 
-## 12. Assumptions
+## 12. Constraints
 
-## 13. Acceptance Criteria
+## 13. Assumptions
 
-## 14. Open Questions
+## 14. Acceptance Criteria
 
+## 15. Open Questions

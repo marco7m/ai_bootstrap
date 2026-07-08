@@ -13,6 +13,7 @@ class WorkflowSelectionTests(unittest.TestCase):
         self.assertIn("spec-driven", groups)
         self.assertIn("living-docs", groups)
         self.assertIn("skill/spec-driven", groups)
+        self.assertIn("skill/maintainability-audit", groups)
         self.assertIn("skill/living-docs", groups)
 
     def test_spec_driven_mode_excludes_living_docs(self) -> None:
@@ -22,6 +23,7 @@ class WorkflowSelectionTests(unittest.TestCase):
         self.assertIn("spec-driven", groups)
         self.assertNotIn("living-docs", groups)
         self.assertIn("skill/spec-driven", groups)
+        self.assertIn("skill/maintainability-audit", groups)
         self.assertNotIn("skill/living-docs", groups)
 
     def test_living_docs_only_mode_excludes_spec_driven(self) -> None:
@@ -32,12 +34,14 @@ class WorkflowSelectionTests(unittest.TestCase):
         self.assertNotIn("spec-driven", groups)
         self.assertIn("skill/living-docs", groups)
         self.assertNotIn("skill/spec-driven", groups)
+        self.assertNotIn("skill/maintainability-audit", groups)
 
     def test_include_skills_can_be_disabled(self) -> None:
         workflows, groups = resolve_workflow_selection(mode="recommended", include_skills=False)
 
         self.assertEqual(workflows, ["spec-driven", "living-docs"])
         self.assertEqual(groups, {"spec-driven", "living-docs"})
+        self.assertNotIn("skill/maintainability-audit", groups)
 
 
 if __name__ == "__main__":

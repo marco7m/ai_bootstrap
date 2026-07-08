@@ -27,7 +27,13 @@ class PlannerTests(unittest.TestCase):
                 profile=profile,
                 pack=pack,
                 enabled_workflows=["spec-driven", "living-docs"],
-                enabled_groups={"spec-driven", "living-docs", "skill/spec-driven", "skill/living-docs"},
+                enabled_groups={
+                    "spec-driven",
+                    "living-docs",
+                    "skill/spec-driven",
+                    "skill/maintainability-audit",
+                    "skill/living-docs",
+                },
                 force=False,
                 dry_run=True,
                 backup_existing=True,
@@ -41,6 +47,7 @@ class PlannerTests(unittest.TestCase):
             self.assertIn("Read on demand.", next(item for item in plan.results if item.path.name == "AI_CONTEXT.md").content)
             self.assertTrue(any(item.path.name == "START_PROMPT.md" for item in plan.results))
             self.assertTrue(any(str(item.path).endswith(".agents/skills/spec-driven/SKILL.md") for item in plan.results))
+            self.assertTrue(any(str(item.path).endswith(".agents/skills/maintainability-audit/SKILL.md") for item in plan.results))
             self.assertTrue(any(str(item.path).endswith(".agents/skills/living-docs/SKILL.md") for item in plan.results))
             self.assertFalse(any(".cursor" in item.path.parts for item in plan.results))
             self.assertFalse(any(".codex" in item.path.parts for item in plan.results))

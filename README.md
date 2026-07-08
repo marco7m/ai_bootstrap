@@ -112,6 +112,15 @@ The core set is included by default in the new CLI:
 
 Compatible assistants can also use the open Agent Skills under `.agents/skills/`.
 
+## Maintainability Guardrails
+
+The generated workflow includes guardrails for code quality and test quality.
+
+- Tests should protect behavior contracts, not private implementation details.
+- File and function size are review triggers, not hard rules.
+- The `maintainability-audit` skill helps spot brittle tests, mixed responsibilities, duplicated logic, and other signs that a small change should include a small local refactor.
+- If a change needs a larger refactor, the workflow asks for a separate spec instead of hiding the debt.
+
 ## TUI
 
 The interactive TUI is optional and only available when you install `textual`.

@@ -52,6 +52,7 @@ class CliTests(unittest.TestCase):
             self.assertFalse(state_path(target).exists())
             self.assertNotIn(".cursor", buffer.getvalue())
             self.assertNotIn(".codex", buffer.getvalue())
+            self.assertIn(".agents/skills/maintainability-audit/SKILL.md", buffer.getvalue())
 
     def test_apply_writes_state_json(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -70,6 +71,7 @@ class CliTests(unittest.TestCase):
             self.assertIn("AGENTS.md", data["files"])
             self.assertIn("docs/AI_CONTEXT.md", data["files"])
             self.assertIn(".agents/skills/spec-driven/SKILL.md", data["files"])
+            self.assertIn(".agents/skills/maintainability-audit/SKILL.md", data["files"])
             self.assertIn(".agents/skills/living-docs/SKILL.md", data["files"])
             self.assertTrue(all(not key.startswith("/") for key in data["files"]))
 
@@ -86,6 +88,7 @@ class CliTests(unittest.TestCase):
             self.assertIn("AGENTS.md", data["files"])
             self.assertIn("docs/SPEC_DRIVEN.md", data["files"])
             self.assertNotIn("docs/AI_CONTEXT.md", data["files"])
+            self.assertIn(".agents/skills/maintainability-audit/SKILL.md", data["files"])
             self.assertNotIn(".agents/skills/living-docs/SKILL.md", data["files"])
 
     def test_dry_run_does_not_write_state_json(self) -> None:

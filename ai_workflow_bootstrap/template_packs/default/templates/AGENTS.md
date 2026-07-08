@@ -20,11 +20,12 @@ You must first:
 1. understand the user's goal;
 2. read `docs/SPEC_DRIVEN.md`;
 3. if available, use the `spec-driven` skill;
-4. guide the user to produce a good-enough specification;
-5. wait for explicit approval of the specification;
-6. create an implementation plan;
-7. create a task checklist;
-8. only then implement.
+4. if the change looks hard to modify, the tests feel brittle, or the files are getting large, use the `maintainability-audit` skill;
+5. guide the user to produce a good-enough specification;
+6. wait for explicit approval of the specification;
+7. create an implementation plan;
+8. create a task checklist;
+9. only then implement.
 
 A task is non-trivial if it:
 - changes behavior;
@@ -50,6 +51,55 @@ Use these principles unless the repository has a more specific local convention:
 - Prefer boring, maintainable code over compressed or overly generic code.
 - Follow existing project conventions before introducing new ones.
 - Avoid speculative abstractions; create boundaries when they protect a real responsibility or external integration.
+
+## Test strategy
+Tests are a safety net, not concrete around the implementation.
+
+Prefer contract-level tests over implementation-detail tests.
+
+- A good test fails when public behavior breaks, an invariant is violated, or an important edge case stops working.
+- A bad test usually fails when a private helper is renamed, code is split into smaller functions, or internal call order changes without a behavior change.
+- Do not add tests only to increase coverage.
+- Before adding tests, state the behavior contract being protected.
+- If a test would make safe refactoring harder, propose a better test boundary.
+
+## Maintainability triggers
+Treat these as alert signals that the change may need a local refactor or a separate refactor spec:
+
+- file over about 800 lines;
+- function or method over about 60 lines;
+- deep nesting inside a function;
+- repeated logic in 3 or more places;
+- a change requires editing many unrelated files;
+- unclear module ownership;
+- tests depend heavily on private implementation;
+- one file mixes domain logic, I/O, validation, formatting, and orchestration;
+- the assistant needs to read a very large file to make a small change.
+
+If a trigger appears, propose a small local refactor inside the current change or a separate refactor spec if the scope is larger.
+
+## Refactor levels
+Level 1 - Always allowed:
+- small local improvements in touched files;
+- rename unclear variables;
+- extract a small function;
+- remove obvious duplication;
+- simplify conditionals.
+
+Level 2 - Call out in the plan:
+- local refactor touching a few files;
+- move responsibility to a better module;
+- reorganize brittle tests;
+- extract an adapter or interface.
+
+Level 3 - Needs its own spec:
+- architectural refactor;
+- directory restructuring;
+- boundary changes;
+- changes across many modules;
+- broad test rewrite.
+
+Every change must leave the touched area at least as maintainable as it was before. If that is not possible within the current scope, document the debt and propose a follow-up refactor.
 
 ## Architectural locality
 The goal is not to minimize the number of changed files at all costs.
