@@ -1,159 +1,88 @@
-# AI Bootstrap
+# ai-workflow-bootstrap
 
-Single-file Python bootstrap for setting up a repository with a guided Spec-Driven Development workflow.
+`ai-workflow-bootstrap` is a modular Python bootstrap for repositories that use a guided Spec-Driven Development workflow.
 
-The intended usage is simple:
+The package provides a CLI entrypoint:
 
-1. Copy `bootstrap_sdd.py` into the root of a new or existing repository.
-2. Run it once.
-3. Start using the generated docs and prompts with Codex or Cursor.
+```bash
+python -m ai_workflow_bootstrap [path]
+```
 
-## What the script does
+The legacy `bootstrap_sdd.py` script still works as a compatibility entrypoint.
 
-When you run `bootstrap_sdd.py`, it inspects the target repository and generates a small working structure for AI-assisted development.
+## Quick Start
 
-It creates:
+Run a preview without writing files:
+
+```bash
+python -m ai_workflow_bootstrap --dry-run .
+```
+
+Apply the default bootstrap to the current repository:
+
+```bash
+python -m ai_workflow_bootstrap .
+```
+
+Apply spec-driven files only:
+
+```bash
+python -m ai_workflow_bootstrap --no-living-docs .
+```
+
+Apply only living docs:
+
+```bash
+python -m ai_workflow_bootstrap --living-docs-only .
+```
+
+Also update the global Codex default:
+
+```bash
+python -m ai_workflow_bootstrap --global-codex .
+```
+
+## What It Generates
+
+The bootstrap creates a workflow scaffold for spec-driven development.
+
+By default, the new CLI generates:
 
 - `AGENTS.md`
 - `docs/SPEC_DRIVEN.md`
 - `docs/START_PROMPT.md`
+- `docs/AI_CONTEXT.md`
+- `docs/LIVING_DOCUMENTATION.md`
+- `docs/WORKFLOW_MODULES.md`
+- `docs/PROJECT_SPEC.md`
+- `docs/IMPLEMENTATION_STATUS.md`
+- `docs/ROADMAP.md`
+- `docs/IDEA_INBOX.md`
+- `docs/CANONICAL_DECISIONS.md`
+- `docs/GLOSSARY.md`
 - `docs/changes/_templates/spec.md`
 - `docs/changes/_templates/plan.md`
 - `docs/changes/_templates/tasks.md`
 - `docs/changes/_templates/notes.md`
 - `docs/changes/_templates/open_questions.md`
 - `docs/changes/_templates/decisions.md`
-
-By default, it also creates:
-
+- `.agents/skills/spec-driven/SKILL.md`
+- `.agents/skills/living-docs/SKILL.md`
 - `.cursor/rules/spec-driven-always.mdc`
 - `.cursor/plans/README.md`
-- `.agents/skills/spec-driven/SKILL.md`
+- `.ai-bootstrap/state.json`
 
-Optionally, with `--global-codex`, it also writes:
+With `--no-living-docs`, the bootstrap keeps the spec-driven workflow and skips the living docs files and living-docs skill.
 
-- `~/.codex/AGENTS.md`
+With `--living-docs-only`, it generates the living docs files and living-docs skill, but skips the spec-driven set.
 
-## What it detects automatically
+## Workflow
 
-The script profiles the repository before generating files.
-
-It detects things like:
-
-- project name from the folder name, unless `--project-name` is provided;
-- package manager such as `npm`, `pnpm`, `yarn`, `bun`, `uv`, or `poetry`;
-- stack hints from files such as `Makefile`, `package.json`, `Cargo.toml`, `go.mod`, `pyproject.toml`, and `requirements.txt`;
-- common commands such as build, test, lint, typecheck, fmt, check, and dev when they can be inferred.
-
-Those detections are written into `AGENTS.md` so the repository starts with project-specific guidance instead of a totally generic template.
-
-## How to use it
-
-### In the current repository
-
-Copy `bootstrap_sdd.py` into the repo root and run:
-
-```bash
-python3 bootstrap_sdd.py
-```
-
-### Against another path
-
-You can also point it at another repository directory:
-
-```bash
-python3 bootstrap_sdd.py /path/to/repo
-```
-
-### Typical next steps
-
-After running it:
-
-1. Open the repository in Codex or Cursor.
-2. Read or paste the prompt from `docs/START_PROMPT.md`.
-3. Describe the change you want to build.
-4. Review and approve the generated spec before implementation.
-
-## Useful options
-
-Preview without writing files:
-
-```bash
-python3 bootstrap_sdd.py --dry-run
-```
-
-Overwrite previously generated files:
-
-```bash
-python3 bootstrap_sdd.py --force
-```
-
-Overwrite without creating backup files:
-
-```bash
-python3 bootstrap_sdd.py --force --no-backup
-```
-
-Set an explicit project name in `AGENTS.md`:
-
-```bash
-python3 bootstrap_sdd.py --project-name "My Project"
-```
-
-Skip Cursor-specific files:
-
-```bash
-python3 bootstrap_sdd.py --no-cursor
-```
-
-Skip the local spec-driven skill:
-
-```bash
-python3 bootstrap_sdd.py --no-skill
-```
-
-Also install a small global Codex default:
-
-```bash
-python3 bootstrap_sdd.py --global-codex
-```
-
-## Generated structure
-
-The default generated layout looks like this:
-
-```text
-.
-├── AGENTS.md
-├── docs/
-│   ├── SPEC_DRIVEN.md
-│   ├── START_PROMPT.md
-│   └── changes/
-│       └── _templates/
-│           ├── decisions.md
-│           ├── notes.md
-│           ├── open_questions.md
-│           ├── plan.md
-│           ├── spec.md
-│           └── tasks.md
-├── .agents/
-│   └── skills/
-│       └── spec-driven/
-│           └── SKILL.md
-└── .cursor/
-    ├── plans/
-    │   └── README.md
-    └── rules/
-        └── spec-driven-always.mdc
-```
-
-## Workflow the generated files enforce
-
-The generated workflow is:
+The repository workflow is:
 
 `idea -> clarification -> spec -> approval -> plan -> tasks -> implementation -> validation`
 
-For non-trivial work, the repository guidance tells the AI to:
+For non-trivial work, the generated docs tell the AI to:
 
 - ask focused clarifying questions first;
 - draft a spec under `docs/changes/<short-change-name>/spec.md`;
@@ -162,30 +91,58 @@ For non-trivial work, the repository guidance tells the AI to:
 - implement only after the plan exists;
 - validate the result against the approved spec.
 
-## Overwrite behavior
+## Living Docs
 
-If a generated file already exists:
+Living docs are compact project memory, not a conversation transcript.
 
-- the script leaves it untouched by default;
-- `--force` allows overwriting it;
-- backups are created automatically when overwriting, unless `--no-backup` is used.
+The core set is included by default in the new CLI:
 
-## When to use this
+- `docs/AI_CONTEXT.md` stays short and read-on-demand;
+- `docs/LIVING_DOCUMENTATION.md` defines the living-docs policy;
+- `docs/WORKFLOW_MODULES.md` explains optional module adoption;
+- `docs/PROJECT_SPEC.md`, `docs/IMPLEMENTATION_STATUS.md`, `docs/ROADMAP.md`, `docs/IDEA_INBOX.md`, `docs/CANONICAL_DECISIONS.md`, and `docs/GLOSSARY.md` hold durable project knowledge.
 
-This bootstrap is useful when you want a repo to start with:
+## Template Packs
 
-- an explicit AI working agreement;
-- a documented spec-first workflow;
-- reusable templates for changes under `docs/changes/`;
-- lightweight editor/agent integration for Codex and Cursor.
+The bootstrap uses template packs so the generated content stays editable without changing the engine.
 
-## Repository purpose
+The default pack lives under `ai_workflow_bootstrap/template_packs/default/` in the source tree and is packaged with the Python distribution.
 
-This repository is the source for `bootstrap_sdd.py` itself.
+## State
 
-The goal is to keep the bootstrap:
+Each real run writes `.ai-bootstrap/state.json` in the target repository.
+
+That file records:
+
+- tool name and version;
+- template pack name and version;
+- target path;
+- enabled workflows;
+- per-file status and template provenance;
+- optional modules, if any are introduced later.
+
+`--dry-run` does not write state.
+
+## Compatibility
+
+`bootstrap_sdd.py` remains available for compatibility.
+
+It still behaves as the legacy entrypoint, so existing usage keeps working while the modular CLI becomes the preferred path.
+
+Legacy usage still works:
+
+```bash
+python bootstrap_sdd.py --dry-run .
+python bootstrap_sdd.py .
+```
+
+## Repository Purpose
+
+This repository is the source for the bootstrap itself.
+
+The goal is to keep it:
 
 - portable;
-- small enough to copy into another repository;
+- modular;
 - opinionated enough to produce consistent results;
-- grounded in the actual behavior of the script.
+- grounded in the actual behavior of the tool.
