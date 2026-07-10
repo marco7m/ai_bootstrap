@@ -1,0 +1,121 @@
+from __future__ import annotations
+
+from collections.abc import Mapping
+
+SUPPORTED_LANGUAGES = ("en", "pt-BR")
+
+_TEXTS: dict[str, dict[str, str]] = {
+    "en": {
+        "app_intro": "This tool prepares a repository to work better with AI assistants.",
+        "spec_driven_help": (
+            "Spec-driven means the assistant first understands the request, writes a spec, waits for approval, "
+            "creates a plan and tasks, and only then implements."
+        ),
+        "living_docs_help": (
+            "Living docs are compact project memory: decisions, current status, roadmap, ideas, and glossary."
+        ),
+        "skills_help": "Agent Skills are reusable instructions for compatible AI coding agents.",
+        "dry_run_help": "Dry run shows what would happen, but writes nothing.",
+        "status_help": (
+            "written = will be created or updated; skipped = already exists and will not be changed; "
+            "unchanged = already matches; overwritten = only with force."
+        ),
+        "project_path_placeholder": "Project path",
+        "language_label": "Language",
+        "project_select_label": "Recent / detected projects",
+        "current_directory_button": "Use current directory",
+        "home_button": "Home",
+        "parent_button": "Parent",
+        "refresh_projects_button": "Refresh projects",
+        "preview_button": "Preview",
+        "dry_run_button": "Dry Run",
+        "apply_button": "Apply",
+        "cancel_button": "Cancel",
+        "confirm_placeholder": "Type APPLY to write",
+        "preview_ready": "Preview ready. Type APPLY and press Apply to write changes.",
+        "dry_run_done": "Dry run completed. No files were written.",
+        "type_apply": "Type APPLY to write files.",
+        "applied_done": (
+            "Applied changes and wrote .ai-bootstrap/state.json.\n"
+            "Next steps:\n"
+            "1. Open your preferred AI assistant.\n"
+            "2. Ask it to read AGENTS.md and docs/AI_CONTEXT.md.\n"
+            "3. For non-trivial changes, follow docs/SPEC_DRIVEN.md.\n"
+            "4. Approve the spec before implementation."
+        ),
+        "no_projects_found": "No recent or detected projects found yet.",
+        "mode_label": "Workflow mode",
+        "include_skills_label": "Include .agents/skills",
+        "overwrite_existing_label": "Overwrite existing files (backups will be created)",
+        "recommended_mode": "Recommended: spec-driven + living docs",
+        "spec_driven_only_mode": "Spec-driven only",
+        "living_docs_only_mode": "Living docs only",
+    },
+    "pt-BR": {
+        "app_intro": "Esta ferramenta prepara um repositório para trabalhar melhor com assistentes de IA.",
+        "spec_driven_help": (
+            "Spec-driven significa que o assistente primeiro entende o pedido, escreve uma spec, espera aprovação, "
+            "cria plano e tarefas, e só depois implementa."
+        ),
+        "living_docs_help": "Living docs são uma memória compacta do projeto: decisões, status atual, roadmap, ideias e glossário.",
+        "skills_help": "Agent Skills são instruções reutilizáveis para agentes de IA compatíveis.",
+        "dry_run_help": "Dry run mostra o que aconteceria, mas não escreve nada.",
+        "status_help": (
+            "written = será criado ou atualizado; skipped = já existe e não será alterado; "
+            "unchanged = já está igual; overwritten = só com force."
+        ),
+        "project_path_placeholder": "Caminho do projeto",
+        "language_label": "Idioma",
+        "project_select_label": "Projetos recentes / detectados",
+        "current_directory_button": "Usar diretório atual",
+        "home_button": "Home",
+        "parent_button": "Diretório pai",
+        "refresh_projects_button": "Atualizar projetos",
+        "preview_button": "Prévia",
+        "dry_run_button": "Simulação",
+        "apply_button": "Aplicar",
+        "cancel_button": "Cancelar",
+        "confirm_placeholder": "Digite APPLY para escrever",
+        "preview_ready": "Prévia pronta. Digite APPLY e clique em Aplicar para escrever as alterações.",
+        "dry_run_done": "Dry run concluído. Nenhum arquivo foi escrito.",
+        "type_apply": "Digite APPLY para escrever arquivos.",
+        "applied_done": (
+            "Alterações aplicadas e .ai-bootstrap/state.json escrito.\n"
+            "Próximos passos:\n"
+            "1. Abra seu assistente de IA preferido.\n"
+            "2. Peça para ele ler AGENTS.md e docs/AI_CONTEXT.md.\n"
+            "3. Para mudanças não triviais, siga docs/SPEC_DRIVEN.md.\n"
+            "4. Aprove a spec antes da implementação."
+        ),
+        "no_projects_found": "Nenhum projeto recente ou detectado encontrado ainda.",
+        "mode_label": "Modo de workflow",
+        "include_skills_label": "Incluir .agents/skills",
+        "overwrite_existing_label": "Sobrescrever arquivos existentes (backups serão criados)",
+        "recommended_mode": "Recomendado: spec-driven + living docs",
+        "spec_driven_only_mode": "Apenas spec-driven",
+        "living_docs_only_mode": "Apenas living docs",
+    },
+}
+
+
+def detect_default_language(env: Mapping[str, str] | None = None) -> str:
+    source = env or {}
+    for key in ("LC_ALL", "LC_MESSAGES", "LANG"):
+        value = source.get(key, "")
+        if not value:
+            continue
+        normalized = value.replace("-", "_").lower()
+        if normalized.startswith("pt_br") or normalized.startswith("pt"):
+            return "pt-BR"
+    return "en"
+
+
+def t(lang: str, key: str) -> str:
+    language = lang if lang in SUPPORTED_LANGUAGES else "en"
+    value = _TEXTS.get(language, {}).get(key)
+    if value is not None:
+        return value
+    fallback = _TEXTS["en"].get(key)
+    if fallback is not None:
+        return fallback
+    return f"[missing:{key}]"

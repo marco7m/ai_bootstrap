@@ -131,7 +131,12 @@ It is useful when you want a guided flow that:
 - explains living docs in simple terms;
 - previews the files before applying;
 - requires explicit confirmation before writing;
-- lets you choose the path, workflow mode, and whether to include `.agents/skills/`.
+- lets you choose the path, workflow mode, and whether to include `.agents/skills/`;
+- can overwrite existing generated files after opt-in, preserving backups;
+- supports English and Portuguese (pt-BR);
+- can pick from recent or detected projects;
+- stores recent projects in `~/.ai-workflow-bootstrap/recent-projects.json`;
+- still supports manual path input.
 
 ## Template Packs
 

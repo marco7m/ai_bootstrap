@@ -91,8 +91,8 @@ def _plan_file(path: Path, template_path: str, template_text: str, *, force: boo
             )
     return WriteResult(
         path=path,
-        status="written",
-        message="created/updated",
+        status="overwritten" if existing else "written",
+        message="overwritten; backup will be created" if existing else "created/updated",
         content=content,
         template=template_path,
         template_hash=_template_hash(template_text),

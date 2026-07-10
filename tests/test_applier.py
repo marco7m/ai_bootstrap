@@ -67,7 +67,7 @@ class ApplierTests(unittest.TestCase):
 
             agents = next(item for item in results if item.path.name == "AGENTS.md")
             backups = list(target.glob("AGENTS.md.bak-*"))
-            self.assertEqual(agents.status, "written")
+            self.assertEqual(agents.status, "overwritten")
             self.assertIn("Project name: Example Project", (target / "AGENTS.md").read_text(encoding="utf-8"))
             self.assertEqual(len(backups), 1)
             self.assertEqual(backups[0].read_text(encoding="utf-8"), "custom\n")
