@@ -16,8 +16,6 @@
 
 ## 8. Non-Functional Requirements
 
-### Maintainability
-
 ### Modularity / Architecture
 
 ### Security / Privacy
@@ -30,14 +28,30 @@
 
 ### Simplicity
 
-## 9. User Flow / System Flow
+## 9. Maintainability Impact
+- Does this change make future changes easier or harder?
+- Touched architecture:
+- Potential entropy:
+- Refactor needed before coding:
+- Refactor scope:
 
-## 10. Edge Cases
+## 10. Living Documentation Impact
 
-## 11. Constraints
+- Product fact owner(s):
+- Architecture fact owner(s):
+- Current capability state/evidence affected:
+- Approved target and active change:
+- Roadmap or durable decisions affected:
+- Documents intentionally unchanged:
 
-## 12. Assumptions
+## 11. User Flow / System Flow
 
-## 13. Acceptance Criteria
+## 12. Edge Cases
 
-## 14. Open Questions
+## 13. Constraints
+
+## 14. Assumptions
+
+## 15. Acceptance Criteria
+
+## 16. Open Questions

@@ -24,9 +24,14 @@
 - What interface or adapter boundary should be preserved?
 - What should remain decoupled?
 
-## 6. Architecture Locality Check
+## 6. Architecture Locality
 
-- Which files are expected to change, and why?
+- Primary module or owner:
+- Files expected to change:
+- Files that should not be touched:
+- New boundaries introduced:
+- Existing boundaries preserved:
+- Why this is the smallest maintainable change:
 - Are the affected files all part of the same conceptual area?
 - Does this change require edits across unrelated areas?
 - If yes, is that expected or a sign of weak boundaries?
@@ -54,8 +59,24 @@
 
 Include only the tests that actually protect the approved spec. If a test would mainly lock down implementation detail, leave it out and explain why.
 
-## 12. Execution Steps
+## 11.1 Test Strategy
+- Contract to protect:
+- Tests to add or update:
+- Tests intentionally not added:
+- Why these tests should survive internal refactors:
 
-## 13. Rollback / Recovery
+## 12. Living Documentation Impact
 
-## 14. Notes
+- Product fact owner(s) to update:
+- Architecture fact owner(s) to update:
+- Current state/evidence changes:
+- Approved target/active-change changes:
+- Roadmap/decision changes:
+- Links/evidence to validate:
+- Why no living-doc update is needed, if applicable:
+
+## 13. Execution Steps
+
+## 14. Rollback / Recovery
+
+## 15. Notes
