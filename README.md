@@ -88,15 +88,17 @@ With `--living-docs-only`, it generates the living docs files and living-docs sk
 
 The repository workflow is:
 
-`idea -> clarification -> spec -> approval -> plan -> tasks -> implementation -> validation`
+`idea -> clarification -> spec -> spec approval -> plan -> tasks -> plan/tasks approval -> implementation -> validation`
 
 For non-trivial work, the generated docs tell the assistant to:
 
 - ask focused clarifying questions first;
 - draft a spec under `docs/changes/<short-change-name>/spec.md`;
-- wait for explicit approval;
-- create `plan.md` and `tasks.md` only after approval;
-- implement only after the plan exists;
+- wait for explicit approval of the spec;
+- create `plan.md` and `tasks.md` only after spec approval;
+- request explicit approval of both the plan and tasks;
+- implement only after plan/tasks approval;
+- allow a different AI assistant or model to continue by reading the approved change artifacts;
 - validate the result against the approved spec.
 
 ## Living Docs

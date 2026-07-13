@@ -25,7 +25,10 @@ You must first:
 6. wait for explicit approval of the specification;
 7. create an implementation plan;
 8. create a task checklist;
-9. only then implement.
+9. ask for explicit approval of both the plan and task checklist;
+10. only then implement.
+
+The approved `spec.md`, `plan.md`, and `tasks.md` are the handoff contract. A different AI assistant or model may continue a later phase by reading those artifacts and the current repository context.
 
 A task is non-trivial if it:
 - changes behavior;

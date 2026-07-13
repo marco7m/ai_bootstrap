@@ -18,6 +18,21 @@ class TemplatePackTests(unittest.TestCase):
         for spec in pack.files:
             self.assertTrue(pack.template_path(spec.template).exists(), spec.template)
 
+    def test_workflow_templates_require_plan_tasks_approval_and_handoff(self) -> None:
+        pack = load_default_template_pack()
+
+        agents = pack.read_template("templates/AGENTS.md")
+        spec_driven = pack.read_template("templates/docs/SPEC_DRIVEN.md")
+        skill = pack.read_template("templates/.agents/skills/spec-driven/SKILL.md")
+        start_prompt = pack.read_template("templates/docs/START_PROMPT.md")
+
+        self.assertIn("explicit approval of both the plan and task checklist", agents)
+        self.assertIn("handoff contract", agents)
+        self.assertIn("plan/tasks approval", spec_driven)
+        self.assertIn("handoff contract", spec_driven)
+        self.assertIn("approve both the plan and tasks explicitly", skill)
+        self.assertIn("different AI assistant or model", start_prompt)
+
     def test_default_includes_spec_driven_and_living_docs(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             target = Path(tmp)

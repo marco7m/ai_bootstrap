@@ -12,8 +12,9 @@ description: Use for non-trivial feature work, bug fixes, refactors, or ambiguou
 7. Keep tests focused on contract-level behavior from the spec and plan, not implementation details.
 8. Ask the user to approve the spec explicitly.
 9. Only after approval, create `plan.md` and `tasks.md`.
-10. In `plan.md`, include existing conventions, module boundaries, architecture locality, security/privacy impact, dependency impact, risks, and validation.
-11. Implement according to the approved spec and plan.
+10. Ask the user to approve both the plan and tasks explicitly before implementation.
+11. In `plan.md`, include existing conventions, module boundaries, architecture locality, security/privacy impact, dependency impact, risks, and validation.
+12. Implement according to the approved spec, plan, and tasks.
 12. Do not force a smaller diff by putting code in the wrong place.
 13. If a simple conceptual change touches many unrelated areas, call it out as a possible architecture smell.
 14. Validate the result against the acceptance criteria and definition of done.

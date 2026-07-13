@@ -11,7 +11,7 @@ not by jumping straight from a vague prompt to code.
 
 For non-trivial work, the sequence is:
 
-idea -> clarification -> spec -> approval -> plan -> tasks -> implementation -> validation
+idea -> clarification -> spec -> spec approval -> plan -> tasks -> plan/tasks approval -> implementation -> validation
 
 Do not jump from idea directly to code.
 
@@ -53,10 +53,13 @@ When the user describes a change, the agent must:
 2. if non-trivial, switch into guided spec mode;
 3. ask only the most important questions first;
 4. synthesize the answers into a spec draft;
-5. ask for approval;
+5. ask for approval of the spec;
 6. create the technical plan;
 7. create the task checklist;
-8. implement only after approval.
+8. ask for explicit approval of both the plan and tasks;
+9. implement only after plan/tasks approval.
+
+The approved `spec.md`, `plan.md`, and `tasks.md` are the handoff contract. A different assistant or model may continue any later phase by reading those artifacts and the current repository context.
 
 ---
 
@@ -101,9 +104,11 @@ For each non-trivial change, create:
 
 `docs/changes/<short-change-name>/spec.md`
 
-After approval, create:
+After spec approval, create:
 - `docs/changes/<short-change-name>/plan.md`
 - `docs/changes/<short-change-name>/tasks.md`
+
+Then pause and request explicit approval of both files before implementation. Spec approval alone is not approval of the implementation approach.
 
 Optional when useful:
 - `docs/changes/<short-change-name>/notes.md`
