@@ -52,6 +52,17 @@ Apply only living docs:
 ai-bootstrap apply --living-docs-only .
 ```
 
+To replace an existing generated scaffold, preview first and then opt into
+destructive overwrite:
+
+```bash
+ai-bootstrap apply --force --dry-run .
+ai-bootstrap apply --force .
+```
+
+`--force` creates no backups and may remove the known obsolete bootstrap files
+shown in the preview. Use Git for recovery.
+
 ## What It Generates
 
 The bootstrap creates a workflow scaffold for spec-driven development.
@@ -61,14 +72,15 @@ By default, the new CLI generates:
 - `AGENTS.md`
 - `docs/SPEC_DRIVEN.md`
 - `docs/START_PROMPT.md`
-- `docs/AI_CONTEXT.md`
+- `docs/INDEX.md`
+- `docs/CAPABILITIES.md`
 - `docs/LIVING_DOCUMENTATION.md`
-- `docs/WORKFLOW_MODULES.md`
-- `docs/PROJECT_SPEC.md`
-- `docs/IMPLEMENTATION_STATUS.md`
+- `docs/product/README.md`
+- `docs/architecture/README.md`
+- `docs/decisions/README.md`
+- `docs/decisions/_template.md`
 - `docs/ROADMAP.md`
 - `docs/IDEA_INBOX.md`
-- `docs/CANONICAL_DECISIONS.md`
 - `docs/GLOSSARY.md`
 - `docs/changes/_templates/spec.md`
 - `docs/changes/_templates/plan.md`
@@ -78,6 +90,7 @@ By default, the new CLI generates:
 - `docs/changes/_templates/decisions.md`
 - `.agents/skills/spec-driven/SKILL.md`
 - `.agents/skills/living-docs/SKILL.md`
+- `.agents/skills/living-docs/scripts/check_links.py`
 - `.ai-bootstrap/state.json`
 
 With `--no-living-docs`, the bootstrap keeps the spec-driven workflow and skips the living docs files and living-docs skill.
@@ -107,10 +120,17 @@ Living docs are compact project memory, not a conversation transcript.
 
 The core set is included by default in the new CLI:
 
-- `docs/AI_CONTEXT.md` stays short and read-on-demand;
+- `docs/INDEX.md` is the only knowledge entry point and records whether coverage is a scaffold, incomplete, or baselined;
+- `docs/CAPABILITIES.md` maps current state/evidence separately from approved targets and active changes;
+- `docs/product/` describes what the project is, its rules, and expected behavior;
+- `docs/architecture/` describes how the project is built and operates;
+- `docs/decisions/` records durable decisions and their consequences;
 - `docs/LIVING_DOCUMENTATION.md` defines the living-docs policy;
-- `docs/WORKFLOW_MODULES.md` explains optional module adoption;
-- `docs/PROJECT_SPEC.md`, `docs/IMPLEMENTATION_STATUS.md`, `docs/ROADMAP.md`, `docs/IDEA_INBOX.md`, `docs/CANONICAL_DECISIONS.md`, and `docs/GLOSSARY.md` hold durable project knowledge.
+- `docs/ROADMAP.md`, `docs/IDEA_INBOX.md`, and `docs/GLOSSARY.md` hold supporting durable knowledge.
+
+Current capability state uses `unknown`, `absent`, `partial`, `implemented`, `verified`, or `deprecated`. Approved future work is recorded separately so a verified current capability can have a planned evolution without ambiguity. Relative Markdown links keep the knowledge graph portable and mechanically verifiable.
+
+Without overwrite enabled, existing files and legacy docs are preserved. Explicit `--force` or the TUI overwrite option is destructive: generated files are replaced and known obsolete bootstrap docs are listed and removed without backups. Git is the recovery mechanism.
 
 Compatible assistants can also use the open Agent Skills under `.agents/skills/`.
 
@@ -134,7 +154,7 @@ It is useful when you want a guided flow that:
 - previews the files before applying;
 - requires explicit confirmation before writing;
 - lets you choose the path, workflow mode, and whether to include `.agents/skills/`;
-- can overwrite existing generated files after opt-in, preserving backups;
+- can destructively overwrite generated files and remove known obsolete bootstrap docs after opt-in;
 - supports English and Portuguese (pt-BR);
 - can pick from recent or detected projects;
 - stores recent projects in `~/.ai-workflow-bootstrap/recent-projects.json`;

@@ -21,11 +21,20 @@ def _legacy_pattern(*parts: str) -> str:
 class CliTests(unittest.TestCase):
     def test_help_mentions_tui_default_and_apply(self) -> None:
         help_text = cli.build_parser().format_help()
+        apply_help = cli.build_parser()._subparsers._group_actions[0].choices["apply"].format_help()
 
         self.assertIn("Open the guided TUI by default", help_text)
         self.assertIn("ai-bootstrap tui", help_text)
         self.assertIn("ai-bootstrap apply [path]", help_text)
         self.assertIn("Examples:", help_text)
+        self.assertIn("Destructively overwrite", apply_help)
+        self.assertNotIn("--no-backup", apply_help)
+
+    def test_removed_no_backup_option_is_rejected(self) -> None:
+        stderr = io.StringIO()
+        with redirect_stderr(stderr), self.assertRaises(SystemExit):
+            cli.build_parser().parse_args(["apply", "--no-backup", "."])
+        self.assertIn("unrecognized arguments", stderr.getvalue())
 
     def test_no_args_opens_tui(self) -> None:
         with mock.patch("ai_workflow_bootstrap.cli._run_tui", return_value=0) as run_tui:
@@ -69,11 +78,36 @@ class CliTests(unittest.TestCase):
             self.assertTrue(os.path.isabs(data["target_path"]))
             self.assertEqual(data["enabled_workflows"], ["spec-driven", "living-docs"])
             self.assertIn("AGENTS.md", data["files"])
-            self.assertIn("docs/AI_CONTEXT.md", data["files"])
+            self.assertIn("docs/INDEX.md", data["files"])
+            self.assertNotIn("docs/AI_CONTEXT.md", data["files"])
+            self.assertIn("docs/CAPABILITIES.md", data["files"])
+            self.assertIn("docs/product/README.md", data["files"])
+            self.assertIn("docs/architecture/README.md", data["files"])
+            self.assertNotIn("docs/PROJECT_SPEC.md", data["files"])
             self.assertIn(".agents/skills/spec-driven/SKILL.md", data["files"])
             self.assertIn(".agents/skills/maintainability-audit/SKILL.md", data["files"])
             self.assertIn(".agents/skills/living-docs/SKILL.md", data["files"])
             self.assertTrue(all(not key.startswith("/") for key in data["files"]))
+
+    def test_force_preview_and_apply_delete_known_legacy_without_backup(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            legacy = target / "docs/AI_CONTEXT.md"
+            legacy.parent.mkdir(parents=True)
+            legacy.write_text("legacy\n", encoding="utf-8")
+            preview = io.StringIO()
+            with redirect_stdout(preview):
+                self.assertEqual(cli.main(["apply", "--force", "--dry-run", str(target)]), 0)
+
+            self.assertTrue(legacy.exists())
+            self.assertIn("deleted", preview.getvalue())
+
+            applied = io.StringIO()
+            with redirect_stdout(applied):
+                self.assertEqual(cli.main(["apply", "--force", str(target)]), 0)
+
+            self.assertFalse(legacy.exists())
+            self.assertEqual(list(target.rglob("*.bak-*")), [])
 
     def test_apply_no_living_docs_writes_spec_only_state(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

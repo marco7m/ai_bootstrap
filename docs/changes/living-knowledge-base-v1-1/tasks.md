@@ -1,0 +1,26 @@
+# Tasks: Living Knowledge Base v1.1
+
+- [x] Re-read the approved v1.1 spec and plan before implementation.
+- [x] Inspect the dirty worktree and preserve unrelated visible change artifacts.
+- [x] Add fixed obsolete-file declarations to the default template pack.
+- [x] Add planned deletion results limited to enabled living-doc groups and force mode.
+- [x] Refuse legacy directories/non-regular targets without recursive deletion.
+- [x] Execute planned deletions only after successful preceding writes.
+- [x] Remove backup fields, module, CLI flag, TUI backup wording and stale tests.
+- [x] Prove forced replacement creates no `.bak-*` file.
+- [x] Update CLI/TUI preview and results to show destructive replacement/deletion accurately.
+- [x] Compact AGENTS, SPEC_DRIVEN, start guidance and generated skills within approved budgets.
+- [x] Remove embedded artifact-template copies and retain standalone owners.
+- [x] Remove fresh `AI_CONTEXT.md` generation and references.
+- [x] Add scaffold/incomplete/baselined guidance and baseline-evidence field to INDEX.
+- [x] Replace one-column capability status with current state, evidence, target and active-change mapping.
+- [x] Keep ideas/rejected history out of the active capability map and align roadmap/decision guidance.
+- [x] Add the generated standard-library relative-link checker and integrate it into the living-docs skill.
+- [x] Update manifest version, README and source workflow guidance.
+- [x] Update planner, applier, CLI, TUI, state and template-pack tests for the new public contract.
+- [x] Add word-budget, checker and destructive-cleanup regression tests without prose snapshots.
+- [x] Verify recommended, living-docs-only and spec-driven-only modes.
+- [x] Run full unit tests, compileall, JSON validation, generated checker and diff checks.
+- [x] Inspect the final diff for accidental backup behavior, undeclared deletion paths, sensitive data and workflow drift.
+- [x] Validate every acceptance criterion, mark completed tasks and record deviations if any.
+- [x] Confirm no automatic staging, commit, Git cleanup or user-selected arbitrary deletion behavior was introduced.

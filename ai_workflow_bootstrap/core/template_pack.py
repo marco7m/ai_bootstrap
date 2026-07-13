@@ -21,12 +21,19 @@ class TemplateFileSpec:
 
 
 @dataclass(frozen=True)
+class TemplateObsoleteFileSpec:
+    path: str
+    group: str = "core"
+
+
+@dataclass(frozen=True)
 class TemplatePack:
     name: str
     version: str
     root: Path
     directories: list[TemplateDirectorySpec] = field(default_factory=list)
     files: list[TemplateFileSpec] = field(default_factory=list)
+    obsolete_files: list[TemplateObsoleteFileSpec] = field(default_factory=list)
 
     def template_path(self, relative_path: str) -> Path:
         return self.root / relative_path
@@ -59,6 +66,14 @@ def _normalize_file_specs(raw_files: Any) -> list[TemplateFileSpec]:
     return specs
 
 
+def _normalize_obsolete_file_specs(raw_files: Any) -> list[TemplateObsoleteFileSpec]:
+    specs: list[TemplateObsoleteFileSpec] = []
+    for item in raw_files or []:
+        if isinstance(item, dict):
+            specs.append(TemplateObsoleteFileSpec(path=item["path"], group=item.get("group", "core")))
+    return specs
+
+
 def load_template_pack(pack_root: Path) -> TemplatePack:
     manifest_path = pack_root / "manifest.json"
     data = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -68,6 +83,7 @@ def load_template_pack(pack_root: Path) -> TemplatePack:
         root=pack_root,
         directories=_normalize_directory_specs(data.get("directories")),
         files=_normalize_file_specs(data.get("files")),
+        obsolete_files=_normalize_obsolete_file_specs(data.get("obsolete_files")),
     )
 
 

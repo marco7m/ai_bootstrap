@@ -35,14 +35,23 @@
 - Refactor needed before coding:
 - Refactor scope:
 
-## 10. User Flow / System Flow
+## 10. Living Documentation Impact
 
-## 11. Edge Cases
+- Product fact owner(s):
+- Architecture fact owner(s):
+- Current capability state/evidence affected:
+- Approved target and active change:
+- Roadmap or durable decisions affected:
+- Documents intentionally unchanged:
 
-## 12. Constraints
+## 11. User Flow / System Flow
 
-## 13. Assumptions
+## 12. Edge Cases
 
-## 14. Acceptance Criteria
+## 13. Constraints
 
-## 15. Open Questions
+## 14. Assumptions
+
+## 15. Acceptance Criteria
+
+## 16. Open Questions

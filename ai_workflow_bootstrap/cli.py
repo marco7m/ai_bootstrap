@@ -52,17 +52,12 @@ def build_parser() -> argparse.ArgumentParser:
     apply_parser.add_argument(
         "--force",
         action="store_true",
-        help="Overwrite existing generated files. Existing files are backed up unless --no-backup is used.",
+        help="Destructively overwrite generated files and remove known obsolete bootstrap files.",
     )
     apply_parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Show what would be created or overwritten without writing files.",
-    )
-    apply_parser.add_argument(
-        "--no-backup",
-        action="store_true",
-        help="Do not create backup files when overwriting with --force.",
     )
     apply_parser.add_argument(
         "--no-skill",
@@ -105,9 +100,8 @@ def print_summary(results: list[WriteResult], *, target: Path, profile) -> None:
 
     print("\nNext steps:")
     print("1. Open your preferred AI assistant.")
-    print("2. Read AGENTS.md and docs/AI_CONTEXT.md.")
-    print("3. For non-trivial changes, follow docs/SPEC_DRIVEN.md.")
-    print("4. Approve the spec before implementation.")
+    print("2. Follow generated entry points when present: AGENTS.md, docs/INDEX.md, and .agents/skills/.")
+    print("3. For non-trivial work, respect the generated approval workflow.")
 
 
 def _resolve_groups(*, no_living_docs: bool, living_docs_only: bool, no_skill: bool) -> tuple[list[str], set[str]]:
@@ -150,9 +144,8 @@ def _run_apply(args: argparse.Namespace) -> int:
         enabled_groups=enabled_groups,
         force=args.force,
         dry_run=args.dry_run,
-        backup_existing=not args.no_backup,
     )
-    results = apply_plan(plan, dry_run=args.dry_run, backup_existing=not args.no_backup)
+    results = apply_plan(plan, dry_run=args.dry_run)
     if not args.dry_run:
         state = build_state(plan=plan, results=results, tool_version=__version__)
         save_state(state_path(target), state, dry_run=False)

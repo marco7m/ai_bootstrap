@@ -11,7 +11,6 @@ AGENTS.md
 .cursor/
 docs/SPEC_DRIVEN.md
 docs/START_PROMPT.md
-docs/changes/
 
 # Allow packaged bootstrap templates even when generated target files are ignored.
 !ai_workflow_bootstrap/template_packs/

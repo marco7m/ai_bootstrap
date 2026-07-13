@@ -1,276 +1,76 @@
 # AGENTS.md
 
-This repository uses a guided Spec-Driven Development workflow by default.
+Project: $project_name
 
-## Project identity
-- Project name: $project_name
-- Repository root: $repo_name
-- Detected stack(s): $detected_stacks
+Repository: $repo_name
 
-## Repository layout
-$repo_layout
+Detected stack: $detected_stacks
 
-## Common commands
-$commands
+## Start here
 
-## Default behavior
-For any non-trivial task, do not start coding immediately.
-
-You must first:
-1. understand the user's goal;
-2. read `docs/SPEC_DRIVEN.md`;
-3. if available, use the `spec-driven` skill;
-4. if the change looks hard to modify, the tests feel brittle, or the files are getting large, use the `maintainability-audit` skill;
-5. guide the user to produce a good-enough specification;
-6. wait for explicit approval of the specification;
-7. create an implementation plan;
-8. create a task checklist;
-9. ask for explicit approval of both the plan and task checklist;
-10. only then implement.
-
-The approved `spec.md`, `plan.md`, and `tasks.md` are the handoff contract. A different AI assistant or model may continue a later phase by reading those artifacts and the current repository context.
-
-A task is non-trivial if it:
-- changes behavior;
-- affects architecture, data flow, APIs, UI, persistence, security, or dependencies;
-- introduces a new feature;
-- changes more than one responsibility;
-- is ambiguous enough that assumptions would be risky.
-
-For trivial tasks, you may proceed directly, but still state assumptions briefly before coding.
-
-## Engineering principles
-Prioritize code that is easy to understand, modify, test, and safely extend.
-
-Use these principles unless the repository has a more specific local convention:
-
-- Prefer simple, explicit designs over clever abstractions.
-- Keep responsibilities cohesive and clearly owned.
-- Separate I/O, domain rules, persistence, external integrations, and presentation/UI.
-- Keep business/domain logic out of routes, CLI entrypoints, UI components, and provider adapters.
-- Encapsulate external systems behind adapters or gateways.
-- Avoid circular dependencies and hidden global state.
-- Prefer functions, types, modules, and names that explain intent.
-- Prefer boring, maintainable code over compressed or overly generic code.
-- Follow existing project conventions before introducing new ones.
-- Avoid speculative abstractions; create boundaries when they protect a real responsibility or external integration.
-
-## Test strategy
-Tests are a safety net, not concrete around the implementation.
-
-Prefer contract-level tests over implementation-detail tests.
-
-- A good test fails when public behavior breaks, an invariant is violated, or an important edge case stops working.
-- A bad test usually fails when a private helper is renamed, code is split into smaller functions, or internal call order changes without a behavior change.
-- Do not add tests only to increase coverage.
-- Before adding tests, state the behavior contract being protected.
-- If a test would make safe refactoring harder, propose a better test boundary.
-
-## Maintainability triggers
-Treat these as alert signals that the change may need a local refactor or a separate refactor spec:
-
-- file over about 800 lines;
-- function or method over about 60 lines;
-- deep nesting inside a function;
-- repeated logic in 3 or more places;
-- a change requires editing many unrelated files;
-- unclear module ownership;
-- tests depend heavily on private implementation;
-- one file mixes domain logic, I/O, validation, formatting, and orchestration;
-- the assistant needs to read a very large file to make a small change.
-
-If a trigger appears, propose a small local refactor inside the current change or a separate refactor spec if the scope is larger.
-
-## Refactor levels
-Level 1 - Always allowed:
-- small local improvements in touched files;
-- rename unclear variables;
-- extract a small function;
-- remove obvious duplication;
-- simplify conditionals.
-
-Level 2 - Call out in the plan:
-- local refactor touching a few files;
-- move responsibility to a better module;
-- reorganize brittle tests;
-- extract an adapter or interface.
-
-Level 3 - Needs its own spec:
-- architectural refactor;
-- directory restructuring;
-- boundary changes;
-- changes across many modules;
-- broad test rewrite.
-
-Every change must leave the touched area at least as maintainable as it was before. If that is not possible within the current scope, document the debt and propose a follow-up refactor.
-
-## Architectural locality
-The goal is not to minimize the number of changed files at all costs.
-
-The goal is to preserve an architecture where responsibilities are well isolated and future changes are naturally localized.
-
-When implementing a change:
-- change every file that legitimately needs to change;
-- do not force a smaller diff by putting code in the wrong place;
-- do not skip tests, docs, types, config, or schema updates just to reduce file count;
-- if a simple conceptual change requires edits across many unrelated areas, call this out as a possible architecture smell;
-- explain whether the scattering is expected or accidental;
-- propose a refactor when it would improve future maintainability.
-
-Good architecture makes related changes local. Bad architecture causes shotgun surgery.
-
-## Simplicity bias
-Prefer the simplest architecture that preserves clear boundaries.
-
-Do not introduce frameworks, queues, background workers, ORMs, migrations, dependency injection containers, service layers, code generation, or distributed components unless the spec justifies them.
-
-When adding structure, explain what responsibility it protects.
-
-## Security and privacy
-Treat credentials, tokens, private URLs, personal data, production data, customer data, and message histories as sensitive.
-
-Rules:
-- Never commit secrets, tokens, API keys, private keys, production credentials, database dumps, or personal data.
-- Keep secrets in `.env` or in a deployment secret manager.
-- Keep `.env` out of Git.
-- Maintain `.env.example` with variable names only, never real values.
-- Do not log secrets or sensitive payloads unless explicitly approved for a narrow debugging task.
-- Validate external inputs at system boundaries.
-- Prefer least privilege for tokens, credentials, and file permissions.
-- Call out security or privacy impact in the plan whenever the change touches auth, credentials, network calls, files, logs, user data, or external APIs.
-
-## Configuration policy
-Configuration should be explicit but minimal.
-
-Rules:
-- Use `.env` only for secrets or environment-specific values that must not be committed.
-- Use committed config files only for non-sensitive functional configuration.
-- Keep config files compact; do not add options before they are needed.
-- Prefer clear defaults in code for low-risk non-sensitive settings.
-- Document required configuration in `.env.example`, README, or the relevant spec.
-
-## Dependency policy
-Do not add a new dependency without explaining:
-- why the standard library or existing dependencies are insufficient;
-- whether it is runtime, build-time, or dev-only;
-- maintenance and security implications;
-- how it affects build, deployment, tests, and lockfiles.
-
-Prefer small, mature, well-maintained dependencies when a dependency is justified.
-
-## Testing policy
-Tests should protect the contract defined by the spec and plan.
-
-Prefer a small number of high-signal tests that cover:
-- acceptance criteria;
-- public behavior and invariants;
-- regression cases that would break the contract.
-
-Avoid adding tests that only freeze implementation detail, internal call order, incidental text, or other behavior that the spec does not require.
-If no new test is justified, say so in the validation notes instead of adding a fragile test for coverage alone.
-
-## Guided mode
-When the user starts describing a feature, bugfix, refactor, or change request, enter guided mode.
-
-In guided mode, you must:
-- ask focused clarifying questions;
-- reduce ambiguity instead of guessing;
-- identify scope, constraints, edge cases, and done criteria;
-- identify non-functional requirements such as maintainability, security, reliability, performance, and observability;
-- draft a written spec before any implementation.
-
-Do not dump too many questions at once.
-Ask only the most useful next questions.
+- Follow repository-local instructions and existing conventions.
+- When `docs/INDEX.md` exists, start there and read only the product,
+  architecture, capability or decision pages relevant to the task.
+- Use the `spec-driven` skill for non-trivial changes. Open
+  `docs/SPEC_DRIVEN.md` only when detailed workflow guidance is needed.
+- Use `maintainability-audit` when ownership is unclear, tests are brittle or a
+  small conceptual change is scattered across unrelated files.
+- Use `living-docs` when orienting in the project or changing durable project
+  knowledge.
 
 ## Required workflow
-For non-trivial work, follow this order:
-1. Discovery
-2. Specification
-3. Spec approval
-4. Technical plan
-5. Task checklist
-6. Implementation
-7. Validation
-8. Final summary
 
-Prefer planning first for difficult tasks. Use a reviewable planning step before coding when the task is ambiguous or multi-step.
+A task is non-trivial when it changes behavior, architecture, persistence,
+interfaces, security, dependencies or multiple responsibilities, or when
+guessing would be risky.
 
-Do not skip steps unless the user explicitly asks to compress the process and the risk is low.
-If risk is high or ambiguity remains, do not silently skip the process.
+For non-trivial work:
 
-## Required artifacts
-For non-trivial work, create a change folder under:
-`docs/changes/<short-change-name>/`
+1. Inspect the relevant repository state and clarify the request.
+2. Create `docs/changes/<change>/spec.md` from the repository template.
+3. Pause for explicit spec approval.
+4. Only then create `plan.md` and `tasks.md`.
+5. Pause for explicit approval of both plan and tasks.
+6. Implement, validate against the approved spec and close the checklist.
 
-Inside it, create:
-- `spec.md`
-- `plan.md`
-- `tasks.md`
+The approved spec, plan and tasks are the handoff contract. Do not treat an
+earlier approval or silence as approval of a later gate. A user may explicitly
+request a compressed workflow when risk is low.
 
-Optional when useful:
-- `notes.md`
-- `open_questions.md`
-- `decisions.md`
+## Knowledge contract
 
-Only create `plan.md` after `spec.md` is approved.
-Only implement after `plan.md` and `tasks.md` exist.
+- Product docs own expected behavior; architecture docs own how the system is
+  built and operates.
+- Keep current implementation separate from approved future behavior.
+- `docs/CAPABILITIES.md` owns current state, evidence, approved target and
+  active change. Never replace a verified current state with a future target.
+- One durable fact has one owner. Link to it instead of copying prose.
+- Change artifacts are temporal history. At closeout, distill durable facts
+  into their owners and validate relative links.
+- A `scaffold` or `incomplete` knowledge base is not proof of complete product
+  intent. Surface conflicts between docs and code/tests/runtime before deciding
+  which side is stale.
 
-## Spec approval rule
-Before implementation, pause and explicitly ask the user to confirm the spec.
-Do not treat silence as approval.
+## Engineering guardrails
 
-Use language like:
-- "Here is the proposed spec. Please review scope, assumptions, non-functional requirements, and acceptance criteria."
-- "Once you approve the spec, I will generate the implementation plan."
+- Preserve cohesive ownership and keep domain rules out of UI, transport,
+  persistence and provider adapters unless that is the established boundary.
+- Prefer simple local changes. Call out shotgun surgery, mixed responsibilities,
+  hidden global state, repeated logic and tests coupled to private details.
+- Tests should protect acceptance criteria, public behavior and invariants.
+- Do not add dependencies without explaining why existing tools are
+  insufficient and assessing maintenance and security impact.
+- Never commit secrets, credentials, private messages, production/customer data
+  or sensitive payloads. Validate external input at system boundaries.
+- Do not change unrelated behavior, stage files, commit or perform destructive
+  Git operations unless the user explicitly requested them.
 
-## Planning rule
-After the spec is approved, create `plan.md` with:
-- relevant existing context and conventions;
-- architecture impact;
-- module boundaries and ownership;
-- architecture locality check;
-- files or areas likely to change and why;
-- data model or API changes;
-- security and privacy impact;
-- dependency impact;
-- risks;
-- validation strategy;
-- step-by-step execution order.
+## Repository context
 
-Then create `tasks.md` as a practical checklist.
-For long or multi-session work, also create or update a living plan in `docs/changes/<short-change-name>/plan.md` or another project-local planning document when that would help resume work later.
+Layout:
 
-## Implementation rule
-During implementation:
-- follow the approved spec and plan;
-- avoid unapproved scope expansion;
-- keep responsibilities in the modules that own them;
-- do not hide architecture problems by forcing a small diff;
-- record meaningful deviations in `notes.md`;
-- record important architecture/product decisions in `decisions.md` when useful;
-- stop and surface conflicts if codebase reality contradicts the approved spec.
+$repo_layout
 
-## Validation rule
-Before declaring work complete:
-- verify the implementation against the spec;
-- verify important edge cases;
-- run relevant commands when possible;
-- check that changed files are conceptually related to the change;
-- call out any architecture smell discovered during implementation;
-- update docs if behavior, commands, configuration, or architecture changed;
-- mark completed items in `tasks.md`.
+Commands:
 
-## Communication style
-Be structured, direct, and concise.
-When guiding the user, behave like a strong technical facilitator:
-- ask the right questions;
-- drive toward decisions;
-- surface tradeoffs;
-- do not rush into code.
-
-## Priority
-If there is any conflict between an ad hoc prompt and this workflow, prefer this workflow unless the user explicitly asks to bypass it.
-
-The detailed process and templates are defined in:
-- `docs/SPEC_DRIVEN.md`
-- `.agents/skills/spec-driven/SKILL.md`
+$commands

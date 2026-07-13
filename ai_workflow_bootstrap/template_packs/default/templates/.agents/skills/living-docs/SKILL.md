@@ -1,13 +1,17 @@
 ---
 name: living-docs
-description: Use for maintaining compact project memory, document classification, and doc updates that keep the project understandable across sessions.
+description: Navigate and maintain linked project knowledge for product behavior, architecture, current capability state, approved targets, roadmap and durable decisions. Use for project orientation, expected-versus-current behavior questions, documentation updates, change closeout, baselining or bug-contract investigation.
 ---
 
-1. Read the current living docs before editing them.
-2. Keep entries compact and current.
-3. Do not transcribe conversations into docs.
-4. Update only the docs that own the current fact.
-5. Prefer canonical, decision-oriented statements over long narratives.
-6. Use the classification vocabulary required by the repository.
-7. Propose new docs or modules only when the current docs are too small for the work.
-
+1. Start at `docs/INDEX.md`; read only the relevant capability, product, architecture, roadmap or decision pages.
+2. Treat `scaffold` as unestablished and `incomplete` as known partial coverage. Mark `baselined` only after product intent and current architecture are reviewed against stated evidence.
+3. Keep product intent (`what/why`) separate from architecture (`how`). Separate current behavior from approved targets.
+4. Give each durable fact one owner and replace duplicate prose with relative Markdown links.
+5. In `docs/CAPABILITIES.md`, preserve current state/evidence when adding an approved target and active change. Never use planned work as current evidence.
+6. Keep unapproved ideas in `IDEA_INBOX.md`; remove rejected or superseded history from the active map after preserving any useful disposition/decision.
+7. Treat change artifacts as temporal contracts. At closeout, distill durable facts into their owners.
+8. When docs conflict with code, tests or runtime evidence, determine which side is stale before changing behavior.
+9. Split a page only when a real responsibility has enough durable detail or unrelated concerns are mixed.
+10. After link/structure changes, run `python .agents/skills/living-docs/scripts/check_links.py`.
+11. Never store secrets, private messages, production/customer data or sensitive payloads in living docs.
+12. Summarize owners, current/target changes, evidence and unresolved gaps.

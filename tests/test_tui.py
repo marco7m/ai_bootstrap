@@ -55,7 +55,19 @@ class TuiTests(unittest.TestCase):
 
             self.assertEqual(safe_result.status, "skipped")
             self.assertEqual(forced_result.status, "overwritten")
-            self.assertTrue(forced_result.needs_backup)
+
+    def test_force_preview_lists_known_legacy_deletion(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            legacy = root / "docs/AI_CONTEXT.md"
+            legacy.parent.mkdir(parents=True)
+            legacy.write_text("legacy\n", encoding="utf-8")
+
+            plan = tui._plan_from_ui(str(root), "recommended", True, dry_run=True, force=True)
+            deletion = next(item for item in plan.results if item.path == legacy)
+
+            self.assertEqual(deletion.kind, "deletion")
+            self.assertEqual(deletion.status, "deleted")
 
     def test_missing_textual_prints_install_message(self) -> None:
         stderr = io.StringIO()

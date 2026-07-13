@@ -1,26 +1,20 @@
 ---
 name: spec-driven
-description: Use for non-trivial feature work, bug fixes, refactors, or ambiguous tasks. Guides the user through clarification -> spec -> approval -> plan -> tasks -> implementation -> validation, with emphasis on architectural locality, maintainability, security, and clear module ownership.
+description: Guide non-trivial features, bug fixes, refactors and ambiguous changes through clarification, spec approval, plan and tasks approval, implementation and validation. Use whenever behavior, architecture, persistence, interfaces, security, dependencies or multiple responsibilities may change.
 ---
 
-1. Read `AGENTS.md` and `docs/SPEC_DRIVEN.md`.
-2. Decide whether the request is trivial or non-trivial.
-3. For non-trivial work, do not code immediately.
-4. Ask a small number of focused clarifying questions.
-5. Draft `docs/changes/<short-change-name>/spec.md` using the repo template.
-6. Include functional and non-functional requirements.
-7. Keep tests focused on contract-level behavior from the spec and plan, not implementation details.
-8. Ask the user to approve the spec explicitly.
-9. Only after approval, create `plan.md` and `tasks.md`.
-10. Ask the user to approve both the plan and tasks explicitly before implementation.
-11. In `plan.md`, include existing conventions, module boundaries, architecture locality, security/privacy impact, dependency impact, risks, and validation.
-12. Implement according to the approved spec, plan, and tasks.
-12. Do not force a smaller diff by putting code in the wrong place.
-13. If a simple conceptual change touches many unrelated areas, call it out as a possible architecture smell.
-14. Validate the result against the acceptance criteria and definition of done.
-15. Summarize the final result, tests, remaining assumptions, and any architecture concerns.
+1. Read repository instructions and inspect the smallest relevant code/doc set.
+2. Clarify the problem, outcome, scope, exclusions, constraints, edge cases and acceptance criteria.
+3. Create `docs/changes/<change>/spec.md` from `docs/changes/_templates/spec.md`.
+4. Identify affected product, architecture and capability owners without duplicating their facts.
+5. Pause for explicit spec approval. Do not create plan/tasks before approval.
+6. After approval, record the approved target and active change without replacing current capability state.
+7. Inspect established boundaries and conventions; create `plan.md` and concrete `tasks.md` from their templates.
+8. Include architecture locality, security/privacy, dependencies, risks, validation and living-knowledge impact.
+9. Pause for explicit approval of both plan and tasks. Spec approval is not implementation approval.
+10. Implement the approved plan, recording meaningful deviations and stopping on unresolved spec/repository conflicts.
+11. Validate acceptance criteria with contract-level tests and relevant checks.
+12. Update current state/evidence only when supported; distill durable facts, validate links and close tasks.
+13. Summarize behavior, files, validation, knowledge updates, limitations and architecture concerns.
 
-When the request is large, ambiguous, or likely to span multiple sessions:
-- prefer a planning step before coding;
-- keep the plan detailed and reviewable;
-- if a persistent plan would help future sessions, save it in a project-local planning document.
+Open `docs/SPEC_DRIVEN.md` only when detailed workflow guidance is needed.

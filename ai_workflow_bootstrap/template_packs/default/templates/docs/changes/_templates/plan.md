@@ -65,8 +65,18 @@ Include only the tests that actually protect the approved spec. If a test would 
 - Tests intentionally not added:
 - Why these tests should survive internal refactors:
 
-## 12. Execution Steps
+## 12. Living Documentation Impact
 
-## 13. Rollback / Recovery
+- Product fact owner(s) to update:
+- Architecture fact owner(s) to update:
+- Current state/evidence changes:
+- Approved target/active-change changes:
+- Roadmap/decision changes:
+- Links/evidence to validate:
+- Why no living-doc update is needed, if applicable:
 
-## 14. Notes
+## 13. Execution Steps
+
+## 14. Rollback / Recovery
+
+## 15. Notes

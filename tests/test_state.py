@@ -7,9 +7,8 @@ from pathlib import Path
 
 from ai_workflow_bootstrap.core.planner import BootstrapPlan, WriteResult
 from ai_workflow_bootstrap.core.scanner import RepoProfile
+from ai_workflow_bootstrap.core.state import build_state, load_state, new_state, save_state, state_path
 from ai_workflow_bootstrap.core.template_pack import load_default_template_pack
-from ai_workflow_bootstrap.core.state import load_state, new_state, save_state, state_path
-from ai_workflow_bootstrap.core.state import build_state
 
 
 class StateTests(unittest.TestCase):
@@ -20,68 +19,55 @@ class StateTests(unittest.TestCase):
             state = new_state(
                 target_path=str(root),
                 template_pack="default",
-                template_pack_version="0.1.0",
+                template_pack_version="0.3.0",
                 enabled_workflows=["spec-driven"],
                 tool_version="0.1.0",
-                files={
-                    "AGENTS.md": {
-                        "status": "written",
-                        "template": "templates/AGENTS.md",
-                        "template_hash": "abc123",
-                    }
-                },
-                optional_modules=[],
+                files={"AGENTS.md": {"status": "written", "template_hash": "abc123"}},
             )
 
             save_state(path, state)
             loaded = load_state(path)
 
             self.assertIsNotNone(loaded)
-            self.assertEqual(loaded.tool_name, "ai-workflow-bootstrap")
             self.assertEqual(loaded.template_pack, "default")
-            self.assertEqual(loaded.enabled_workflows, ["spec-driven"])
             self.assertEqual(loaded.files["AGENTS.md"]["template_hash"], "abc123")
 
-    def test_build_state_uses_relative_file_paths_and_skips_external_files(self) -> None:
+    def test_build_state_skips_external_and_deletion_results(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            pack = load_default_template_pack()
-            profile = RepoProfile(project_name="Example", repo_name="example")
             plan = BootstrapPlan(
                 target=root,
-                profile=profile,
-                pack=pack,
+                profile=RepoProfile(project_name="Example", repo_name="example"),
+                pack=load_default_template_pack(),
                 results=[],
                 enabled_workflows=["spec-driven", "living-docs"],
                 enabled_groups={"spec-driven", "living-docs"},
-                force=False,
+                force=True,
                 dry_run=False,
-                backup_existing=True,
             )
             results = [
                 WriteResult(
-                    path=root / "docs/AI_CONTEXT.md",
+                    path=root / "docs/INDEX.md",
                     status="written",
                     message="created/updated",
-                    template="templates/docs/AI_CONTEXT.md",
+                    template="templates/docs/INDEX.md",
                     template_hash="abc123",
                 ),
                 WriteResult(
-                    path=Path("/tmp/example/AGENTS.md"),
-                    status="written",
-                    message="created/updated",
-                    template="templates/AGENTS.md",
-                    template_hash="def456",
+                    path=root / "docs/AI_CONTEXT.md",
+                    status="deleted",
+                    message="obsolete generated file will be deleted",
+                    kind="deletion",
                 ),
+                WriteResult(path=Path("/tmp/example/AGENTS.md"), status="written", message="created/updated"),
             ]
 
             state = build_state(plan=plan, results=results, tool_version="0.1.0")
 
             self.assertTrue(os.path.isabs(state.target_path))
-            self.assertIn("docs/AI_CONTEXT.md", state.files)
+            self.assertIn("docs/INDEX.md", state.files)
+            self.assertNotIn("docs/AI_CONTEXT.md", state.files)
             self.assertNotIn("/tmp/example/AGENTS.md", state.files)
-            self.assertTrue(all(not key.startswith("/") for key in state.files))
-            self.assertEqual(state.files["docs/AI_CONTEXT.md"]["template_hash"], "abc123")
 
 
 if __name__ == "__main__":

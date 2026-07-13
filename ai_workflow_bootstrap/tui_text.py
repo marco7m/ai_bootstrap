@@ -12,13 +12,13 @@ _TEXTS: dict[str, dict[str, str]] = {
             "creates a plan and tasks, and only then implements."
         ),
         "living_docs_help": (
-            "Living docs are compact project memory: decisions, current status, roadmap, ideas, and glossary."
+            "Living docs are compact project memory: current evidence, approved targets, decisions, roadmap, and terms."
         ),
         "skills_help": "Agent Skills are reusable instructions for compatible AI coding agents.",
         "dry_run_help": "Dry run shows what would happen, but writes nothing.",
         "status_help": (
             "written = will be created or updated; skipped = already exists and will not be changed; "
-            "unchanged = already matches; overwritten = only with force."
+            "unchanged = already matches; overwritten/deleted = destructive and only with overwrite enabled."
         ),
         "project_path_placeholder": "Project path",
         "language_label": "Language",
@@ -39,14 +39,13 @@ _TEXTS: dict[str, dict[str, str]] = {
             "Applied changes and wrote .ai-bootstrap/state.json.\n"
             "Next steps:\n"
             "1. Open your preferred AI assistant.\n"
-            "2. Ask it to read AGENTS.md and docs/AI_CONTEXT.md.\n"
-            "3. For non-trivial changes, follow docs/SPEC_DRIVEN.md.\n"
-            "4. Approve the spec before implementation."
+            "2. Follow generated entry points when present: AGENTS.md, docs/INDEX.md, and .agents/skills/.\n"
+            "3. For non-trivial work, respect the generated approval workflow."
         ),
         "no_projects_found": "No recent or detected projects found yet.",
         "mode_label": "Workflow mode",
         "include_skills_label": "Include .agents/skills",
-        "overwrite_existing_label": "Overwrite existing files (backups will be created)",
+        "overwrite_existing_label": "Destructively overwrite and remove obsolete generated files",
         "recommended_mode": "Recommended: spec-driven + living docs",
         "spec_driven_only_mode": "Spec-driven only",
         "living_docs_only_mode": "Living docs only",
@@ -57,12 +56,12 @@ _TEXTS: dict[str, dict[str, str]] = {
             "Spec-driven significa que o assistente primeiro entende o pedido, escreve uma spec, espera aprovação, "
             "cria plano e tarefas, e só depois implementa."
         ),
-        "living_docs_help": "Living docs são uma memória compacta do projeto: decisões, status atual, roadmap, ideias e glossário.",
+        "living_docs_help": "Living docs são memória compacta: evidência atual, alvos aprovados, decisões, roadmap e termos.",
         "skills_help": "Agent Skills são instruções reutilizáveis para agentes de IA compatíveis.",
         "dry_run_help": "Dry run mostra o que aconteceria, mas não escreve nada.",
         "status_help": (
             "written = será criado ou atualizado; skipped = já existe e não será alterado; "
-            "unchanged = já está igual; overwritten = só com force."
+            "unchanged = já está igual; overwritten/deleted = destrutivo e só com sobrescrita habilitada."
         ),
         "project_path_placeholder": "Caminho do projeto",
         "language_label": "Idioma",
@@ -83,14 +82,13 @@ _TEXTS: dict[str, dict[str, str]] = {
             "Alterações aplicadas e .ai-bootstrap/state.json escrito.\n"
             "Próximos passos:\n"
             "1. Abra seu assistente de IA preferido.\n"
-            "2. Peça para ele ler AGENTS.md e docs/AI_CONTEXT.md.\n"
-            "3. Para mudanças não triviais, siga docs/SPEC_DRIVEN.md.\n"
-            "4. Aprove a spec antes da implementação."
+            "2. Siga as entradas geradas quando existirem: AGENTS.md, docs/INDEX.md e .agents/skills/.\n"
+            "3. Em trabalho não trivial, respeite o workflow de aprovação gerado."
         ),
         "no_projects_found": "Nenhum projeto recente ou detectado encontrado ainda.",
         "mode_label": "Modo de workflow",
         "include_skills_label": "Incluir .agents/skills",
-        "overwrite_existing_label": "Sobrescrever arquivos existentes (backups serão criados)",
+        "overwrite_existing_label": "Sobrescrever e remover arquivos gerados obsoletos (destrutivo)",
         "recommended_mode": "Recomendado: spec-driven + living docs",
         "spec_driven_only_mode": "Apenas spec-driven",
         "living_docs_only_mode": "Apenas living docs",

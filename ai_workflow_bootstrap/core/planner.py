@@ -19,7 +19,6 @@ class WriteResult:
     template: str = ""
     template_hash: str = ""
     existing: bool = False
-    needs_backup: bool = False
 
 
 @dataclass
@@ -32,13 +31,19 @@ class BootstrapPlan:
     enabled_groups: set[str]
     force: bool
     dry_run: bool
-    backup_existing: bool
 
 
 def _resolve_output_path(target: Path, raw_path: str) -> Path:
     if raw_path.startswith("~"):
         return Path(raw_path).expanduser()
     return target / raw_path
+
+
+def _resolve_obsolete_path(target: Path, raw_path: str) -> Path:
+    relative = Path(raw_path)
+    if relative.is_absolute() or raw_path.startswith("~") or ".." in relative.parts:
+        raise ValueError(f"Obsolete path must stay inside the target repository: {raw_path}")
+    return target / relative
 
 
 def _render_context(profile: RepoProfile) -> dict[str, object]:
@@ -92,12 +97,31 @@ def _plan_file(path: Path, template_path: str, template_text: str, *, force: boo
     return WriteResult(
         path=path,
         status="overwritten" if existing else "written",
-        message="overwritten; backup will be created" if existing else "created/updated",
+        message="overwritten by explicit request" if existing else "created/updated",
         content=content,
         template=template_path,
         template_hash=_template_hash(template_text),
         existing=existing,
-        needs_backup=existing and force,
+    )
+
+
+def _plan_obsolete_file(path: Path) -> WriteResult | None:
+    if not path.exists() and not path.is_symlink():
+        return None
+    if path.is_file() or path.is_symlink():
+        return WriteResult(
+            path=path,
+            status="deleted",
+            message="obsolete generated file will be deleted",
+            kind="deletion",
+            existing=True,
+        )
+    return WriteResult(
+        path=path,
+        status="skipped",
+        message="obsolete path is not a file; refusing deletion",
+        kind="deletion",
+        existing=True,
     )
 
 
@@ -110,7 +134,6 @@ def build_plan(
     enabled_groups: set[str],
     force: bool,
     dry_run: bool,
-    backup_existing: bool,
 ) -> BootstrapPlan:
     results: list[WriteResult] = []
     context = _render_context(profile)
@@ -126,6 +149,14 @@ def build_plan(
         content = render_template(template_text, context)
         results.append(_plan_file(_resolve_output_path(target, spec.path), spec.template, template_text, force=force, content=content))
 
+    if force:
+        for spec in pack.obsolete_files:
+            if spec.group not in enabled_groups:
+                continue
+            deletion = _plan_obsolete_file(_resolve_obsolete_path(target, spec.path))
+            if deletion is not None:
+                results.append(deletion)
+
     return BootstrapPlan(
         target=target,
         profile=profile,
@@ -135,5 +166,4 @@ def build_plan(
         enabled_groups=enabled_groups,
         force=force,
         dry_run=dry_run,
-        backup_existing=backup_existing,
     )

@@ -99,7 +99,6 @@ def _plan_from_ui(
         enabled_groups=enabled_groups,
         force=force,
         dry_run=dry_run,
-        backup_existing=True,
     )
 
 
@@ -385,7 +384,7 @@ def _build_app():
 
             self._current_plan = plan
             self._show_plan(plan)
-            apply_plan(plan, dry_run=True, backup_existing=True)
+            apply_plan(plan, dry_run=True)
             self._set_status(t(self._language, "dry_run_done"))
 
         def _apply(self) -> None:
@@ -405,7 +404,7 @@ def _build_app():
 
             self._current_plan = plan
             self._show_plan(plan)
-            results = apply_plan(plan, dry_run=False, backup_existing=True)
+            results = apply_plan(plan, dry_run=False)
 
             state = build_state(plan=plan, results=results, tool_version=__version__)
             save_state(state_path(plan.target), state, dry_run=False)

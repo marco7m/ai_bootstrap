@@ -1,14 +1,11 @@
 # Start Prompt
 
-Use your preferred AI assistant.
+Work from the repository state and follow `AGENTS.md`.
 
-Read AGENTS.md, docs/AI_CONTEXT.md, and docs/SPEC_DRIVEN.md.
-If available, use the open Agent Skills under `.agents/skills/`.
-Follow the guided Spec-Driven Development workflow in this repository.
-Prefer a planning step before coding for ambiguous or multi-step work.
-For non-trivial work, request explicit approval of the spec, then request explicit approval again after creating `plan.md` and `tasks.md`.
-The user may use a different AI assistant or model for each phase; use the approved change artifacts as the handoff contract.
-Pay attention to architectural locality, security, configuration, dependency discipline, and maintainability.
+When present, start project orientation at `docs/INDEX.md` and read only the
+linked knowledge relevant to the request. Use the spec-driven skill for
+non-trivial work; consult `docs/SPEC_DRIVEN.md` only for detailed guidance.
 
-My request is:
-<describe what you want to build here>
+Respect both approval gates: spec approval first, then explicit plan/tasks
+approval before implementation. Keep current behavior separate from approved
+targets and update durable knowledge only with supporting evidence.
