@@ -1,10 +1,21 @@
 from __future__ import annotations
 
-import hashlib
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 from .composer import CompositionConflict, compose_ensured_lines, compose_make_targets
+from .lifecycle import (
+    COMPOSED,
+    MANAGED,
+    MIGRATED,
+    PROJECT,
+    SEEDED,
+    classify_rendered_file,
+    content_hash,
+    is_content_hash,
+)
 from .renderer import render_template
 from .scanner import RepoProfile, format_commands, format_detected_stack, format_repo_layout
 from .template_pack import TemplateCompositionSpec, TemplatePack
@@ -21,6 +32,7 @@ class WriteResult:
     template_hash: str = ""
     existing: bool = False
     ownership: str = "bootstrap"
+    lifecycle: str = MANAGED
 
 
 @dataclass
@@ -33,6 +45,8 @@ class BootstrapPlan:
     enabled_groups: set[str]
     force: bool
     dry_run: bool
+    managed_only: bool = False
+    reset_project_knowledge: bool = False
 
 
 def _resolve_repo_path(target: Path, raw_path: str) -> Path:
@@ -64,7 +78,7 @@ def _render_context(profile: RepoProfile) -> dict[str, object]:
 
 
 def _template_hash(template_text: str) -> str:
-    return hashlib.sha256(template_text.encode("utf-8")).hexdigest()
+    return content_hash(template_text)
 
 
 def _plan_directory(path: Path) -> WriteResult:
@@ -80,69 +94,106 @@ def _plan_file(
     *,
     force: bool,
     content: str,
+    lifecycle: str,
+    prior_entry: Mapping[str, Any] | None = None,
+    reset_project_knowledge: bool = False,
     overwrite_hint: str = "",
 ) -> WriteResult:
     existing = path.exists()
+    current_hash: str | None = None
     if existing:
         try:
             current = path.read_text(encoding="utf-8")
         except UnicodeDecodeError:
             current = path.read_text(encoding="utf-8", errors="replace")
-        normalized_current = current.rstrip() + "\n"
-        if normalized_current == content:
-            return WriteResult(
-                path=path,
-                status="unchanged",
-                message="already up to date",
-                content=content,
-                template=template_path,
-                template_hash=_template_hash(template_text),
-                existing=True,
-            )
-        if not force:
-            message = "exists; use --force to overwrite"
-            if overwrite_hint:
-                message += f". {overwrite_hint}"
-            return WriteResult(
-                path=path,
-                status="skipped",
-                message=message,
-                content=content,
-                template=template_path,
-                template_hash=_template_hash(template_text),
-                existing=True,
-            )
-    message = "overwritten by explicit request" if existing else "created/updated"
-    if existing and overwrite_hint:
+        current_hash = content_hash(current)
+    prior_hash = (prior_entry or {}).get("applied_content_hash")
+    decision = classify_rendered_file(
+        lifecycle=lifecycle,
+        exists=existing,
+        current_hash=current_hash,
+        rendered_hash=content_hash(content),
+        prior_applied_hash=prior_hash if isinstance(prior_hash, str) else None,
+        force=force,
+        reset_project_knowledge=reset_project_knowledge,
+    )
+    messages = {
+        "written": "created from bootstrap template",
+        "unchanged": "already matches rendered bootstrap content",
+        "updated": "untouched seed safely updated to the current template",
+        "overwritten": "bootstrap-managed file updated by explicit request",
+        "reset": "seeded project knowledge reset by separate explicit request",
+        "skipped": "managed file differs; use --force to update it",
+        "preserved": (
+            "project-evolved seeded knowledge preserved"
+            if is_content_hash(prior_hash)
+            else "seeded knowledge preserved because applied provenance is unavailable"
+        ),
+    }
+    message = messages[decision.status]
+    if existing and overwrite_hint and decision.status in {"skipped", "overwritten"}:
         message += f". {overwrite_hint}"
     return WriteResult(
         path=path,
-        status="overwritten" if existing else "written",
+        status=decision.status,
         message=message,
         content=content,
         template=template_path,
         template_hash=_template_hash(template_text),
         existing=existing,
+        lifecycle=lifecycle,
     )
 
 
-def _plan_obsolete_file(path: Path) -> WriteResult | None:
+def _plan_obsolete_file(
+    path: Path,
+    *,
+    prior_entry: Mapping[str, Any] | None,
+    migration_target: str,
+) -> WriteResult | None:
     if not path.exists() and not path.is_symlink():
         return None
     if path.is_file() or path.is_symlink():
+        try:
+            current = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError) as exc:
+            return WriteResult(
+                path=path,
+                status="migration_required",
+                message=f"obsolete file cannot be verified safely: {exc}",
+                kind="deletion",
+                existing=True,
+                lifecycle=MIGRATED,
+            )
+        prior_hash = (prior_entry or {}).get("applied_content_hash")
+        if not is_content_hash(prior_hash) or content_hash(current) != prior_hash:
+            destination = f" Migrate durable content to {migration_target}." if migration_target else ""
+            return WriteResult(
+                path=path,
+                status="migration_required",
+                message=(
+                    "obsolete file has project drift or no trusted applied provenance; preserved."
+                    + destination
+                ),
+                kind="deletion",
+                existing=True,
+                lifecycle=MIGRATED,
+            )
         return WriteResult(
             path=path,
             status="deleted",
-            message="obsolete generated file will be deleted",
+            message="unchanged obsolete bootstrap file will be deleted",
             kind="deletion",
             existing=True,
+            lifecycle=MIGRATED,
         )
     return WriteResult(
         path=path,
-        status="skipped",
-        message="obsolete path is not a file; refusing deletion",
+        status="migration_required",
+        message="obsolete path is not a regular file; refusing recursive deletion",
         kind="deletion",
         existing=True,
+        lifecycle=MIGRATED,
     )
 
 
@@ -182,6 +233,7 @@ def _plan_composition(
                 template=spec.template,
                 template_hash=_template_hash(template_text),
                 existing=True,
+                lifecycle=COMPOSED,
             )
 
     if spec.mode == "make-targets":
@@ -199,6 +251,7 @@ def _plan_composition(
             template=spec.template,
             template_hash=_template_hash(template_text),
             existing=existing,
+            lifecycle=COMPOSED,
         )
     if not result.changed:
         status = "unchanged"
@@ -212,6 +265,7 @@ def _plan_composition(
         template=spec.template,
         template_hash=_template_hash(template_text),
         existing=existing,
+        lifecycle=COMPOSED,
     )
 
 
@@ -224,8 +278,12 @@ def build_plan(
     enabled_groups: set[str],
     force: bool,
     dry_run: bool,
+    prior_files: Mapping[str, Mapping[str, Any]] | None = None,
+    managed_only: bool = False,
+    reset_project_knowledge: bool = False,
 ) -> BootstrapPlan:
     results: list[WriteResult] = []
+    prior_files = prior_files or {}
     context = _render_context(profile)
 
     for fragment in pack.context_fragments:
@@ -242,6 +300,8 @@ def build_plan(
     for spec in pack.files:
         if spec.group not in enabled_groups or not _matches_stacks(spec.when_stacks, profile):
             continue
+        if managed_only and spec.lifecycle == SEEDED:
+            continue
         template_text = pack.read_template(spec.template)
         content = render_template(template_text, context)
         results.append(
@@ -251,6 +311,9 @@ def build_plan(
                 template_text,
                 force=force,
                 content=content,
+                lifecycle=spec.lifecycle,
+                prior_entry=prior_files.get(Path(spec.path).as_posix()),
+                reset_project_knowledge=reset_project_knowledge and spec.lifecycle == SEEDED,
                 overwrite_hint=spec.overwrite_hint,
             )
         )
@@ -267,6 +330,7 @@ def build_plan(
                     message="project-owned instructions preserved; bootstrap will never overwrite this path",
                     existing=True,
                     ownership="project",
+                    lifecycle=PROJECT,
                 )
             )
 
@@ -278,11 +342,15 @@ def build_plan(
         path = _resolve_repo_path(target, spec.path)
         results.append(_plan_composition(path, spec, template_text, content))
 
-    if force:
+    if force and not managed_only:
         for spec in pack.obsolete_files:
             if spec.group not in enabled_groups:
                 continue
-            deletion = _plan_obsolete_file(_resolve_repo_path(target, spec.path))
+            deletion = _plan_obsolete_file(
+                _resolve_repo_path(target, spec.path),
+                prior_entry=prior_files.get(Path(spec.path).as_posix()),
+                migration_target=spec.migration_target,
+            )
             if deletion is not None:
                 results.append(deletion)
 
@@ -295,4 +363,6 @@ def build_plan(
         enabled_groups=enabled_groups,
         force=force,
         dry_run=dry_run,
+        managed_only=managed_only,
+        reset_project_knowledge=reset_project_knowledge,
     )

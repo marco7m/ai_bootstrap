@@ -17,9 +17,8 @@ _TEXTS: dict[str, dict[str, str]] = {
         "skills_help": "Agent Skills are reusable instructions for compatible AI coding agents.",
         "dry_run_help": "Dry run shows what would happen, but writes nothing.",
         "status_help": (
-            "written/updated = will be safely written; skipped = an unmanaged existing file will not change; "
-            "preserved = project-owned and never overwritten; conflict = blocked with remediation; "
-            "unchanged = already matches; overwritten/deleted = destructive and only with overwrite enabled."
+            "managed/seeded/project/composed/migrated identifies ownership; preserved protects project knowledge; "
+            "conflict/migration_required blocks all writes; reset is destructive and separately confirmed."
         ),
         "project_path_placeholder": "Project path",
         "language_label": "Language",
@@ -36,6 +35,7 @@ _TEXTS: dict[str, dict[str, str]] = {
         "preview_ready": "Preview ready. Type APPLY and press Apply to write changes.",
         "dry_run_done": "Dry run completed. No files were written.",
         "type_apply": "Type APPLY to write files.",
+        "type_reset_confirmation": "Type RESET PROJECT KNOWLEDGE to confirm the seeded-knowledge reset.",
         "applied_done": (
             "Applied changes and wrote .ai-bootstrap/state.json.\n"
             "Next steps:\n"
@@ -45,7 +45,9 @@ _TEXTS: dict[str, dict[str, str]] = {
         ),
         "no_projects_found": "No recent or detected projects found yet.",
         "include_skills_label": "Include .agents/skills",
-        "overwrite_existing_label": "Destructively overwrite and remove obsolete generated files",
+        "overwrite_existing_label": "Update bootstrap-managed files / retire unchanged obsolete scaffolds",
+        "reset_project_knowledge_label": "Reset seeded project knowledge (destructive)",
+        "reset_confirm_placeholder": "Type RESET PROJECT KNOWLEDGE",
     },
     "pt-BR": {
         "app_intro": "Esta ferramenta prepara um repositório para trabalhar melhor com assistentes de IA.",
@@ -57,9 +59,8 @@ _TEXTS: dict[str, dict[str, str]] = {
         "skills_help": "Agent Skills são instruções reutilizáveis para agentes de IA compatíveis.",
         "dry_run_help": "Dry run mostra o que aconteceria, mas não escreve nada.",
         "status_help": (
-            "written/updated = será escrito com segurança; skipped = arquivo existente não gerenciado não mudará; "
-            "preserved = pertence ao projeto e nunca é sobrescrito; conflict = bloqueado com instruções; "
-            "unchanged = já está igual; overwritten/deleted = destrutivo e só com sobrescrita habilitada."
+            "managed/seeded/project/composed/migrated identifica ownership; preserved protege conhecimento; "
+            "conflict/migration_required bloqueia toda escrita; reset é destrutivo e exige confirmação própria."
         ),
         "project_path_placeholder": "Caminho do projeto",
         "language_label": "Idioma",
@@ -76,6 +77,7 @@ _TEXTS: dict[str, dict[str, str]] = {
         "preview_ready": "Prévia pronta. Digite APPLY e clique em Aplicar para escrever as alterações.",
         "dry_run_done": "Dry run concluído. Nenhum arquivo foi escrito.",
         "type_apply": "Digite APPLY para escrever arquivos.",
+        "type_reset_confirmation": "Digite RESET PROJECT KNOWLEDGE para confirmar o reset dos documentos seeded.",
         "applied_done": (
             "Alterações aplicadas e .ai-bootstrap/state.json escrito.\n"
             "Próximos passos:\n"
@@ -85,7 +87,9 @@ _TEXTS: dict[str, dict[str, str]] = {
         ),
         "no_projects_found": "Nenhum projeto recente ou detectado encontrado ainda.",
         "include_skills_label": "Incluir .agents/skills",
-        "overwrite_existing_label": "Sobrescrever e remover arquivos gerados obsoletos (destrutivo)",
+        "overwrite_existing_label": "Atualizar gerenciados / retirar scaffolds obsoletos intactos",
+        "reset_project_knowledge_label": "Resetar conhecimento seeded do projeto (destrutivo)",
+        "reset_confirm_placeholder": "Digite RESET PROJECT KNOWLEDGE",
     },
 }
 

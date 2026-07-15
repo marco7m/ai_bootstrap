@@ -61,6 +61,12 @@ request a compressed workflow when risk is low.
 - A `scaffold` or `incomplete` knowledge base is not proof of complete product
   intent. Surface conflicts between docs and code/tests/runtime before deciding
   which side is stale.
+- Bootstrap reapplication is infrastructure maintenance, not documentation
+  closeout. A seeded living-doc scaffold becomes project knowledge once reviewed
+  or edited and must not be replaced by a template during ordinary upgrades.
+- If an owner looks regenerated, truncated or downgraded, inspect
+  `.ai-bootstrap/state.json` and relevant Git/evidence before trusting it.
+  Restore the established knowledge boundary before a narrow change closeout.
 
 ## Engineering guardrails
 

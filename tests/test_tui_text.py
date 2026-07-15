@@ -21,9 +21,11 @@ class TuiTextTests(unittest.TestCase):
     def test_translation_returns_english(self) -> None:
         self.assertIn("This tool prepares", t("en", "app_intro"))
 
-    def test_overwrite_labels_are_explicitly_destructive(self) -> None:
-        self.assertIn("Destructively", t("en", "overwrite_existing_label"))
-        self.assertIn("destrutivo", t("pt-BR", "overwrite_existing_label"))
+    def test_managed_update_and_reset_labels_are_separate(self) -> None:
+        self.assertIn("bootstrap-managed", t("en", "overwrite_existing_label"))
+        self.assertNotIn("destructive", t("en", "overwrite_existing_label").lower())
+        self.assertIn("destructive", t("en", "reset_project_knowledge_label").lower())
+        self.assertIn("destrutivo", t("pt-BR", "reset_project_knowledge_label"))
         self.assertNotIn("backup", t("en", "overwrite_existing_label").lower())
 
     def test_unknown_language_falls_back_to_english(self) -> None:

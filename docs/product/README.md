@@ -8,19 +8,40 @@ Implementation mechanisms belong in architecture.
 
 ## Purpose and actors
 
-Describe the problem, desired outcome, product identity and participating users
-or systems. If intent is unresolved, record the gap instead of inferring it from code.
+`ai-workflow-bootstrap` prepares repositories with reusable agent instructions,
+spec-driven change contracts, living-document scaffolds, and stack-aware
+workflow support. Project owners use the CLI or TUI to preview and apply that
+surface; agents and contributors consume the generated workflow and knowledge
+owners.
 
 ## Current contract
 
-Describe expected behavior now: capabilities, flows, invariants, domain rules,
-edge/failure behavior, boundaries, non-goals and behavior that must not occur.
-Link meaningful capabilities from the capability map.
+The bootstrap renders declared files, safely composes supported repository-owned
+files, previews operations, and writes state after successful application.
+Rendered files are either permanently `managed` or seed-once `seeded` knowledge.
+Without update consent, divergent managed files are skipped. `--force` updates
+managed files while evolved or untracked seeded knowledge remains preserved.
+Untouched seeds may safely receive a new rendered template when their current
+content matches the last applied-content hash.
+
+`--managed-only` excludes seeded and obsolete operations. Project-knowledge
+reset is a separate destructive action that affects only seeded paths and
+requires the exact `RESET PROJECT KNOWLEDGE` confirmation for a real CLI/TUI
+apply. Dry-run may preview it without confirmation.
+
+Obsolete bootstrap files are deleted only when prior state proves their current
+content still matches the last applied content. Drifted, untracked or malformed
+provenance produces `migration_required`, preserves the file and blocks the
+entire real apply before any write.
+
+Project-owned paths such as `AGENTS.project.md` and conflicting composition
+targets remain protected. The tool creates no backup, commit, branch, or stash.
 
 ## Approved targets
 
-Describe approved future behavior separately. Link its active change and keep
-the current implementation/evidence unchanged until work actually progresses.
+No further product target is currently approved. The lifecycle-aware ownership
+contract was introduced by the completed
+[living-knowledge ownership change](../changes/protect-living-knowledge-ownership-v1/spec.md).
 
 ## Product documents
 

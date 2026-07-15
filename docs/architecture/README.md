@@ -11,18 +11,39 @@ Detected stack: python.
 
 Repository areas:
 
+- `ai_workflow_bootstrap/core/`
+- `ai_workflow_bootstrap/template_packs/`
+- `ai_workflow_bootstrap/cli.py`
+- `ai_workflow_bootstrap/tui.py`
 - `docs/`
 - `tests/`
 
-Document the smallest useful current view: module responsibilities, boundaries,
-external adapters, important data/control/runtime flows, persistence authority,
-security/reliability/operations constraints and known limitations. Base claims
-on repository or runtime evidence; state unknowns explicitly.
+The default template-pack manifest declares generated directories/files with
+explicit lifecycle, project-owned paths, safe compositions, context fragments,
+workflow groups, and guarded obsolete migrations. `core.template_pack` parses
+and validates that declaration. `core.lifecycle` owns exact content hashing,
+the pure managed/seeded decision matrix, reset confirmation, and writable versus
+blocking statuses.
+
+The renderer and scanner supply output content/context. `core.planner` observes
+the target and combines manifest lifecycle with prior state provenance to
+classify visible results. `core.applier` preflights all `conflict` and
+`migration_required` results before executing an eligible mutation.
+`core.state` compatibly reads old state and merges lifecycle,
+`applied_content_hash`, applied pack version, unselected provenance and safe
+retirement records after successful application.
+
+CLI and TUI are adapters over the same plan/apply contract. They own selection,
+preview and separate reset consent, not lifecycle decisions. Composition logic
+owns structural updates to `Makefile` and `.gitignore`; force/reset never bypass
+a composition or migration conflict. Optional Git comparison exists only in the
+generated semantic checker and is not part of normal apply planning.
 
 ## Approved target architecture
 
-Keep future boundaries separate from current architecture. Link the approved
-target and active change; a design is not evidence that implementation exists.
+No further architecture target is currently approved. The current lifecycle
+boundary and provenance flow were introduced by the completed
+[living-knowledge ownership change](../changes/protect-living-knowledge-ownership-v1/spec.md).
 
 ## Architecture documents
 

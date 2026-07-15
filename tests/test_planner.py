@@ -5,12 +5,117 @@ import unittest
 from pathlib import Path
 
 from ai_workflow_bootstrap.core.planner import build_plan
+from ai_workflow_bootstrap.core.lifecycle import content_hash
 from ai_workflow_bootstrap.core.scanner import RepoProfile
 from ai_workflow_bootstrap.core.template_pack import load_default_template_pack
 from ai_workflow_bootstrap.core.template_pack import TemplateObsoleteFileSpec, TemplatePack
+from ai_workflow_bootstrap.core.applier import apply_plan
 
 
 class PlannerTests(unittest.TestCase):
+    def test_legacy_incident_state_preserves_all_evolved_seeded_owners_under_force(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            seeded_paths = {
+                "docs/INDEX.md": "# Established index\n",
+                "docs/CAPABILITIES.md": "# Established capabilities\n",
+                "docs/product/README.md": "# Established product\n",
+                "docs/architecture/README.md": "# Established architecture\n",
+                "docs/ROADMAP.md": "# Established roadmap\n",
+            }
+            for relative, content in seeded_paths.items():
+                path = target / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(content, encoding="utf-8")
+            agents = target / "AGENTS.md"
+            agents.write_text("# Old managed policy\n", encoding="utf-8")
+            legacy_state = {
+                relative: {"status": "overwritten", "template_hash": "a" * 64}
+                for relative in seeded_paths
+            }
+
+            plan = build_plan(
+                target,
+                profile=RepoProfile(project_name="Example", repo_name="example"),
+                pack=load_default_template_pack(),
+                enabled_workflows=["spec-driven", "living-docs"],
+                enabled_groups={"spec-driven", "living-docs"},
+                force=True,
+                dry_run=False,
+                prior_files=legacy_state,
+            )
+
+            for relative, original in seeded_paths.items():
+                result = next(item for item in plan.results if item.path == target / relative)
+                self.assertEqual(result.lifecycle, "seeded")
+                self.assertEqual(result.status, "preserved")
+                self.assertIn("provenance is unavailable", result.message)
+                self.assertEqual((target / relative).read_text(encoding="utf-8"), original)
+            self.assertEqual(
+                next(item for item in plan.results if item.path == agents).status,
+                "overwritten",
+            )
+
+            apply_plan(plan, dry_run=False)
+            for relative, original in seeded_paths.items():
+                self.assertEqual((target / relative).read_text(encoding="utf-8"), original)
+            self.assertIn("Project: Example", agents.read_text(encoding="utf-8"))
+
+    def test_untouched_seed_updates_but_project_drift_is_preserved(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            index = target / "docs/INDEX.md"
+            index.parent.mkdir(parents=True)
+            index.write_text("old seed\n", encoding="utf-8")
+            pack = load_default_template_pack()
+            prior = {"docs/INDEX.md": {"applied_content_hash": content_hash("old seed\n")}}
+
+            safe_plan = build_plan(
+                target,
+                profile=RepoProfile(project_name="Example", repo_name="example"),
+                pack=pack,
+                enabled_workflows=["living-docs"],
+                enabled_groups={"living-docs"},
+                force=True,
+                dry_run=True,
+                prior_files=prior,
+            )
+            self.assertEqual(next(item for item in safe_plan.results if item.path == index).status, "updated")
+
+            index.write_text("project knowledge\n", encoding="utf-8")
+            drift_plan = build_plan(
+                target,
+                profile=RepoProfile(project_name="Example", repo_name="example"),
+                pack=pack,
+                enabled_workflows=["living-docs"],
+                enabled_groups={"living-docs"},
+                force=True,
+                dry_run=True,
+                prior_files=prior,
+            )
+            self.assertEqual(next(item for item in drift_plan.results if item.path == index).status, "preserved")
+
+    def test_managed_only_excludes_seeded_and_obsolete_operations(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            legacy = target / "docs/AI_CONTEXT.md"
+            legacy.parent.mkdir(parents=True)
+            legacy.write_text("legacy\n", encoding="utf-8")
+            plan = build_plan(
+                target,
+                profile=RepoProfile(project_name="Example", repo_name="example"),
+                pack=load_default_template_pack(),
+                enabled_workflows=["spec-driven", "living-docs"],
+                enabled_groups={"spec-driven", "living-docs"},
+                force=True,
+                dry_run=True,
+                managed_only=True,
+            )
+
+            self.assertTrue(any(item.path == target / "AGENTS.md" for item in plan.results))
+            self.assertFalse(any(item.lifecycle == "seeded" for item in plan.results))
+            self.assertFalse(any(item.kind == "deletion" for item in plan.results))
+
     def test_generated_path_cannot_follow_symlink_outside_target(self) -> None:
         with tempfile.TemporaryDirectory() as tmp, tempfile.TemporaryDirectory() as outside:
             target = Path(tmp)
@@ -77,6 +182,7 @@ class PlannerTests(unittest.TestCase):
                 enabled_groups={"living-docs"},
                 force=True,
                 dry_run=True,
+                prior_files={"docs/AI_CONTEXT.md": {"applied_content_hash": content_hash("legacy\n")}},
             )
 
             deletion_index = next(index for index, item in enumerate(plan.results) if item.path == legacy)

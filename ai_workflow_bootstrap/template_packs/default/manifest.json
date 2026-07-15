@@ -1,6 +1,6 @@
 {
   "name": "default",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "directories": [
     { "path": "docs", "group": "spec-driven" },
     { "path": "docs/changes", "group": "spec-driven" },
@@ -18,36 +18,39 @@
       "path": "AGENTS.md",
       "template": "templates/AGENTS.md",
       "group": "spec-driven",
+      "lifecycle": "managed",
       "overwrite_hint": "Before replacing this managed file, move repository-specific instructions to AGENTS.project.md; that project-owned path is preserved even with --force."
     },
-    { "path": "docs/SPEC_DRIVEN.md", "template": "templates/docs/SPEC_DRIVEN.md", "group": "spec-driven" },
-    { "path": "docs/START_PROMPT.md", "template": "templates/docs/START_PROMPT.md", "group": "spec-driven" },
-    { "path": "docs/changes/_templates/spec.md", "template": "templates/docs/changes/_templates/spec.md", "group": "spec-driven" },
-    { "path": "docs/changes/_templates/plan.md", "template": "templates/docs/changes/_templates/plan.md", "group": "spec-driven" },
-    { "path": "docs/changes/_templates/tasks.md", "template": "templates/docs/changes/_templates/tasks.md", "group": "spec-driven" },
-    { "path": "docs/changes/_templates/notes.md", "template": "templates/docs/changes/_templates/notes.md", "group": "spec-driven" },
-    { "path": "docs/changes/_templates/open_questions.md", "template": "templates/docs/changes/_templates/open_questions.md", "group": "spec-driven" },
-    { "path": "docs/changes/_templates/decisions.md", "template": "templates/docs/changes/_templates/decisions.md", "group": "spec-driven" },
-    { "path": "docs/INDEX.md", "template": "templates/docs/INDEX.md", "group": "living-docs" },
-    { "path": "docs/LIVING_DOCUMENTATION.md", "template": "templates/docs/LIVING_DOCUMENTATION.md", "group": "living-docs" },
-    { "path": "docs/CAPABILITIES.md", "template": "templates/docs/CAPABILITIES.md", "group": "living-docs" },
-    { "path": "docs/product/README.md", "template": "templates/docs/product/README.md", "group": "living-docs" },
-    { "path": "docs/architecture/README.md", "template": "templates/docs/architecture/README.md", "group": "living-docs" },
+    { "path": "docs/SPEC_DRIVEN.md", "template": "templates/docs/SPEC_DRIVEN.md", "group": "spec-driven", "lifecycle": "managed" },
+    { "path": "docs/START_PROMPT.md", "template": "templates/docs/START_PROMPT.md", "group": "spec-driven", "lifecycle": "managed" },
+    { "path": "docs/changes/_templates/spec.md", "template": "templates/docs/changes/_templates/spec.md", "group": "spec-driven", "lifecycle": "managed" },
+    { "path": "docs/changes/_templates/plan.md", "template": "templates/docs/changes/_templates/plan.md", "group": "spec-driven", "lifecycle": "managed" },
+    { "path": "docs/changes/_templates/tasks.md", "template": "templates/docs/changes/_templates/tasks.md", "group": "spec-driven", "lifecycle": "managed" },
+    { "path": "docs/changes/_templates/notes.md", "template": "templates/docs/changes/_templates/notes.md", "group": "spec-driven", "lifecycle": "managed" },
+    { "path": "docs/changes/_templates/open_questions.md", "template": "templates/docs/changes/_templates/open_questions.md", "group": "spec-driven", "lifecycle": "managed" },
+    { "path": "docs/changes/_templates/decisions.md", "template": "templates/docs/changes/_templates/decisions.md", "group": "spec-driven", "lifecycle": "managed" },
+    { "path": "docs/INDEX.md", "template": "templates/docs/INDEX.md", "group": "living-docs", "lifecycle": "seeded" },
+    { "path": "docs/LIVING_DOCUMENTATION.md", "template": "templates/docs/LIVING_DOCUMENTATION.md", "group": "living-docs", "lifecycle": "managed" },
+    { "path": "docs/CAPABILITIES.md", "template": "templates/docs/CAPABILITIES.md", "group": "living-docs", "lifecycle": "seeded" },
+    { "path": "docs/product/README.md", "template": "templates/docs/product/README.md", "group": "living-docs", "lifecycle": "seeded" },
+    { "path": "docs/architecture/README.md", "template": "templates/docs/architecture/README.md", "group": "living-docs", "lifecycle": "seeded" },
     {
       "path": "docs/architecture/rust-development.md",
       "template": "templates/docs/architecture/rust-development.md",
       "group": "living-docs",
+      "lifecycle": "managed",
       "when_stacks": ["rust"]
     },
-    { "path": "docs/decisions/README.md", "template": "templates/docs/decisions/README.md", "group": "living-docs" },
-    { "path": "docs/decisions/_template.md", "template": "templates/docs/decisions/_template.md", "group": "living-docs" },
-    { "path": "docs/ROADMAP.md", "template": "templates/docs/ROADMAP.md", "group": "living-docs" },
-    { "path": "docs/IDEA_INBOX.md", "template": "templates/docs/IDEA_INBOX.md", "group": "living-docs" },
-    { "path": "docs/GLOSSARY.md", "template": "templates/docs/GLOSSARY.md", "group": "living-docs" },
-    { "path": ".agents/skills/spec-driven/SKILL.md", "template": "templates/.agents/skills/spec-driven/SKILL.md", "group": "skill/spec-driven" },
-    { "path": ".agents/skills/maintainability-audit/SKILL.md", "template": "templates/.agents/skills/maintainability-audit/SKILL.md", "group": "skill/maintainability-audit" },
-    { "path": ".agents/skills/living-docs/SKILL.md", "template": "templates/.agents/skills/living-docs/SKILL.md", "group": "skill/living-docs" },
-    { "path": ".agents/skills/living-docs/scripts/check_links.py", "template": "templates/.agents/skills/living-docs/scripts/check_links.py", "group": "skill/living-docs" }
+    { "path": "docs/decisions/README.md", "template": "templates/docs/decisions/README.md", "group": "living-docs", "lifecycle": "seeded" },
+    { "path": "docs/decisions/_template.md", "template": "templates/docs/decisions/_template.md", "group": "living-docs", "lifecycle": "managed" },
+    { "path": "docs/ROADMAP.md", "template": "templates/docs/ROADMAP.md", "group": "living-docs", "lifecycle": "seeded" },
+    { "path": "docs/IDEA_INBOX.md", "template": "templates/docs/IDEA_INBOX.md", "group": "living-docs", "lifecycle": "seeded" },
+    { "path": "docs/GLOSSARY.md", "template": "templates/docs/GLOSSARY.md", "group": "living-docs", "lifecycle": "seeded" },
+    { "path": ".agents/skills/spec-driven/SKILL.md", "template": "templates/.agents/skills/spec-driven/SKILL.md", "group": "skill/spec-driven", "lifecycle": "managed" },
+    { "path": ".agents/skills/maintainability-audit/SKILL.md", "template": "templates/.agents/skills/maintainability-audit/SKILL.md", "group": "skill/maintainability-audit", "lifecycle": "managed" },
+    { "path": ".agents/skills/living-docs/SKILL.md", "template": "templates/.agents/skills/living-docs/SKILL.md", "group": "skill/living-docs", "lifecycle": "managed" },
+    { "path": ".agents/skills/living-docs/scripts/check_links.py", "template": "templates/.agents/skills/living-docs/scripts/check_links.py", "group": "skill/living-docs", "lifecycle": "managed" },
+    { "path": ".agents/skills/living-docs/scripts/check_living_docs.py", "template": "templates/.agents/skills/living-docs/scripts/check_living_docs.py", "group": "skill/living-docs", "lifecycle": "managed" }
   ],
   "context_fragments": [
     {
@@ -79,10 +82,10 @@
     { "path": "AGENTS.project.md", "group": "spec-driven" }
   ],
   "obsolete_files": [
-    { "path": "docs/WORKFLOW_MODULES.md", "group": "living-docs" },
-    { "path": "docs/PROJECT_SPEC.md", "group": "living-docs" },
-    { "path": "docs/IMPLEMENTATION_STATUS.md", "group": "living-docs" },
-    { "path": "docs/CANONICAL_DECISIONS.md", "group": "living-docs" },
-    { "path": "docs/AI_CONTEXT.md", "group": "living-docs" }
+    { "path": "docs/WORKFLOW_MODULES.md", "group": "living-docs", "migration_target": "docs/LIVING_DOCUMENTATION.md" },
+    { "path": "docs/PROJECT_SPEC.md", "group": "living-docs", "migration_target": "docs/product/README.md" },
+    { "path": "docs/IMPLEMENTATION_STATUS.md", "group": "living-docs", "migration_target": "docs/CAPABILITIES.md" },
+    { "path": "docs/CANONICAL_DECISIONS.md", "group": "living-docs", "migration_target": "docs/decisions/README.md" },
+    { "path": "docs/AI_CONTEXT.md", "group": "living-docs", "migration_target": "docs/INDEX.md and docs/architecture/README.md" }
   ]
 }

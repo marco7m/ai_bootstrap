@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 from ai_workflow_bootstrap.core.applier import PlanConflictError, apply_plan
+from ai_workflow_bootstrap.core.lifecycle import content_hash
 from ai_workflow_bootstrap.core.planner import build_plan
 from ai_workflow_bootstrap.core.scanner import RepoProfile
 from ai_workflow_bootstrap.core.template_pack import load_default_template_pack
@@ -82,6 +83,7 @@ class ApplierTests(unittest.TestCase):
                 enabled_groups={"spec-driven", "living-docs"},
                 force=True,
                 dry_run=False,
+                prior_files={"docs/PROJECT_SPEC.md": {"applied_content_hash": content_hash("legacy\n")}},
             )
 
             deletion = next(item for item in plan.results if item.path == legacy)
@@ -133,8 +135,9 @@ class ApplierTests(unittest.TestCase):
 
             deletion = next(item for item in plan.results if item.path == legacy)
             self.assertEqual(deletion.kind, "deletion")
-            self.assertEqual(deletion.status, "skipped")
-            apply_plan(plan, dry_run=False)
+            self.assertEqual(deletion.status, "migration_required")
+            with self.assertRaises(PlanConflictError):
+                apply_plan(plan, dry_run=False)
             self.assertTrue((legacy / "keep.txt").exists())
 
 

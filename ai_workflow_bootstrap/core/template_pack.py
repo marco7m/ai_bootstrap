@@ -7,6 +7,8 @@ from importlib import import_module
 from pathlib import Path
 from typing import Any
 
+from .lifecycle import COMPOSED, MANAGED, MIGRATED, PROJECT, RENDERED_FILE_LIFECYCLES
+
 
 @dataclass(frozen=True)
 class TemplateDirectorySpec:
@@ -22,6 +24,7 @@ class TemplateFileSpec:
     group: str = "core"
     when_stacks: tuple[str, ...] = ()
     overwrite_hint: str = ""
+    lifecycle: str = MANAGED
 
 
 @dataclass(frozen=True)
@@ -41,18 +44,22 @@ class TemplateCompositionSpec:
     when_stacks: tuple[str, ...] = ()
     marker: str = ""
     equivalent_lines: tuple[str, ...] = ()
+    lifecycle: str = COMPOSED
 
 
 @dataclass(frozen=True)
 class TemplateProjectOwnedPathSpec:
     path: str
     group: str = "core"
+    lifecycle: str = PROJECT
 
 
 @dataclass(frozen=True)
 class TemplateObsoleteFileSpec:
     path: str
     group: str = "core"
+    migration_target: str = ""
+    lifecycle: str = MIGRATED
 
 
 @dataclass(frozen=True)
@@ -109,6 +116,7 @@ def _normalize_file_specs(raw_files: Any) -> list[TemplateFileSpec]:
                     group=item.get("group", "core"),
                     when_stacks=tuple(item.get("when_stacks", ())),
                     overwrite_hint=item.get("overwrite_hint", ""),
+                    lifecycle=item.get("lifecycle", MANAGED),
                 )
             )
     return specs
@@ -155,7 +163,13 @@ def _normalize_obsolete_file_specs(raw_files: Any) -> list[TemplateObsoleteFileS
     specs: list[TemplateObsoleteFileSpec] = []
     for item in raw_files or []:
         if isinstance(item, dict):
-            specs.append(TemplateObsoleteFileSpec(path=item["path"], group=item.get("group", "core")))
+            specs.append(
+                TemplateObsoleteFileSpec(
+                    path=item["path"],
+                    group=item.get("group", "core"),
+                    migration_target=item.get("migration_target", ""),
+                )
+            )
     return specs
 
 
@@ -204,6 +218,15 @@ def load_template_pack(pack_root: Path) -> TemplatePack:
     invalid_modes = sorted({spec.mode for spec in pack.compositions if spec.mode not in supported_modes})
     if invalid_modes:
         raise ValueError(f"Unsupported composition modes: {', '.join(invalid_modes)}")
+    invalid_lifecycles = sorted(
+        {
+            repr(spec.lifecycle)
+            for spec in pack.files
+            if not isinstance(spec.lifecycle, str) or spec.lifecycle not in RENDERED_FILE_LIFECYCLES
+        }
+    )
+    if invalid_lifecycles:
+        raise ValueError(f"Unsupported file lifecycles: {', '.join(invalid_lifecycles)}")
     protected = {_normalized_declared_path(spec.path) for spec in pack.project_owned_paths}
     claimed = {_normalized_declared_path(spec.path) for spec in pack.files}
     claimed.update(_normalized_declared_path(spec.path) for spec in pack.compositions)

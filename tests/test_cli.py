@@ -11,7 +11,8 @@ from pathlib import Path
 from unittest import mock
 
 from ai_workflow_bootstrap import cli
-from ai_workflow_bootstrap.core.state import state_path
+from ai_workflow_bootstrap.core.lifecycle import content_hash
+from ai_workflow_bootstrap.core.state import new_state, save_state, state_path
 
 
 def _legacy_pattern(*parts: str) -> str:
@@ -27,7 +28,9 @@ class CliTests(unittest.TestCase):
         self.assertIn("ai-bootstrap tui", help_text)
         self.assertIn("ai-bootstrap apply [path]", help_text)
         self.assertIn("Examples:", help_text)
-        self.assertIn("Destructively overwrite", apply_help)
+        self.assertIn("Update divergent bootstrap-managed files", apply_help)
+        self.assertIn("--managed-only", apply_help)
+        self.assertIn("--reset-project-knowledge", apply_help)
         self.assertNotIn("--no-backup", apply_help)
 
     def test_removed_no_backup_option_is_rejected(self) -> None:
@@ -95,6 +98,22 @@ class CliTests(unittest.TestCase):
             legacy = target / "docs/AI_CONTEXT.md"
             legacy.parent.mkdir(parents=True)
             legacy.write_text("legacy\n", encoding="utf-8")
+            save_state(
+                state_path(target),
+                new_state(
+                    target_path=str(target),
+                    template_pack="default",
+                    template_pack_version="0.4.0",
+                    enabled_workflows=["spec-driven", "living-docs"],
+                    tool_version="0.1.0",
+                    files={
+                        "docs/AI_CONTEXT.md": {
+                            "status": "written",
+                            "applied_content_hash": content_hash("legacy\n"),
+                        }
+                    },
+                ),
+            )
             preview = io.StringIO()
             with redirect_stdout(preview):
                 self.assertEqual(cli.main(["apply", "--force", "--dry-run", str(target)]), 0)
@@ -108,6 +127,80 @@ class CliTests(unittest.TestCase):
 
             self.assertFalse(legacy.exists())
             self.assertEqual(list(target.rglob("*.bak-*")), [])
+
+    def test_untracked_obsolete_file_blocks_apply_before_any_write(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            legacy = target / "docs/PROJECT_SPEC.md"
+            legacy.parent.mkdir(parents=True)
+            legacy.write_text("project knowledge\n", encoding="utf-8")
+            stderr = io.StringIO()
+
+            with redirect_stderr(stderr):
+                exit_code = cli.main(["apply", "--force", str(target)])
+
+            self.assertEqual(exit_code, 2)
+            self.assertIn("migration_required", stderr.getvalue())
+            self.assertTrue(legacy.exists())
+            self.assertFalse((target / "AGENTS.md").exists())
+            self.assertFalse(state_path(target).exists())
+
+    def test_seeded_reset_requires_separate_confirmation(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            self.assertEqual(cli.main(["apply", str(target)]), 0)
+            index = target / "docs/INDEX.md"
+            rendered = index.read_text(encoding="utf-8")
+            index.write_text("# Project knowledge\n", encoding="utf-8")
+
+            stderr = io.StringIO()
+            with redirect_stderr(stderr):
+                exit_code = cli.main(["apply", "--reset-project-knowledge", str(target)])
+            self.assertEqual(exit_code, 2)
+            self.assertIn("RESET PROJECT KNOWLEDGE", stderr.getvalue())
+            self.assertEqual(index.read_text(encoding="utf-8"), "# Project knowledge\n")
+
+            preview = io.StringIO()
+            with redirect_stdout(preview):
+                self.assertEqual(
+                    cli.main(["apply", "--reset-project-knowledge", "--dry-run", str(target)]),
+                    0,
+                )
+            self.assertIn("reset", preview.getvalue())
+            self.assertEqual(index.read_text(encoding="utf-8"), "# Project knowledge\n")
+
+            self.assertEqual(
+                cli.main(
+                    [
+                        "apply",
+                        "--reset-project-knowledge",
+                        "--confirm-reset-project-knowledge",
+                        "RESET PROJECT KNOWLEDGE",
+                        str(target),
+                    ]
+                ),
+                0,
+            )
+            self.assertEqual(index.read_text(encoding="utf-8"), rendered)
+
+    def test_managed_only_keeps_seeded_state_and_content(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            self.assertEqual(cli.main(["apply", str(target)]), 0)
+            before = json.loads(state_path(target).read_text(encoding="utf-8"))
+            index = target / "docs/INDEX.md"
+            index.write_text("# Project knowledge\n", encoding="utf-8")
+            (target / "AGENTS.md").write_text("# Old managed\n", encoding="utf-8")
+
+            self.assertEqual(cli.main(["apply", "--force", "--managed-only", str(target)]), 0)
+
+            after = json.loads(state_path(target).read_text(encoding="utf-8"))
+            self.assertEqual(index.read_text(encoding="utf-8"), "# Project knowledge\n")
+            self.assertEqual(
+                after["files"]["docs/INDEX.md"]["applied_content_hash"],
+                before["files"]["docs/INDEX.md"]["applied_content_hash"],
+            )
+            self.assertIn("Project:", (target / "AGENTS.md").read_text(encoding="utf-8"))
 
     def test_removed_partial_workflow_options_are_rejected(self) -> None:
         for option in ("--no-living-docs", "--living-docs-only"):

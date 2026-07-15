@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from .lifecycle import BLOCKING_STATUSES, WRITABLE_STATUSES
 from .planner import BootstrapPlan, WriteResult
 
 
@@ -19,9 +20,11 @@ def _write_file(path: Path, content: str) -> None:
 
 
 def apply_plan(plan: BootstrapPlan, *, dry_run: bool) -> list[WriteResult]:
-    conflicts = [item for item in plan.results if item.status == "conflict"]
+    conflicts = [item for item in plan.results if item.status in BLOCKING_STATUSES]
     if conflicts and not dry_run:
-        details = "\n\n".join(item.message for item in conflicts)
+        details = "\n\n".join(
+            f"[{item.status}] {item.path}: {item.message}" for item in conflicts
+        )
         raise PlanConflictError(details)
 
     results: list[WriteResult] = []
@@ -38,7 +41,7 @@ def apply_plan(plan: BootstrapPlan, *, dry_run: bool) -> list[WriteResult]:
             results.append(item)
             continue
 
-        if item.status in {"skipped", "unchanged", "preserved", "conflict"}:
+        if item.status not in WRITABLE_STATUSES:
             results.append(item)
             continue
 

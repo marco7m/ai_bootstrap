@@ -10,8 +10,8 @@ description: Navigate and maintain linked project knowledge for product behavior
 5. In `docs/CAPABILITIES.md`, preserve current state/evidence when adding an approved target and active change. Never use planned work as current evidence.
 6. Keep unapproved ideas in `IDEA_INBOX.md`; remove rejected or superseded history from the active map after preserving any useful disposition/decision.
 7. Treat change artifacts as temporal contracts. At closeout, distill durable facts into their owners.
-8. When docs conflict with code, tests or runtime evidence, determine which side is stale before changing behavior.
-9. Split a page only when a real responsibility has enough durable detail or unrelated concerns are mixed.
-10. After link/structure changes, run `python .agents/skills/living-docs/scripts/check_links.py`.
-11. Never store secrets, private messages, production/customer data or sensitive payloads in living docs.
-12. Summarize owners, current/target changes, evidence and unresolved gaps.
+8. When docs conflict with evidence, or an owner looks regenerated, truncated or downgraded, inspect `.ai-bootstrap/state.json` and relevant Git/evidence before trusting it. Restore the whole owner's established boundary before narrow closeout.
+9. Preserve capabilities unless explicitly deprecated/disposed. Recovery combines still-valid prior facts with later supported increments; never blindly restore or promote unsupported prose to `verified`.
+10. At closeout account for facts added, changed and removed; every removal needs disposition. Split a page only for a real responsibility.
+11. After structural/recovery changes run `python .agents/skills/living-docs/scripts/check_living_docs.py` and `python .agents/skills/living-docs/scripts/check_links.py`.
+12. Never store sensitive payloads. Summarize owners, current/target changes, evidence and gaps.

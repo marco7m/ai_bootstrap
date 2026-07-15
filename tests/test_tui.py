@@ -7,6 +7,8 @@ from contextlib import redirect_stderr
 from pathlib import Path
 
 from ai_workflow_bootstrap import tui
+from ai_workflow_bootstrap.core.lifecycle import content_hash
+from ai_workflow_bootstrap.core.state import new_state, save_state, state_path
 
 
 class TuiTests(unittest.TestCase):
@@ -18,6 +20,8 @@ class TuiTests(unittest.TestCase):
             tui.PATH_INPUT_ID,
             tui.INCLUDE_SKILLS_ID,
             tui.OVERWRITE_EXISTING_ID,
+            tui.RESET_PROJECT_KNOWLEDGE_ID,
+            tui.RESET_CONFIRM_INPUT_ID,
             tui.PREVIEW_BUTTON_ID,
             tui.DRY_RUN_BUTTON_ID,
             tui.APPLY_BUTTON_ID,
@@ -56,12 +60,47 @@ class TuiTests(unittest.TestCase):
             self.assertEqual(safe_result.status, "skipped")
             self.assertEqual(forced_result.status, "overwritten")
 
+    def test_reset_preview_is_separate_from_managed_update(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            index = root / "docs/INDEX.md"
+            index.parent.mkdir(parents=True)
+            index.write_text("# Project knowledge\n", encoding="utf-8")
+
+            ordinary = tui._plan_from_ui(str(root), True, dry_run=True, force=True)
+            reset = tui._plan_from_ui(
+                str(root),
+                True,
+                dry_run=True,
+                force=False,
+                reset_project_knowledge=True,
+            )
+
+            self.assertEqual(next(item for item in ordinary.results if item.path == index).status, "preserved")
+            self.assertEqual(next(item for item in reset.results if item.path == index).status, "reset")
+
     def test_force_preview_lists_known_legacy_deletion(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             legacy = root / "docs/AI_CONTEXT.md"
             legacy.parent.mkdir(parents=True)
             legacy.write_text("legacy\n", encoding="utf-8")
+            save_state(
+                state_path(root),
+                new_state(
+                    target_path=str(root),
+                    template_pack="default",
+                    template_pack_version="0.4.0",
+                    enabled_workflows=["spec-driven", "living-docs"],
+                    tool_version="0.1.0",
+                    files={
+                        "docs/AI_CONTEXT.md": {
+                            "status": "written",
+                            "applied_content_hash": content_hash("legacy\n"),
+                        }
+                    },
+                ),
+            )
 
             plan = tui._plan_from_ui(str(root), True, dry_run=True, force=True)
             deletion = next(item for item in plan.results if item.path == legacy)

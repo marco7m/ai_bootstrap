@@ -47,7 +47,7 @@ class TemplatePackTests(unittest.TestCase):
         pack = load_default_template_pack()
 
         self.assertEqual(pack.name, "default")
-        self.assertEqual(pack.version, "0.4.0")
+        self.assertEqual(pack.version, "0.5.0")
         templated_specs = [*pack.files, *pack.context_fragments, *pack.compositions]
         for spec in templated_specs:
             self.assertTrue(pack.template_path(spec.template).exists(), spec.template)
@@ -62,6 +62,21 @@ class TemplatePackTests(unittest.TestCase):
             },
         )
         self.assertEqual({spec.path for spec in pack.project_owned_paths}, {"AGENTS.project.md"})
+        self.assertTrue(all(spec.lifecycle in {"managed", "seeded"} for spec in pack.files))
+        self.assertEqual(
+            {spec.path for spec in pack.files if spec.lifecycle == "seeded"},
+            {
+                "docs/INDEX.md",
+                "docs/CAPABILITIES.md",
+                "docs/product/README.md",
+                "docs/architecture/README.md",
+                "docs/decisions/README.md",
+                "docs/ROADMAP.md",
+                "docs/IDEA_INBOX.md",
+                "docs/GLOSSARY.md",
+            },
+        )
+        self.assertTrue(all(spec.migration_target for spec in pack.obsolete_files))
 
     def test_workflow_preserves_two_approval_gates_and_single_template_owners(self) -> None:
         pack = load_default_template_pack()
@@ -140,6 +155,7 @@ class TemplatePackTests(unittest.TestCase):
             self.assertIn(str(target / "docs/CAPABILITIES.md"), planned)
             self.assertIn(str(target / ".agents/skills/living-docs/SKILL.md"), planned)
             self.assertIn(str(target / ".agents/skills/living-docs/scripts/check_links.py"), planned)
+            self.assertIn(str(target / ".agents/skills/living-docs/scripts/check_living_docs.py"), planned)
             self.assertNotIn(str(target / "docs/AI_CONTEXT.md"), planned)
             self.assertNotIn(str(target / "AGENTS.project.md"), planned)
 
@@ -235,7 +251,10 @@ class TemplatePackTests(unittest.TestCase):
             apply_plan(preserve_plan, dry_run=False)
             self.assertEqual(project_agents.read_text(encoding="utf-8"), custom)
             state = build_state(plan=preserve_plan, results=preserve_plan.results, tool_version="test")
-            self.assertEqual(state.files["AGENTS.project.md"], {"status": "preserved", "ownership": "project"})
+            self.assertEqual(
+                state.files["AGENTS.project.md"],
+                {"status": "preserved", "ownership": "project", "lifecycle": "project"},
+            )
 
     def test_managed_agents_overwrite_warns_how_to_migrate_project_rules(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -268,6 +287,30 @@ class TemplatePackTests(unittest.TestCase):
                 encoding="utf-8",
             )
             with self.assertRaisesRegex(ValueError, "Project-owned paths"):
+                load_template_pack(root)
+
+    def test_manifest_defaults_external_files_to_managed_and_rejects_unknown_lifecycle(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "seed.md").write_text("seed\n", encoding="utf-8")
+            manifest = root / "manifest.json"
+            manifest.write_text(
+                json.dumps({"files": [{"path": "AGENTS.md", "template": "seed.md"}]}),
+                encoding="utf-8",
+            )
+            self.assertEqual(load_template_pack(root).files[0].lifecycle, "managed")
+
+            manifest.write_text(
+                json.dumps(
+                    {
+                        "files": [
+                            {"path": "docs/INDEX.md", "template": "seed.md", "lifecycle": "unknown"}
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "Unsupported file lifecycles"):
                 load_template_pack(root)
 
     def test_manifest_rejects_normalized_project_owned_path_overlap(self) -> None:

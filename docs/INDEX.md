@@ -1,7 +1,13 @@
 # Project Knowledge Index
 
-- Knowledge status: `scaffold`
-- Baseline evidence: _not established_
+- Knowledge status: `incomplete`
+- Baseline evidence: repository at `e57c818`, the validated 91-test lifecycle
+  suite, fresh Python/Rust generation checks, and the reviewed 0.4.0 downstream
+  overwrite incident (2026-07-15).
+- Bootstrap recovery audit: the 0.4.0 overwrite of this repository's index,
+  capabilities, product and architecture owners was reviewed during
+  `protect-living-knowledge-ownership-v1`; current coverage remains explicitly
+  incomplete rather than assuming the old scaffold was complete.
 
 `scaffold` means these generated placeholders are not complete project truth.
 Use `incomplete` when useful reviewed knowledge exists with known gaps. Use
@@ -27,3 +33,7 @@ against the stated evidence.
 
 Do not use an empty scaffold, one large change spec or a conversation transcript
 as the current project description.
+
+Current reviewed coverage is limited to bootstrap application/overwrite
+ownership and the generated workflow surface. Broader product and architecture
+coverage remains incomplete.

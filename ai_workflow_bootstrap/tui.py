@@ -8,10 +8,11 @@ from pathlib import Path
 
 from . import __version__
 from .core.applier import apply_plan
+from .core.lifecycle import RESET_CONFIRMATION
 from .core.planner import BootstrapPlan, build_plan
 from .core.projects import add_recent_project, format_project_choice, load_recent_projects, scan_project_dirs
 from .core.scanner import detect_project_name, detect_repo_profile
-from .core.state import build_state, save_state, state_path
+from .core.state import build_state, load_state, save_state, state_path
 from .core.template_pack import load_default_template_pack
 from .core.workflow import resolve_workflow_selection
 from .tui_text import SUPPORTED_LANGUAGES, detect_default_language, t
@@ -24,6 +25,8 @@ PROJECT_MESSAGE_ID = "project_message"
 PATH_INPUT_ID = "path_input"
 INCLUDE_SKILLS_ID = "include_skills"
 OVERWRITE_EXISTING_ID = "overwrite_existing"
+RESET_PROJECT_KNOWLEDGE_ID = "reset_project_knowledge"
+RESET_CONFIRM_INPUT_ID = "reset_confirm_input"
 PREVIEW_BUTTON_ID = "preview_button"
 DRY_RUN_BUTTON_ID = "dry_run_button"
 APPLY_BUTTON_ID = "apply_button"
@@ -80,6 +83,7 @@ def _plan_from_ui(
     include_skills: bool,
     dry_run: bool,
     force: bool = False,
+    reset_project_knowledge: bool = False,
 ) -> BootstrapPlan:
     target = Path(target_text or ".").expanduser()
     if target.exists() and not target.is_dir():
@@ -88,6 +92,7 @@ def _plan_from_ui(
     project_name = detect_project_name(target, None)
     profile = detect_repo_profile(target, project_name)
     pack = load_default_template_pack()
+    prior_state = load_state(state_path(target))
     enabled_workflows, enabled_groups = resolve_workflow_selection(include_skills=include_skills)
     return build_plan(
         target,
@@ -97,6 +102,8 @@ def _plan_from_ui(
         enabled_groups=enabled_groups,
         force=force,
         dry_run=dry_run,
+        prior_files=prior_state.files if prior_state else None,
+        reset_project_knowledge=reset_project_knowledge,
     )
 
 
@@ -135,6 +142,7 @@ def _build_app():
         #controls,
         #path_controls,
         #workflow_controls,
+        #reset_controls,
         #action_controls {
             height: auto;
             padding: 0 2;
@@ -152,6 +160,10 @@ def _build_app():
 
         #confirm_input {
             width: 24;
+        }
+
+        #reset_confirm_input {
+            width: 32;
         }
 
         #preview_table {
@@ -210,6 +222,17 @@ def _build_app():
                     yield Checkbox(t(self._language, "overwrite_existing_label"), False, id=OVERWRITE_EXISTING_ID)
                     yield Input(placeholder=t(self._language, "confirm_placeholder"), id=CONFIRM_INPUT_ID)
 
+                with Horizontal(id="reset_controls"):
+                    yield Checkbox(
+                        t(self._language, "reset_project_knowledge_label"),
+                        False,
+                        id=RESET_PROJECT_KNOWLEDGE_ID,
+                    )
+                    yield Input(
+                        placeholder=t(self._language, "reset_confirm_placeholder"),
+                        id=RESET_CONFIRM_INPUT_ID,
+                    )
+
                 with Horizontal(id="action_controls"):
                     yield Button(t(self._language, "preview_button"), id=PREVIEW_BUTTON_ID, variant="primary")
                     yield Button(t(self._language, "dry_run_button"), id=DRY_RUN_BUTTON_ID)
@@ -222,7 +245,7 @@ def _build_app():
 
         def on_mount(self) -> None:
             table = self.query_one(f"#{PREVIEW_TABLE_ID}", DataTable)
-            table.add_columns("Path", "Status", "Kind", "Message")
+            table.add_columns("Path", "Lifecycle", "Status", "Kind", "Message")
             self._refresh_language_texts()
             self._refresh_projects()
             self._refresh_preview()
@@ -244,6 +267,12 @@ def _build_app():
 
         def _confirm_widget(self):
             return self.query_one(f"#{CONFIRM_INPUT_ID}", Input)
+
+        def _reset_project_knowledge_widget(self):
+            return self.query_one(f"#{RESET_PROJECT_KNOWLEDGE_ID}", Checkbox)
+
+        def _reset_confirm_widget(self):
+            return self.query_one(f"#{RESET_CONFIRM_INPUT_ID}", Input)
 
         def _project_message_widget(self):
             return self.query_one(f"#{PROJECT_MESSAGE_ID}", Static)
@@ -270,7 +299,13 @@ def _build_app():
             self._path_widget().placeholder = t(self._language, "project_path_placeholder")
             self._include_skills_widget().label = t(self._language, "include_skills_label")
             self._overwrite_existing_widget().label = t(self._language, "overwrite_existing_label")
+            self._reset_project_knowledge_widget().label = t(
+                self._language, "reset_project_knowledge_label"
+            )
             self._confirm_widget().placeholder = t(self._language, "confirm_placeholder")
+            self._reset_confirm_widget().placeholder = t(
+                self._language, "reset_confirm_placeholder"
+            )
             self._refresh_button_labels()
             self.query_one(f"#{APP_INTRO_ID}", Static).update(t(self._language, "app_intro"))
             self.query_one(f"#{SPEC_DRIVEN_HELP_ID}", Static).update(t(self._language, "spec_driven_help"))
@@ -313,17 +348,20 @@ def _build_app():
                 project_select.value = Select.NULL
             self._project_message_widget().update("")
 
-        def _read_settings(self) -> tuple[str, bool, bool]:
+        def _read_settings(self) -> tuple[str, bool, bool, bool]:
             path = self._path_widget().value.strip() or "."
             include_skills = bool(self._include_skills_widget().value)
             force = bool(self._overwrite_existing_widget().value)
-            return path, include_skills, force
+            reset_project_knowledge = bool(self._reset_project_knowledge_widget().value)
+            return path, include_skills, force, reset_project_knowledge
 
         def _show_plan(self, plan: BootstrapPlan) -> None:
             table = self.query_one(f"#{PREVIEW_TABLE_ID}", DataTable)
             table.clear()
             for item in plan.results:
-                table.add_row(str(item.path), item.status, item.kind, item.message)
+                table.add_row(
+                    str(item.path), item.lifecycle, item.status, item.kind, item.message
+                )
 
         def _update_path(self, value: str) -> None:
             self._path_widget().value = value
@@ -335,8 +373,14 @@ def _build_app():
 
         def _refresh_preview(self) -> None:
             try:
-                path, include_skills, force = self._read_settings()
-                plan = _plan_from_ui(path, include_skills, dry_run=True, force=force)
+                path, include_skills, force, reset = self._read_settings()
+                plan = _plan_from_ui(
+                    path,
+                    include_skills,
+                    dry_run=True,
+                    force=force,
+                    reset_project_knowledge=reset,
+                )
             except ValueError as exc:
                 self._current_plan = None
                 self._set_status(str(exc))
@@ -347,10 +391,16 @@ def _build_app():
             self._set_status(t(self._language, "preview_ready"))
 
         def _dry_run(self) -> None:
-            path, include_skills, force = self._read_settings()
+            path, include_skills, force, reset = self._read_settings()
 
             try:
-                plan = _plan_from_ui(path, include_skills, dry_run=True, force=force)
+                plan = _plan_from_ui(
+                    path,
+                    include_skills,
+                    dry_run=True,
+                    force=force,
+                    reset_project_knowledge=reset,
+                )
             except ValueError as exc:
                 self._current_plan = None
                 self._set_status(str(exc))
@@ -362,15 +412,24 @@ def _build_app():
             self._set_status(t(self._language, "dry_run_done"))
 
         def _apply(self) -> None:
-            path, include_skills, force = self._read_settings()
+            path, include_skills, force, reset = self._read_settings()
             confirm = self._confirm_widget().value.strip().upper()
 
             if confirm != "APPLY":
                 self._set_status(t(self._language, "type_apply"))
                 return
+            if reset and self._reset_confirm_widget().value.strip() != RESET_CONFIRMATION:
+                self._set_status(t(self._language, "type_reset_confirmation"))
+                return
 
             try:
-                plan = _plan_from_ui(path, include_skills, dry_run=False, force=force)
+                plan = _plan_from_ui(
+                    path,
+                    include_skills,
+                    dry_run=False,
+                    force=force,
+                    reset_project_knowledge=reset,
+                )
                 self._current_plan = plan
                 self._show_plan(plan)
                 results = apply_plan(plan, dry_run=False)
@@ -379,7 +438,13 @@ def _build_app():
                 self._set_status(str(exc))
                 return
 
-            state = build_state(plan=plan, results=results, tool_version=__version__)
+            prior_state = load_state(state_path(plan.target))
+            state = build_state(
+                plan=plan,
+                results=results,
+                tool_version=__version__,
+                prior_state=prior_state,
+            )
             save_state(state_path(plan.target), state, dry_run=False)
             try:
                 add_recent_project(plan.target)
@@ -410,7 +475,11 @@ def _build_app():
                 self._refresh_preview()
 
         def on_checkbox_changed(self, event) -> None:
-            if event.control.id in {INCLUDE_SKILLS_ID, OVERWRITE_EXISTING_ID}:
+            if event.control.id in {
+                INCLUDE_SKILLS_ID,
+                OVERWRITE_EXISTING_ID,
+                RESET_PROJECT_KNOWLEDGE_ID,
+            }:
                 self._refresh_preview()
 
         def on_button_pressed(self, event) -> None:

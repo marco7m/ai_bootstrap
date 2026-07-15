@@ -44,16 +44,29 @@ The bootstrap always installs the recommended combination: spec-driven
 development plus living documentation. Partial workflow modes are not
 supported.
 
-To replace an existing generated scaffold, preview first and then opt into
-destructive overwrite:
+To upgrade divergent bootstrap-managed policy, preview first and then opt into
+the managed update:
 
 ```bash
 ai-bootstrap apply --force --dry-run .
 ai-bootstrap apply --force .
 ```
 
-`--force` creates no backups and may remove the known obsolete bootstrap files
-shown in the preview. Use Git for recovery.
+`--force` updates only `managed` files. It does not overwrite living-document
+seeds that evolved in the project. To update only managed infrastructure and
+safe compositions, excluding seeded files entirely, add `--managed-only`.
+
+Resetting project knowledge is a separate destructive action:
+
+```bash
+ai-bootstrap apply --reset-project-knowledge --dry-run .
+ai-bootstrap apply --reset-project-knowledge \
+  --confirm-reset-project-knowledge "RESET PROJECT KNOWLEDGE" .
+```
+
+The reset affects only manifest-declared `seeded` files. It never resets
+project-owned or composed files. The tool creates no backups; use Git or another
+repository-owned recovery mechanism when intentionally resetting knowledge.
 
 `AGENTS.md` is bootstrap-managed. Store repository-specific agent instructions
 in `AGENTS.project.md` instead. That complement is created by the project only
@@ -88,6 +101,7 @@ By default, the new CLI generates:
 - `.agents/skills/spec-driven/SKILL.md`
 - `.agents/skills/living-docs/SKILL.md`
 - `.agents/skills/living-docs/scripts/check_links.py`
+- `.agents/skills/living-docs/scripts/check_living_docs.py`
 - `.ai-bootstrap/state.json`
 
 The bootstrap does not create an empty `AGENTS.project.md`. Managed `AGENTS.md`
@@ -140,7 +154,19 @@ The core set is included by default in the new CLI:
 
 Current capability state uses `unknown`, `absent`, `partial`, `implemented`, `verified`, or `deprecated`. Approved future work is recorded separately so a verified current capability can have a planned evolution without ambiguity. Relative Markdown links keep the knowledge graph portable and mechanically verifiable.
 
-Without overwrite enabled, existing files and legacy docs are preserved. Explicit `--force` or the TUI overwrite option is destructive: generated files are replaced and known obsolete bootstrap docs are listed and removed without backups. Git is the recovery mechanism.
+Generated paths have explicit lifecycles:
+
+- `managed`: bootstrap policy that changes only under `--force` when divergent;
+- `seeded`: initial project-knowledge structure, safely updatable only while its
+  content still matches the last applied hash;
+- `project`: never created, overwritten, reset or deleted by the bootstrap;
+- `composed`: structurally and idempotently merged with repository content;
+- `migrated`: retired content deleted only when state proves it never drifted.
+
+Evolved or untracked seeded files are preserved even with `--force`. An obsolete
+file with drift or missing provenance becomes `migration_required` and blocks
+the whole real apply before any write. This keeps migration review explicit
+instead of attempting an automatic prose merge.
 
 Protected project-owned paths are never overwritten or deleted by that option.
 
@@ -166,7 +192,10 @@ It is useful when you want a guided flow that:
 - previews the files before applying;
 - requires explicit confirmation before writing;
 - lets you choose the path and whether to include `.agents/skills/`;
-- can destructively overwrite generated files and remove known obsolete bootstrap docs after opt-in;
+- can update bootstrap-managed files without replacing evolved living docs;
+- exposes seeded-knowledge reset as a separate, off-by-default control with its
+  own typed confirmation;
+- labels lifecycle, preservation, reset and migration blockers in the preview;
 - supports English and Portuguese (pt-BR);
 - can pick from recent or detected projects;
 - stores recent projects in `~/.ai-workflow-bootstrap/recent-projects.json`;
@@ -176,9 +205,10 @@ It is useful when you want a guided flow that:
 
 The bootstrap uses template packs so the generated content stays editable without changing the engine.
 
-Pack entries may be conditional on detected stacks. The manifest also declares
-safe compositions and protected project-owned paths, keeping policy in the pack
-while the engine provides generic selection, preview and preservation behavior.
+Pack entries may be conditional on detected stacks. Rendered file entries
+declare `managed` or `seeded`; omitted lifecycle defaults to `managed` for pack
+compatibility. Specialized collections represent safe compositions, protected
+project paths and guarded obsolete migrations.
 
 The default pack lives under `ai_workflow_bootstrap/template_packs/default/` in the source tree and is packaged with the Python distribution.
 
@@ -192,10 +222,33 @@ That file records:
 - template pack name and version;
 - target path;
 - enabled workflows;
-- per-file status, ownership and template provenance when applicable;
+- per-file status, lifecycle, ownership, template provenance, rendered
+  `applied_content_hash`, and applied pack version when established;
+- safely retired-file disposition when applicable;
 - optional modules, if any are introduced later.
 
 `--dry-run` does not write state.
+
+State from older versions remains readable. Missing or malformed per-file
+applied provenance never grants permission to overwrite seeded knowledge or
+delete obsolete content. Selective managed updates merge state rather than
+discarding unselected seeded provenance.
+
+## Auditing Previously Affected Projects
+
+The corrected bootstrap prevents new loss; it cannot reconstruct documentation
+that an older run already replaced. For a suspected project:
+
+1. Inspect `.ai-bootstrap/state.json` for seeded owners whose last legacy status
+   is `overwritten`.
+2. Run the generated `check_living_docs.py`, optionally with
+   `--baseline-ref <git-ref>`.
+3. Compare prior Git content, current change artifacts, code/tests and safe
+   runtime evidence.
+4. Restore the union of still-valid prior facts and later supported increments;
+   do not blindly restore an old revision or infer product intent from code.
+5. Give every removed capability/fact an explicit disposition, restore an
+   honest coverage status, then run both semantic and link checkers.
 
 ## Local Launcher
 
