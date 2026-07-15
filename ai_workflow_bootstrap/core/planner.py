@@ -4,9 +4,10 @@ import hashlib
 from dataclasses import dataclass
 from pathlib import Path
 
+from .composer import CompositionConflict, compose_ensured_lines, compose_make_targets
 from .renderer import render_template
 from .scanner import RepoProfile, format_commands, format_detected_stack, format_repo_layout
-from .template_pack import TemplatePack
+from .template_pack import TemplateCompositionSpec, TemplatePack
 
 
 @dataclass
@@ -19,6 +20,7 @@ class WriteResult:
     template: str = ""
     template_hash: str = ""
     existing: bool = False
+    ownership: str = "bootstrap"
 
 
 @dataclass
@@ -33,17 +35,22 @@ class BootstrapPlan:
     dry_run: bool
 
 
-def _resolve_output_path(target: Path, raw_path: str) -> Path:
-    if raw_path.startswith("~"):
-        return Path(raw_path).expanduser()
-    return target / raw_path
-
-
-def _resolve_obsolete_path(target: Path, raw_path: str) -> Path:
+def _resolve_repo_path(target: Path, raw_path: str) -> Path:
     relative = Path(raw_path)
     if relative.is_absolute() or raw_path.startswith("~") or ".." in relative.parts:
-        raise ValueError(f"Obsolete path must stay inside the target repository: {raw_path}")
-    return target / relative
+        raise ValueError(f"Template path must stay inside the target repository: {raw_path}")
+    path = target / relative
+    root = target.resolve()
+    resolved = path.resolve() if path.exists() or path.is_symlink() else path.parent.resolve() / path.name
+    try:
+        resolved.relative_to(root)
+    except ValueError as exc:
+        raise ValueError(f"Template path must stay inside the target repository: {raw_path}") from exc
+    return path
+
+
+def _matches_stacks(required: tuple[str, ...], profile: RepoProfile) -> bool:
+    return set(required).issubset(profile.detected_stacks)
 
 
 def _render_context(profile: RepoProfile) -> dict[str, object]:
@@ -66,7 +73,15 @@ def _plan_directory(path: Path) -> WriteResult:
     return WriteResult(path=path, status="written", message="directory created", kind="directory")
 
 
-def _plan_file(path: Path, template_path: str, template_text: str, *, force: bool, content: str) -> WriteResult:
+def _plan_file(
+    path: Path,
+    template_path: str,
+    template_text: str,
+    *,
+    force: bool,
+    content: str,
+    overwrite_hint: str = "",
+) -> WriteResult:
     existing = path.exists()
     if existing:
         try:
@@ -85,19 +100,25 @@ def _plan_file(path: Path, template_path: str, template_text: str, *, force: boo
                 existing=True,
             )
         if not force:
+            message = "exists; use --force to overwrite"
+            if overwrite_hint:
+                message += f". {overwrite_hint}"
             return WriteResult(
                 path=path,
                 status="skipped",
-                message="exists; use --force to overwrite",
+                message=message,
                 content=content,
                 template=template_path,
                 template_hash=_template_hash(template_text),
                 existing=True,
             )
+    message = "overwritten by explicit request" if existing else "created/updated"
+    if existing and overwrite_hint:
+        message += f". {overwrite_hint}"
     return WriteResult(
         path=path,
         status="overwritten" if existing else "written",
-        message="overwritten by explicit request" if existing else "created/updated",
+        message=message,
         content=content,
         template=template_path,
         template_hash=_template_hash(template_text),
@@ -125,6 +146,75 @@ def _plan_obsolete_file(path: Path) -> WriteResult | None:
     )
 
 
+def _format_composition_conflict(path: Path, conflict: CompositionConflict) -> str:
+    return (
+        f"Blocked before writing any files: {path} target {conflict.target!r}. "
+        f"{conflict.reason}\nCurrent definition:\n{conflict.current}\n"
+        f"Required definition:\n{conflict.required}\n"
+        f"To continue: {conflict.remediation} "
+        "--force does not bypass repository-owned file conflicts."
+    )
+
+
+def _plan_composition(
+    path: Path,
+    spec: TemplateCompositionSpec,
+    template_text: str,
+    content: str,
+) -> WriteResult:
+    existing = path.exists()
+    current = ""
+    if existing:
+        try:
+            current = path.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            conflict = CompositionConflict(
+                target="<file encoding>",
+                current="file is not valid UTF-8",
+                required="UTF-8 text",
+                reason="The repository-owned file cannot be composed safely.",
+                remediation="Convert the file to UTF-8 or move it aside, then rerun the bootstrap.",
+            )
+            return WriteResult(
+                path=path,
+                status="conflict",
+                message=_format_composition_conflict(path, conflict),
+                template=spec.template,
+                template_hash=_template_hash(template_text),
+                existing=True,
+            )
+
+    if spec.mode == "make-targets":
+        result = compose_make_targets(current, content, spec.marker)
+    elif spec.mode == "ensure-lines":
+        result = compose_ensured_lines(current, content, spec.equivalent_lines)
+    else:
+        raise ValueError(f"Unknown composition mode: {spec.mode}")
+
+    if result.conflict:
+        return WriteResult(
+            path=path,
+            status="conflict",
+            message=_format_composition_conflict(path, result.conflict),
+            template=spec.template,
+            template_hash=_template_hash(template_text),
+            existing=existing,
+        )
+    if not result.changed:
+        status = "unchanged"
+    else:
+        status = "updated" if existing else "written"
+    return WriteResult(
+        path=path,
+        status=status,
+        message="safely composed" if result.changed else "composed content already satisfied",
+        content=result.content,
+        template=spec.template,
+        template_hash=_template_hash(template_text),
+        existing=existing,
+    )
+
+
 def build_plan(
     target: Path,
     *,
@@ -138,22 +228,61 @@ def build_plan(
     results: list[WriteResult] = []
     context = _render_context(profile)
 
+    for fragment in pack.context_fragments:
+        context.setdefault(fragment.name, "")
+        if fragment.group not in enabled_groups or not _matches_stacks(fragment.when_stacks, profile):
+            continue
+        template_text = pack.read_template(fragment.template)
+        context[fragment.name] = render_template(template_text, context).rstrip()
+
     for directory in pack.directories:
-        if directory.group in enabled_groups:
-            results.append(_plan_directory(_resolve_output_path(target, directory.path)))
+        if directory.group in enabled_groups and _matches_stacks(directory.when_stacks, profile):
+            results.append(_plan_directory(_resolve_repo_path(target, directory.path)))
 
     for spec in pack.files:
-        if spec.group not in enabled_groups:
+        if spec.group not in enabled_groups or not _matches_stacks(spec.when_stacks, profile):
             continue
         template_text = pack.read_template(spec.template)
         content = render_template(template_text, context)
-        results.append(_plan_file(_resolve_output_path(target, spec.path), spec.template, template_text, force=force, content=content))
+        results.append(
+            _plan_file(
+                _resolve_repo_path(target, spec.path),
+                spec.template,
+                template_text,
+                force=force,
+                content=content,
+                overwrite_hint=spec.overwrite_hint,
+            )
+        )
+
+    for spec in pack.project_owned_paths:
+        if spec.group not in enabled_groups:
+            continue
+        path = _resolve_repo_path(target, spec.path)
+        if path.exists() or path.is_symlink():
+            results.append(
+                WriteResult(
+                    path=path,
+                    status="preserved",
+                    message="project-owned instructions preserved; bootstrap will never overwrite this path",
+                    existing=True,
+                    ownership="project",
+                )
+            )
+
+    for spec in pack.compositions:
+        if spec.group not in enabled_groups or not _matches_stacks(spec.when_stacks, profile):
+            continue
+        template_text = pack.read_template(spec.template)
+        content = render_template(template_text, context)
+        path = _resolve_repo_path(target, spec.path)
+        results.append(_plan_composition(path, spec, template_text, content))
 
     if force:
         for spec in pack.obsolete_files:
             if spec.group not in enabled_groups:
                 continue
-            deletion = _plan_obsolete_file(_resolve_obsolete_path(target, spec.path))
+            deletion = _plan_obsolete_file(_resolve_repo_path(target, spec.path))
             if deletion is not None:
                 results.append(deletion)
 

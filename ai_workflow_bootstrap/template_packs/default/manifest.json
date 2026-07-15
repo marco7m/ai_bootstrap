@@ -1,6 +1,6 @@
 {
   "name": "default",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "directories": [
     { "path": "docs", "group": "spec-driven" },
     { "path": "docs/changes", "group": "spec-driven" },
@@ -14,7 +14,12 @@
     { "path": ".agents/skills/living-docs/scripts", "group": "skill/living-docs" }
   ],
   "files": [
-    { "path": "AGENTS.md", "template": "templates/AGENTS.md", "group": "spec-driven" },
+    {
+      "path": "AGENTS.md",
+      "template": "templates/AGENTS.md",
+      "group": "spec-driven",
+      "overwrite_hint": "Before replacing this managed file, move repository-specific instructions to AGENTS.project.md; that project-owned path is preserved even with --force."
+    },
     { "path": "docs/SPEC_DRIVEN.md", "template": "templates/docs/SPEC_DRIVEN.md", "group": "spec-driven" },
     { "path": "docs/START_PROMPT.md", "template": "templates/docs/START_PROMPT.md", "group": "spec-driven" },
     { "path": "docs/changes/_templates/spec.md", "template": "templates/docs/changes/_templates/spec.md", "group": "spec-driven" },
@@ -28,6 +33,12 @@
     { "path": "docs/CAPABILITIES.md", "template": "templates/docs/CAPABILITIES.md", "group": "living-docs" },
     { "path": "docs/product/README.md", "template": "templates/docs/product/README.md", "group": "living-docs" },
     { "path": "docs/architecture/README.md", "template": "templates/docs/architecture/README.md", "group": "living-docs" },
+    {
+      "path": "docs/architecture/rust-development.md",
+      "template": "templates/docs/architecture/rust-development.md",
+      "group": "living-docs",
+      "when_stacks": ["rust"]
+    },
     { "path": "docs/decisions/README.md", "template": "templates/docs/decisions/README.md", "group": "living-docs" },
     { "path": "docs/decisions/_template.md", "template": "templates/docs/decisions/_template.md", "group": "living-docs" },
     { "path": "docs/ROADMAP.md", "template": "templates/docs/ROADMAP.md", "group": "living-docs" },
@@ -37,6 +48,35 @@
     { "path": ".agents/skills/maintainability-audit/SKILL.md", "template": "templates/.agents/skills/maintainability-audit/SKILL.md", "group": "skill/maintainability-audit" },
     { "path": ".agents/skills/living-docs/SKILL.md", "template": "templates/.agents/skills/living-docs/SKILL.md", "group": "skill/living-docs" },
     { "path": ".agents/skills/living-docs/scripts/check_links.py", "template": "templates/.agents/skills/living-docs/scripts/check_links.py", "group": "skill/living-docs" }
+  ],
+  "context_fragments": [
+    {
+      "name": "stack_agent_instructions",
+      "template": "templates/fragments/rust-agents.md",
+      "group": "spec-driven",
+      "when_stacks": ["rust"]
+    }
+  ],
+  "compositions": [
+    {
+      "path": "Makefile",
+      "template": "templates/compositions/rust.Makefile",
+      "mode": "make-targets",
+      "marker": "rust-development",
+      "group": "spec-driven",
+      "when_stacks": ["rust"]
+    },
+    {
+      "path": ".gitignore",
+      "template": "templates/compositions/rust.gitignore",
+      "mode": "ensure-lines",
+      "equivalent_lines": ["/target/"],
+      "group": "spec-driven",
+      "when_stacks": ["rust"]
+    }
+  ],
+  "project_owned_paths": [
+    { "path": "AGENTS.project.md", "group": "spec-driven" }
   ],
   "obsolete_files": [
     { "path": "docs/WORKFLOW_MODULES.md", "group": "living-docs" },

@@ -40,17 +40,9 @@ Apply the default bootstrap to the current repository:
 ai-bootstrap apply .
 ```
 
-Apply spec-driven files only:
-
-```bash
-ai-bootstrap apply --no-living-docs .
-```
-
-Apply only living docs:
-
-```bash
-ai-bootstrap apply --living-docs-only .
-```
+The bootstrap always installs the recommended combination: spec-driven
+development plus living documentation. Partial workflow modes are not
+supported.
 
 To replace an existing generated scaffold, preview first and then opt into
 destructive overwrite:
@@ -62,6 +54,11 @@ ai-bootstrap apply --force .
 
 `--force` creates no backups and may remove the known obsolete bootstrap files
 shown in the preview. Use Git for recovery.
+
+`AGENTS.md` is bootstrap-managed. Store repository-specific agent instructions
+in `AGENTS.project.md` instead. That complement is created by the project only
+when a real local rule is needed; when present, the bootstrap reports it as
+project-owned and preserves it even with `--force`.
 
 ## What It Generates
 
@@ -93,9 +90,22 @@ By default, the new CLI generates:
 - `.agents/skills/living-docs/scripts/check_links.py`
 - `.ai-bootstrap/state.json`
 
-With `--no-living-docs`, the bootstrap keeps the spec-driven workflow and skips the living docs files and living-docs skill.
+The bootstrap does not create an empty `AGENTS.project.md`. Managed `AGENTS.md`
+instructs assistants to create and read it only when repository-specific
+working guidance exists.
 
-With `--living-docs-only`, it generates the living docs files and living-docs skill, but skips the spec-driven set.
+For a repository detected as Rust, the bootstrap also:
+
+- safely composes `make dev`, `make run`, `make clean-dev`, `make test`,
+  `make lint`, and `make typecheck` into `Makefile`;
+- ensures `target/` is ignored without replacing `.gitignore`;
+- generates `docs/architecture/rust-development.md` and a short conditional
+  routing rule in `AGENTS.md`.
+
+An existing equivalent Make target is preserved. A target with the same name
+but a different recipe blocks the entire apply before any write. The error
+shows both recipes and remediation; `--force` does not override project-owned
+Make recipes.
 
 ## Workflow
 
@@ -132,6 +142,8 @@ Current capability state uses `unknown`, `absent`, `partial`, `implemented`, `ve
 
 Without overwrite enabled, existing files and legacy docs are preserved. Explicit `--force` or the TUI overwrite option is destructive: generated files are replaced and known obsolete bootstrap docs are listed and removed without backups. Git is the recovery mechanism.
 
+Protected project-owned paths are never overwritten or deleted by that option.
+
 Compatible assistants can also use the open Agent Skills under `.agents/skills/`.
 
 ## Maintainability Guardrails
@@ -153,7 +165,7 @@ It is useful when you want a guided flow that:
 - explains living docs in simple terms;
 - previews the files before applying;
 - requires explicit confirmation before writing;
-- lets you choose the path, workflow mode, and whether to include `.agents/skills/`;
+- lets you choose the path and whether to include `.agents/skills/`;
 - can destructively overwrite generated files and remove known obsolete bootstrap docs after opt-in;
 - supports English and Portuguese (pt-BR);
 - can pick from recent or detected projects;
@@ -163,6 +175,10 @@ It is useful when you want a guided flow that:
 ## Template Packs
 
 The bootstrap uses template packs so the generated content stays editable without changing the engine.
+
+Pack entries may be conditional on detected stacks. The manifest also declares
+safe compositions and protected project-owned paths, keeping policy in the pack
+while the engine provides generic selection, preview and preservation behavior.
 
 The default pack lives under `ai_workflow_bootstrap/template_packs/default/` in the source tree and is packaged with the Python distribution.
 
@@ -176,7 +192,7 @@ That file records:
 - template pack name and version;
 - target path;
 - enabled workflows;
-- per-file status and template provenance;
+- per-file status, ownership and template provenance when applicable;
 - optional modules, if any are introduced later.
 
 `--dry-run` does not write state.

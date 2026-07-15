@@ -11,6 +11,22 @@ from ai_workflow_bootstrap.core.template_pack import TemplateObsoleteFileSpec, T
 
 
 class PlannerTests(unittest.TestCase):
+    def test_generated_path_cannot_follow_symlink_outside_target(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp, tempfile.TemporaryDirectory() as outside:
+            target = Path(tmp)
+            (target / "docs").symlink_to(Path(outside), target_is_directory=True)
+
+            with self.assertRaisesRegex(ValueError, "stay inside the target repository"):
+                build_plan(
+                    target,
+                    profile=RepoProfile(project_name="Example", repo_name="example"),
+                    pack=load_default_template_pack(),
+                    enabled_workflows=["spec-driven", "living-docs"],
+                    enabled_groups={"spec-driven", "living-docs"},
+                    force=False,
+                    dry_run=True,
+                )
+
     def test_build_plan_renders_current_default_outputs(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             target = Path(tmp)

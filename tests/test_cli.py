@@ -109,21 +109,32 @@ class CliTests(unittest.TestCase):
             self.assertFalse(legacy.exists())
             self.assertEqual(list(target.rglob("*.bak-*")), [])
 
-    def test_apply_no_living_docs_writes_spec_only_state(self) -> None:
+    def test_removed_partial_workflow_options_are_rejected(self) -> None:
+        for option in ("--no-living-docs", "--living-docs-only"):
+            with self.subTest(option=option):
+                stderr = io.StringIO()
+                with redirect_stderr(stderr), self.assertRaises(SystemExit):
+                    cli.build_parser().parse_args(["apply", option, "."])
+                self.assertIn("unrecognized arguments", stderr.getvalue())
+
+    def test_make_conflict_returns_actionable_error_without_writes_or_state(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             target = Path(tmp)
-            buffer = io.StringIO()
-            with redirect_stdout(buffer):
-                exit_code = cli.main(["apply", "--no-living-docs", str(target)])
+            (target / "Cargo.toml").write_text("[workspace]\nmembers=[]\n", encoding="utf-8")
+            (target / "Makefile").write_text("run:\n\tcargo run --features desktop\n", encoding="utf-8")
+            stderr = io.StringIO()
+            with redirect_stderr(stderr):
+                exit_code = cli.main(["apply", "--force", str(target)])
 
-            self.assertEqual(exit_code, 0)
-            data = json.loads(state_path(target).read_text(encoding="utf-8"))
-            self.assertEqual(data["enabled_workflows"], ["spec-driven"])
-            self.assertIn("AGENTS.md", data["files"])
-            self.assertIn("docs/SPEC_DRIVEN.md", data["files"])
-            self.assertNotIn("docs/AI_CONTEXT.md", data["files"])
-            self.assertIn(".agents/skills/maintainability-audit/SKILL.md", data["files"])
-            self.assertNotIn(".agents/skills/living-docs/SKILL.md", data["files"])
+            self.assertEqual(exit_code, 2)
+            message = stderr.getvalue()
+            self.assertIn("Current definition", message)
+            self.assertIn("cargo run --features desktop", message)
+            self.assertIn("cargo run --release", message)
+            self.assertIn("--force does not bypass repository-owned file conflicts", message)
+            self.assertIn("rerun the bootstrap", message)
+            self.assertFalse((target / "AGENTS.md").exists())
+            self.assertFalse(state_path(target).exists())
 
     def test_dry_run_does_not_write_state_json(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

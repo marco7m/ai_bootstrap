@@ -6,7 +6,7 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from . import __version__
-from .core.applier import apply_plan
+from .core.applier import PlanConflictError, apply_plan
 from .core.planner import BootstrapPlan, WriteResult, build_plan
 from .core.scanner import detect_project_name, detect_repo_profile
 from .core.state import build_state, save_state, state_path
@@ -20,9 +20,7 @@ HELP_EPILOG = (
     "  ai-bootstrap apply [path]     Apply from CLI\n\n"
     "Examples:\n"
     "  ai-bootstrap\n"
-    "  ai-bootstrap apply --dry-run .\n"
-    "  ai-bootstrap apply --no-living-docs .\n"
-    "  ai-bootstrap apply --living-docs-only ."
+    "  ai-bootstrap apply --dry-run ."
 )
 
 
@@ -64,16 +62,6 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Do not create the spec-driven skill under .agents/skills/spec-driven/.",
     )
-    apply_parser.add_argument(
-        "--no-living-docs",
-        action="store_true",
-        help="Do not create living docs files or the living-docs skill.",
-    )
-    apply_parser.add_argument(
-        "--living-docs-only",
-        action="store_true",
-        help="Create only living docs files and the living-docs skill.",
-    )
     apply_parser.set_defaults(command="apply")
     return parser
 
@@ -88,7 +76,7 @@ def print_summary(results: list[WriteResult], *, target: Path, profile) -> None:
         print(f"Top directories: {', '.join(profile.top_dirs)}")
     if profile.commands:
         print("Suggested commands:")
-        for key in ("build", "test", "lint", "typecheck", "fmt", "check", "dev"):
+        for key in ("build", "dev", "run", "test", "lint", "typecheck", "fmt", "check", "clean-dev"):
             if key in profile.commands:
                 print(f"- {key:10} {profile.commands[key]}")
 
@@ -102,14 +90,6 @@ def print_summary(results: list[WriteResult], *, target: Path, profile) -> None:
     print("1. Open your preferred AI assistant.")
     print("2. Follow generated entry points when present: AGENTS.md, docs/INDEX.md, and .agents/skills/.")
     print("3. For non-trivial work, respect the generated approval workflow.")
-
-
-def _resolve_groups(*, no_living_docs: bool, living_docs_only: bool, no_skill: bool) -> tuple[list[str], set[str]]:
-    if living_docs_only:
-        return resolve_workflow_selection(mode="living-docs", include_skills=not no_skill)
-    if no_living_docs:
-        return resolve_workflow_selection(mode="spec-driven", include_skills=not no_skill)
-    return resolve_workflow_selection(mode="recommended", include_skills=not no_skill)
 
 
 def _run_tui(argv: Sequence[str] | None = None) -> int:
@@ -131,11 +111,7 @@ def _run_apply(args: argparse.Namespace) -> int:
     project_name = detect_project_name(target, args.project_name)
     profile = detect_repo_profile(target, project_name)
     pack = load_default_template_pack()
-    enabled_workflows, enabled_groups = _resolve_groups(
-        no_living_docs=args.no_living_docs,
-        living_docs_only=args.living_docs_only,
-        no_skill=args.no_skill,
-    )
+    enabled_workflows, enabled_groups = resolve_workflow_selection(include_skills=not args.no_skill)
     plan: BootstrapPlan = build_plan(
         target,
         profile=profile,
@@ -145,7 +121,11 @@ def _run_apply(args: argparse.Namespace) -> int:
         force=args.force,
         dry_run=args.dry_run,
     )
-    results = apply_plan(plan, dry_run=args.dry_run)
+    try:
+        results = apply_plan(plan, dry_run=args.dry_run)
+    except PlanConflictError as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        return 2
     if not args.dry_run:
         state = build_state(plan=plan, results=results, tool_version=__version__)
         save_state(state_path(target), state, dry_run=False)

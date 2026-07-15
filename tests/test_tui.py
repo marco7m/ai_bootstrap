@@ -16,7 +16,6 @@ class TuiTests(unittest.TestCase):
             tui.PROJECT_SELECT_ID,
             tui.PROJECT_MESSAGE_ID,
             tui.PATH_INPUT_ID,
-            tui.MODE_SELECT_ID,
             tui.INCLUDE_SKILLS_ID,
             tui.OVERWRITE_EXISTING_ID,
             tui.PREVIEW_BUTTON_ID,
@@ -39,6 +38,7 @@ class TuiTests(unittest.TestCase):
         ]
 
         self.assertEqual(len(ids), len(set(ids)))
+        self.assertFalse(hasattr(tui, "MODE_SELECT_ID"))
 
     def test_plan_uses_force_only_when_overwrite_is_enabled(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -47,8 +47,8 @@ class TuiTests(unittest.TestCase):
             existing_file.parent.mkdir(parents=True)
             existing_file.write_text("existing content", encoding="utf-8")
 
-            safe_plan = tui._plan_from_ui(str(root), "recommended", True, dry_run=True)
-            forced_plan = tui._plan_from_ui(str(root), "recommended", True, dry_run=True, force=True)
+            safe_plan = tui._plan_from_ui(str(root), True, dry_run=True)
+            forced_plan = tui._plan_from_ui(str(root), True, dry_run=True, force=True)
 
             safe_result = next(item for item in safe_plan.results if item.path == existing_file)
             forced_result = next(item for item in forced_plan.results if item.path == existing_file)
@@ -63,11 +63,25 @@ class TuiTests(unittest.TestCase):
             legacy.parent.mkdir(parents=True)
             legacy.write_text("legacy\n", encoding="utf-8")
 
-            plan = tui._plan_from_ui(str(root), "recommended", True, dry_run=True, force=True)
+            plan = tui._plan_from_ui(str(root), True, dry_run=True, force=True)
             deletion = next(item for item in plan.results if item.path == legacy)
 
             self.assertEqual(deletion.kind, "deletion")
             self.assertEqual(deletion.status, "deleted")
+
+    def test_plan_always_enables_both_workflows_and_surfaces_make_remediation(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "Cargo.toml").write_text("[workspace]\nmembers=[]\n", encoding="utf-8")
+            (root / "Makefile").write_text("run:\n\tcargo run --features desktop\n", encoding="utf-8")
+
+            plan = tui._plan_from_ui(str(root), True, dry_run=True, force=True)
+
+            self.assertEqual(plan.enabled_workflows, ["spec-driven", "living-docs"])
+            conflict = next(item for item in plan.results if item.status == "conflict")
+            self.assertIn("Current definition", conflict.message)
+            self.assertIn("Required definition", conflict.message)
+            self.assertIn("--force does not bypass repository-owned file conflicts", conflict.message)
 
     def test_missing_textual_prints_install_message(self) -> None:
         stderr = io.StringIO()

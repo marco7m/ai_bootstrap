@@ -5,6 +5,10 @@ from pathlib import Path
 from .planner import BootstrapPlan, WriteResult
 
 
+class PlanConflictError(ValueError):
+    pass
+
+
 def _write_directory(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
 
@@ -15,6 +19,11 @@ def _write_file(path: Path, content: str) -> None:
 
 
 def apply_plan(plan: BootstrapPlan, *, dry_run: bool) -> list[WriteResult]:
+    conflicts = [item for item in plan.results if item.status == "conflict"]
+    if conflicts and not dry_run:
+        details = "\n\n".join(item.message for item in conflicts)
+        raise PlanConflictError(details)
+
     results: list[WriteResult] = []
     for item in plan.results:
         if item.kind == "directory":
@@ -29,7 +38,7 @@ def apply_plan(plan: BootstrapPlan, *, dry_run: bool) -> list[WriteResult]:
             results.append(item)
             continue
 
-        if item.status in {"skipped", "unchanged"}:
+        if item.status in {"skipped", "unchanged", "preserved", "conflict"}:
             results.append(item)
             continue
 

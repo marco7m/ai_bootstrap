@@ -18,6 +18,17 @@ Detected stack: $detected_stacks
 - Use `living-docs` when orienting in the project or changing durable project
   knowledge.
 
+## Project-owned instructions
+
+- Read `AGENTS.project.md` when it exists.
+- Create it only when a concrete repository-specific working instruction needs
+  a durable owner. Put such instructions there instead of editing this managed
+  file.
+- Keep it concise, link detailed facts to their living-document owners, and
+  never store secrets, private messages or sensitive production/customer data.
+
+$stack_agent_instructions
+
 ## Required workflow
 
 A task is non-trivial when it changes behavior, architecture, persistence,

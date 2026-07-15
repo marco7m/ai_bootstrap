@@ -22,7 +22,6 @@ LANGUAGE_SELECT_ID = "language_select"
 PROJECT_SELECT_ID = "project_select"
 PROJECT_MESSAGE_ID = "project_message"
 PATH_INPUT_ID = "path_input"
-MODE_SELECT_ID = "mode_select"
 INCLUDE_SKILLS_ID = "include_skills"
 OVERWRITE_EXISTING_ID = "overwrite_existing"
 PREVIEW_BUTTON_ID = "preview_button"
@@ -78,7 +77,6 @@ def _load_textual():
 
 def _plan_from_ui(
     target_text: str,
-    mode: str,
     include_skills: bool,
     dry_run: bool,
     force: bool = False,
@@ -90,7 +88,7 @@ def _plan_from_ui(
     project_name = detect_project_name(target, None)
     profile = detect_repo_profile(target, project_name)
     pack = load_default_template_pack()
-    enabled_workflows, enabled_groups = resolve_workflow_selection(mode=mode, include_skills=include_skills)
+    enabled_workflows, enabled_groups = resolve_workflow_selection(include_skills=include_skills)
     return build_plan(
         target,
         profile=profile,
@@ -136,7 +134,7 @@ def _build_app():
 
         #controls,
         #path_controls,
-        #mode_controls,
+        #workflow_controls,
         #action_controls {
             height: auto;
             padding: 0 2;
@@ -150,10 +148,6 @@ def _build_app():
 
         #path_input {
             width: 56;
-        }
-
-        #mode_select {
-            width: 34;
         }
 
         #confirm_input {
@@ -211,13 +205,7 @@ def _build_app():
                     yield Button(t(self._language, "parent_button"), id=PARENT_BUTTON_ID)
                     yield Button(t(self._language, "refresh_projects_button"), id=REFRESH_PROJECTS_BUTTON_ID)
 
-                with Horizontal(id="mode_controls"):
-                    yield Select(
-                        options=self._mode_options(),
-                        prompt=t(self._language, "mode_label"),
-                        value="recommended",
-                        id=MODE_SELECT_ID,
-                    )
+                with Horizontal(id="workflow_controls"):
                     yield Checkbox(t(self._language, "include_skills_label"), True, id=INCLUDE_SKILLS_ID)
                     yield Checkbox(t(self._language, "overwrite_existing_label"), False, id=OVERWRITE_EXISTING_ID)
                     yield Input(placeholder=t(self._language, "confirm_placeholder"), id=CONFIRM_INPUT_ID)
@@ -239,13 +227,6 @@ def _build_app():
             self._refresh_projects()
             self._refresh_preview()
 
-        def _mode_options(self) -> list[tuple[str, str]]:
-            return [
-                (t(self._language, "recommended_mode"), "recommended"),
-                (t(self._language, "spec_driven_only_mode"), "spec-driven"),
-                (t(self._language, "living_docs_only_mode"), "living-docs"),
-            ]
-
         def _language_widget(self):
             return self.query_one(f"#{LANGUAGE_SELECT_ID}", Select)
 
@@ -254,9 +235,6 @@ def _build_app():
 
         def _path_widget(self):
             return self.query_one(f"#{PATH_INPUT_ID}", Input)
-
-        def _mode_widget(self):
-            return self.query_one(f"#{MODE_SELECT_ID}", Select)
 
         def _include_skills_widget(self):
             return self.query_one(f"#{INCLUDE_SKILLS_ID}", Checkbox)
@@ -290,8 +268,6 @@ def _build_app():
             self._language_widget().prompt = t(self._language, "language_label")
             self._project_widget().prompt = t(self._language, "project_select_label")
             self._path_widget().placeholder = t(self._language, "project_path_placeholder")
-            self._mode_widget().prompt = t(self._language, "mode_label")
-            self._mode_widget().set_options(self._mode_options())
             self._include_skills_widget().label = t(self._language, "include_skills_label")
             self._overwrite_existing_widget().label = t(self._language, "overwrite_existing_label")
             self._confirm_widget().placeholder = t(self._language, "confirm_placeholder")
@@ -337,13 +313,11 @@ def _build_app():
                 project_select.value = Select.NULL
             self._project_message_widget().update("")
 
-        def _read_settings(self) -> tuple[str, str, bool, bool]:
+        def _read_settings(self) -> tuple[str, bool, bool]:
             path = self._path_widget().value.strip() or "."
-            mode_value = self._mode_widget().value
-            mode = mode_value if isinstance(mode_value, str) and mode_value in {"recommended", "spec-driven", "living-docs"} else "recommended"
             include_skills = bool(self._include_skills_widget().value)
             force = bool(self._overwrite_existing_widget().value)
-            return path, mode, include_skills, force
+            return path, include_skills, force
 
         def _show_plan(self, plan: BootstrapPlan) -> None:
             table = self.query_one(f"#{PREVIEW_TABLE_ID}", DataTable)
@@ -361,8 +335,8 @@ def _build_app():
 
         def _refresh_preview(self) -> None:
             try:
-                path, mode, include_skills, force = self._read_settings()
-                plan = _plan_from_ui(path, mode, include_skills, dry_run=True, force=force)
+                path, include_skills, force = self._read_settings()
+                plan = _plan_from_ui(path, include_skills, dry_run=True, force=force)
             except ValueError as exc:
                 self._current_plan = None
                 self._set_status(str(exc))
@@ -373,10 +347,10 @@ def _build_app():
             self._set_status(t(self._language, "preview_ready"))
 
         def _dry_run(self) -> None:
-            path, mode, include_skills, force = self._read_settings()
+            path, include_skills, force = self._read_settings()
 
             try:
-                plan = _plan_from_ui(path, mode, include_skills, dry_run=True, force=force)
+                plan = _plan_from_ui(path, include_skills, dry_run=True, force=force)
             except ValueError as exc:
                 self._current_plan = None
                 self._set_status(str(exc))
@@ -388,7 +362,7 @@ def _build_app():
             self._set_status(t(self._language, "dry_run_done"))
 
         def _apply(self) -> None:
-            path, mode, include_skills, force = self._read_settings()
+            path, include_skills, force = self._read_settings()
             confirm = self._confirm_widget().value.strip().upper()
 
             if confirm != "APPLY":
@@ -396,15 +370,14 @@ def _build_app():
                 return
 
             try:
-                plan = _plan_from_ui(path, mode, include_skills, dry_run=False, force=force)
+                plan = _plan_from_ui(path, include_skills, dry_run=False, force=force)
+                self._current_plan = plan
+                self._show_plan(plan)
+                results = apply_plan(plan, dry_run=False)
             except ValueError as exc:
                 self._current_plan = None
                 self._set_status(str(exc))
                 return
-
-            self._current_plan = plan
-            self._show_plan(plan)
-            results = apply_plan(plan, dry_run=False)
 
             state = build_state(plan=plan, results=results, tool_version=__version__)
             save_state(state_path(plan.target), state, dry_run=False)

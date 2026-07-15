@@ -1,0 +1,42 @@
+# Tasks: Unified bootstrap workflow and conditional project policies
+
+- [x] Re-read the approved spec and plan before implementation.
+- [x] Inspect the working tree and preserve unrelated user changes.
+- [x] Register the approved target and active change without replacing current evidence.
+- [x] Replace workflow-mode tests with the single recommended spec-driven plus living-docs contract.
+- [x] Remove CLI partial-mode flags, branching, help and examples; prove legacy flags are rejected.
+- [x] Remove the TUI workflow selector, translated mode labels and mode plumbing.
+- [x] Prove every CLI/TUI plan and successful state enables both workflows.
+- [x] Add behavior-level tests for conditional manifest entries and backward-compatible manifests.
+- [x] Add project-owned path tests for absence/no-write, project creation, arbitrary edits, normal/forced/upgrade preservation and every overlap rejection.
+- [x] Extend the manifest with protected project-owned paths and optional overwrite migration hints.
+- [x] Carry ownership and `preserved` semantics through planner, applier, preview and state without false content hashes.
+- [x] Declare `AGENTS.project.md` protected without generating a seed or state entry while absent.
+- [x] Update managed `AGENTS.md` to create/read the complement only when needed and route repository-specific adjustments there.
+- [x] Add actionable migration guidance before overwriting a legacy customized managed `AGENTS.md`.
+- [x] Add pure composer tests for managed Make blocks, ensured lines, idempotency and upgrades.
+- [x] Add conservative tests for equivalent targets, target collisions and malformed/duplicate markers.
+- [x] Add plan/application tests proving a conflict is previewed and blocks every real write.
+- [x] Make every conflict identify the file, target, current/required recipes, no-write guarantee and concrete remediation.
+- [x] Prove CLI/TUI conflict messages say `--force` is not a bypass and tell the user how to retry.
+- [x] Extend template-pack dataclasses/parsing with generic stack conditions, context fragments and compositions.
+- [x] Centralize safe target-repository path validation for generated, composed and obsolete paths.
+- [x] Implement the pure composer without filesystem I/O or Rust-specific policy.
+- [x] Integrate conditional file/context/composition selection into planner render context and results.
+- [x] Add generic conflict preflight to the applier and non-zero CLI handling without state writes.
+- [x] Update TUI/CLI status guidance to explain composed updates and conflicts accurately.
+- [x] Add Rust-only Make, `.gitignore`, `AGENTS.md` fragment and development-document templates.
+- [x] Bind the complete Rust policy to the always-enabled workflow groups.
+- [x] Align Rust detected command presentation with `make dev`, `make run`, `make clean-dev`, `make test`, `make lint` and `make typecheck`.
+- [x] Add Rust/non-Rust tests for the single unified workflow.
+- [x] Prove Python-only generation receives no Rust content or repository-file composition.
+- [x] Prove existing Makefile and `.gitignore` content outside managed additions is preserved.
+- [x] Add a deterministic fake-Cargo Make test proving `clean-dev` selects profile `dev` and preserves `target/release`.
+- [x] Protect the compact `AGENTS.md` word budget and single-owner Rust rationale.
+- [x] Increment the default template-pack version and update source README behavior.
+- [x] Update product, architecture and all three capability rows only with implementation evidence.
+- [x] Run unit tests, compileall, manifest JSON validation, temporary Rust/Python generation, generated link checks and `git diff --check`.
+- [x] Inspect the final diff for legacy workflow modes, accidental project-owned overwrite/deletion, unsafe path handling, silent Make replacement, bare `cargo clean`, non-Rust leakage, duplicated policy and unrelated changes.
+- [x] Validate every acceptance criterion and record any approved deviation.
+- [x] Mark the capability verified and clear the active change only if validation supports closeout.
+- [x] Confirm no dependency, automatic staging, commit, backup file or user-data cleanup was introduced.

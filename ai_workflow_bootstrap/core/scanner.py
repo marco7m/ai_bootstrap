@@ -129,8 +129,12 @@ def detect_repo_profile(target: Path, project_name: str) -> RepoProfile:
     if cargo_toml.exists():
         profile.detected_stacks.append("rust")
         maybe_set("build", "cargo build")
-        maybe_set("test", "cargo test")
-        maybe_set("lint", "cargo clippy --all-targets --all-features -- -D warnings")
+        profile.commands["dev"] = "make dev"
+        profile.commands["run"] = "make run"
+        profile.commands["clean-dev"] = "make clean-dev"
+        profile.commands["test"] = "make test"
+        profile.commands["lint"] = "make lint"
+        profile.commands["typecheck"] = "make typecheck"
         maybe_set("fmt", "cargo fmt --all --check")
 
     go_mod = target / "go.mod"
@@ -182,7 +186,7 @@ def format_repo_layout(profile: RepoProfile) -> str:
 
 
 def format_commands(profile: RepoProfile) -> str:
-    ordered = ["build", "test", "lint", "typecheck", "fmt", "check", "dev"]
+    ordered = ["build", "dev", "run", "test", "lint", "typecheck", "fmt", "check", "clean-dev"]
     lines = []
     for name in ordered:
         if name in profile.commands:
@@ -196,4 +200,3 @@ def format_detected_stack(profile: RepoProfile) -> str:
     if not profile.detected_stacks:
         return "unknown"
     return ", ".join(profile.detected_stacks)
-

@@ -87,6 +87,8 @@ def build_state(
         if status == "written" and item.existing:
             status = "overwritten"
         entry: dict[str, Any] = {"status": status}
+        if item.ownership != "bootstrap":
+            entry["ownership"] = item.ownership
         if item.template:
             entry["template"] = item.template
             entry["template_hash"] = item.template_hash

@@ -8,6 +8,21 @@ from ai_workflow_bootstrap.core.scanner import detect_repo_profile, detect_proje
 
 
 class ScannerTests(unittest.TestCase):
+    def test_rust_profile_uses_generated_make_interface(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "Cargo.toml").write_text("[workspace]\nmembers = []\n", encoding="utf-8")
+
+            profile = detect_repo_profile(root, "Rust Example")
+
+            self.assertIn("rust", profile.detected_stacks)
+            self.assertEqual(profile.commands["dev"], "make dev")
+            self.assertEqual(profile.commands["run"], "make run")
+            self.assertEqual(profile.commands["clean-dev"], "make clean-dev")
+            self.assertEqual(profile.commands["test"], "make test")
+            self.assertEqual(profile.commands["lint"], "make lint")
+            self.assertEqual(profile.commands["typecheck"], "make typecheck")
+
     def test_detects_basic_repo_hints(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -36,4 +51,3 @@ class ScannerTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

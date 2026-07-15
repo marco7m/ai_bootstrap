@@ -17,7 +17,8 @@ _TEXTS: dict[str, dict[str, str]] = {
         "skills_help": "Agent Skills are reusable instructions for compatible AI coding agents.",
         "dry_run_help": "Dry run shows what would happen, but writes nothing.",
         "status_help": (
-            "written = will be created or updated; skipped = already exists and will not be changed; "
+            "written/updated = will be safely written; skipped = an unmanaged existing file will not change; "
+            "preserved = project-owned and never overwritten; conflict = blocked with remediation; "
             "unchanged = already matches; overwritten/deleted = destructive and only with overwrite enabled."
         ),
         "project_path_placeholder": "Project path",
@@ -43,12 +44,8 @@ _TEXTS: dict[str, dict[str, str]] = {
             "3. For non-trivial work, respect the generated approval workflow."
         ),
         "no_projects_found": "No recent or detected projects found yet.",
-        "mode_label": "Workflow mode",
         "include_skills_label": "Include .agents/skills",
         "overwrite_existing_label": "Destructively overwrite and remove obsolete generated files",
-        "recommended_mode": "Recommended: spec-driven + living docs",
-        "spec_driven_only_mode": "Spec-driven only",
-        "living_docs_only_mode": "Living docs only",
     },
     "pt-BR": {
         "app_intro": "Esta ferramenta prepara um repositório para trabalhar melhor com assistentes de IA.",
@@ -60,7 +57,8 @@ _TEXTS: dict[str, dict[str, str]] = {
         "skills_help": "Agent Skills são instruções reutilizáveis para agentes de IA compatíveis.",
         "dry_run_help": "Dry run mostra o que aconteceria, mas não escreve nada.",
         "status_help": (
-            "written = será criado ou atualizado; skipped = já existe e não será alterado; "
+            "written/updated = será escrito com segurança; skipped = arquivo existente não gerenciado não mudará; "
+            "preserved = pertence ao projeto e nunca é sobrescrito; conflict = bloqueado com instruções; "
             "unchanged = já está igual; overwritten/deleted = destrutivo e só com sobrescrita habilitada."
         ),
         "project_path_placeholder": "Caminho do projeto",
@@ -86,12 +84,8 @@ _TEXTS: dict[str, dict[str, str]] = {
             "3. Em trabalho não trivial, respeite o workflow de aprovação gerado."
         ),
         "no_projects_found": "Nenhum projeto recente ou detectado encontrado ainda.",
-        "mode_label": "Modo de workflow",
         "include_skills_label": "Incluir .agents/skills",
         "overwrite_existing_label": "Sobrescrever e remover arquivos gerados obsoletos (destrutivo)",
-        "recommended_mode": "Recomendado: spec-driven + living docs",
-        "spec_driven_only_mode": "Apenas spec-driven",
-        "living_docs_only_mode": "Apenas living docs",
     },
 }
 

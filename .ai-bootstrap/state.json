@@ -1,77 +1,77 @@
 {
-  "applied_at": "2026-07-13T19:01:59Z",
+  "applied_at": "2026-07-15T16:33:42Z",
   "enabled_workflows": [
     "spec-driven",
     "living-docs"
   ],
   "files": {
     ".agents/skills/living-docs/SKILL.md": {
-      "status": "written",
+      "status": "unchanged",
       "template": "templates/.agents/skills/living-docs/SKILL.md",
       "template_hash": "3f0c2d89473f257101f91bbfbd1541acd75f3a8ccc2ac160741b5c2831371378"
     },
     ".agents/skills/living-docs/scripts/check_links.py": {
-      "status": "written",
+      "status": "unchanged",
       "template": "templates/.agents/skills/living-docs/scripts/check_links.py",
       "template_hash": "f41ba9736dedb46c06173afd64911e28c9a731524ef5116f627dcfb18da91c4e"
     },
     ".agents/skills/maintainability-audit/SKILL.md": {
-      "status": "written",
+      "status": "unchanged",
       "template": "templates/.agents/skills/maintainability-audit/SKILL.md",
       "template_hash": "552c7e81759f56d3f957a824599e6edf64f045428c93ec0cef66698e2359710f"
     },
     ".agents/skills/spec-driven/SKILL.md": {
-      "status": "overwritten",
+      "status": "unchanged",
       "template": "templates/.agents/skills/spec-driven/SKILL.md",
       "template_hash": "b13fa1d207f5d2328294930bf1b77e53b82177174e1ca500c1d952415ffd4d29"
     },
     "AGENTS.md": {
       "status": "overwritten",
       "template": "templates/AGENTS.md",
-      "template_hash": "7af00f5226565a8ce4e3c4a8c911e9650fadd424d9a9defb898c7ffb628e6016"
+      "template_hash": "ddb3e1b1627e8f9fd341d754c923984fe51338d56e422126f33d438321cc7ca7"
     },
     "docs/CAPABILITIES.md": {
-      "status": "written",
+      "status": "overwritten",
       "template": "templates/docs/CAPABILITIES.md",
       "template_hash": "9c566227d2fde8d4ab53a355028dce6dae568f525ea517fb3d17804bd4e2fd29"
     },
     "docs/GLOSSARY.md": {
-      "status": "written",
+      "status": "unchanged",
       "template": "templates/docs/GLOSSARY.md",
       "template_hash": "d1508a92d7a7733891330fee7b3cbe7ee17ab19800fabc231218682d06bf2d32"
     },
     "docs/IDEA_INBOX.md": {
-      "status": "written",
+      "status": "unchanged",
       "template": "templates/docs/IDEA_INBOX.md",
       "template_hash": "8adf076ec8dd4924734e23a96e0786f8a891a6ac55e93a36b83eda5efe1f6db4"
     },
     "docs/INDEX.md": {
-      "status": "written",
+      "status": "overwritten",
       "template": "templates/docs/INDEX.md",
       "template_hash": "d9a7f939511030e8dd2fa7bbde9b2dbee6bc265453b15691935c1a85cd2baa34"
     },
     "docs/LIVING_DOCUMENTATION.md": {
-      "status": "written",
+      "status": "unchanged",
       "template": "templates/docs/LIVING_DOCUMENTATION.md",
       "template_hash": "a74ab101301cbcfc48a4706ccde0f0010ece9215f25ab58dd8e0c674cd11a673"
     },
     "docs/ROADMAP.md": {
-      "status": "written",
+      "status": "unchanged",
       "template": "templates/docs/ROADMAP.md",
       "template_hash": "680685ae1df2518c65102595a27d65a34d8bd456211c996b8bccff1f08b65cf9"
     },
     "docs/SPEC_DRIVEN.md": {
-      "status": "overwritten",
+      "status": "unchanged",
       "template": "templates/docs/SPEC_DRIVEN.md",
       "template_hash": "a248660d9e219382d6d64c4e1349d1717d5021cfa868fedeab3c8e57c7471f95"
     },
     "docs/START_PROMPT.md": {
-      "status": "overwritten",
+      "status": "unchanged",
       "template": "templates/docs/START_PROMPT.md",
       "template_hash": "6b38dca2c979b0ad3a3874a8878cfedefd39b8fdf381b94234836b01b9ac0113"
     },
     "docs/architecture/README.md": {
-      "status": "written",
+      "status": "overwritten",
       "template": "templates/docs/architecture/README.md",
       "template_hash": "a140182f878a89e771b8d7dd8cd2bd2129d299f022aa78553cb35a4dfe501739"
     },
@@ -91,32 +91,32 @@
       "template_hash": "9dc2f6ad2bf68fea056d89fef4b3ba4717700917b20fcc29eb101e1e51236c63"
     },
     "docs/changes/_templates/plan.md": {
-      "status": "overwritten",
+      "status": "unchanged",
       "template": "templates/docs/changes/_templates/plan.md",
       "template_hash": "31434243bc67e29d3b625c425991df2887f72aa530355ac56f241959a3a284f7"
     },
     "docs/changes/_templates/spec.md": {
-      "status": "overwritten",
+      "status": "unchanged",
       "template": "templates/docs/changes/_templates/spec.md",
       "template_hash": "a942235f9b5fff711d2e15a82b48017662a58b4eeecac3fbddd5a9de03a1babd"
     },
     "docs/changes/_templates/tasks.md": {
-      "status": "overwritten",
+      "status": "unchanged",
       "template": "templates/docs/changes/_templates/tasks.md",
       "template_hash": "f0355e9e3d29d856a777109d764d4d13a818543b9b8006c4503a57a224a8cc01"
     },
     "docs/decisions/README.md": {
-      "status": "written",
+      "status": "unchanged",
       "template": "templates/docs/decisions/README.md",
       "template_hash": "f171f1fa902916007f7c635849737f9edb3283d301a965ae78b73ceaa54a92ed"
     },
     "docs/decisions/_template.md": {
-      "status": "written",
+      "status": "unchanged",
       "template": "templates/docs/decisions/_template.md",
       "template_hash": "d7d4ca53e4cb6344a0f158f73453f2074e931b0ac58c5cab06358caf7baffae3"
     },
     "docs/product/README.md": {
-      "status": "written",
+      "status": "overwritten",
       "template": "templates/docs/product/README.md",
       "template_hash": "9e3feefd338179800956a66fc7eda19fb1f2a74575235ea9d1416858a378c891"
     }
@@ -124,7 +124,7 @@
   "optional_modules": [],
   "target_path": "/home/marco/slapy/projetos/ai_bootstrap",
   "template_pack": "default",
-  "template_pack_version": "0.3.0",
+  "template_pack_version": "0.4.0",
   "tool_name": "ai-workflow-bootstrap",
   "tool_version": "0.1.0"
 }
