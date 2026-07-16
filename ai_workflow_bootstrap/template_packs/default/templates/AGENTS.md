@@ -29,6 +29,17 @@ Detected stack: $detected_stacks
 
 $stack_agent_instructions
 
+## Long-running commands
+
+- Before choosing a terminal wait cadence, classify the process as finite and
+  non-interactive or as interactive, persistent or input-sensitive.
+- For finite and non-interactive commands that may take time, use the longest
+  supported wait, targeting up to `300000 ms`. If the process is still running,
+  use another long wait. Do not poll at short intervals or create model rounds
+  solely to check completion.
+- Use responsive polling for servers, TUIs, debuggers and programs that require
+  input or prompt observation.
+
 ## Required workflow
 
 A task is non-trivial when it changes behavior, architecture, persistence,

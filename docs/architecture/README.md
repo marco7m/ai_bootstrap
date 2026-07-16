@@ -39,6 +39,12 @@ owns structural updates to `Makefile` and `.gitignore`; force/reset never bypass
 a composition or migration conflict. Optional Git comparison exists only in the
 generated semantic checker and is not part of normal apply planning.
 
+The managed base `AGENTS.md` template owns stack-independent process
+classification and wait-cadence guidance. Manifest-selected context fragments
+add only stack-specific examples; the Rust fragment classifies common Cargo
+validation commands while leaving launched-program behavior authoritative.
+Renderer, planner and execution adapters remain policy-agnostic.
+
 ## Approved target architecture
 
 No further architecture target is currently approved. The current lifecycle

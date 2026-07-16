@@ -47,7 +47,7 @@ class TemplatePackTests(unittest.TestCase):
         pack = load_default_template_pack()
 
         self.assertEqual(pack.name, "default")
-        self.assertEqual(pack.version, "0.5.0")
+        self.assertEqual(pack.version, "0.5.1")
         templated_specs = [*pack.files, *pack.context_fragments, *pack.compositions]
         for spec in templated_specs:
             self.assertTrue(pack.template_path(spec.template).exists(), spec.template)
@@ -215,6 +215,38 @@ class TemplatePackTests(unittest.TestCase):
             self.assertNotIn(target / "docs/architecture/rust-development.md", python_paths)
             agents = next(item for item in python_plan.results if item.path == target / "AGENTS.md")
             self.assertNotIn("Rust development lifecycle", agents.content)
+
+    def test_long_running_command_wait_policy_is_generic_with_conditional_rust_examples(self) -> None:
+        groups = {"spec-driven", "living-docs"}
+        pack = load_default_template_pack()
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            rendered_agents = {}
+            for name, profile in (("python", _profile()), ("rust", _rust_profile())):
+                plan = build_plan(
+                    target,
+                    profile=profile,
+                    pack=pack,
+                    enabled_workflows=["spec-driven", "living-docs"],
+                    enabled_groups=groups,
+                    force=False,
+                    dry_run=True,
+                )
+                rendered_agents[name] = next(
+                    item.content for item in plan.results if item.path == target / "AGENTS.md"
+                )
+
+            for agents in rendered_agents.values():
+                self.assertIn("finite and non-interactive", agents)
+                self.assertIn("`300000 ms`", agents)
+                self.assertIn("create model rounds", agents)
+                self.assertIn("solely to check completion", agents)
+                self.assertIn("servers, TUIs, debuggers", agents)
+
+            for cargo_command in ("cargo build", "cargo check", "cargo test", "cargo clippy"):
+                self.assertIn(f"`{cargo_command}`", rendered_agents["rust"])
+                self.assertNotIn(f"`{cargo_command}`", rendered_agents["python"])
+            self.assertIn("`cargo run` by the launched program", rendered_agents["rust"])
 
     def test_project_owned_instructions_are_never_created_or_overwritten(self) -> None:
         groups = {"spec-driven", "living-docs"}

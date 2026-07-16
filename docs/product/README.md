@@ -37,6 +37,13 @@ entire real apply before any write.
 Project-owned paths such as `AGENTS.project.md` and conflicting composition
 targets remain protected. The tool creates no backup, commit, branch, or stash.
 
+Generated agent instructions classify process behavior before choosing a
+terminal wait cadence. Finite non-interactive work uses the longest supported
+wait, targeting up to five minutes, and avoids completion-only short polling;
+interactive or persistent processes retain responsive observation. Rust
+projects also receive conditional Cargo examples without assuming that every
+program launched through Cargo is non-interactive.
+
 ## Approved targets
 
 No further product target is currently approved. The lifecycle-aware ownership

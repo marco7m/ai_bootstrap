@@ -18,7 +18,7 @@ Detailed behavior and design remain in their owning documents.
 
 | Capability | Product contract | Architecture | Current state | Evidence | Approved target | Active change |
 | --- | --- | --- | --- | --- | --- | --- |
-| Bootstrap file application and upgrade | [Product](product/README.md) | [Architecture](architecture/README.md) | `verified` | Lifecycle, manifest, state, planner/applier, CLI/TUI, incident and semantic-checker contracts pass in the 91-test suite; fresh Python/Rust generation and forced reapply preserved evolved seeded content. | — | — |
+| Bootstrap file application and upgrade | [Product](product/README.md) | [Architecture](architecture/README.md) | `verified` | The 92-test suite passes, including rendered Python/Rust contracts for generic long waits, interactive exceptions and conditional Cargo examples; lifecycle, manifest, state, planner/applier, CLI/TUI, incident and semantic checks remain covered. | — | — |
 
 ## Rules
 

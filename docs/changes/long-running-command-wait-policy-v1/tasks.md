@@ -1,0 +1,23 @@
+# Tasks: Long-running command wait policy v1
+
+- [x] Re-read the approved spec and approved plan before implementation.
+- [x] Recheck the working tree and preserve pre-existing changes in `.ai-bootstrap/state.json` and `docs/LIVING_DOCUMENTATION.md`.
+- [x] Register the approved target and active change in `docs/CAPABILITIES.md` without replacing current state or evidence.
+- [x] Add rendered-output contract assertions for the generic finite/non-interactive classification and `300000 ms` target in both Python and Rust profiles.
+- [x] Assert that completion-only short polling/model rounds are discouraged and interactive or persistent processes retain responsive polling.
+- [x] Assert that the four Cargo examples appear only for Rust and that `cargo run` is classified by launched-program behavior.
+- [x] Add the compact stack-independent long-running-command policy to the managed base `AGENTS.md` template.
+- [x] Add only Rust-specific command examples to the existing Rust context fragment without duplicating timing rules.
+- [x] Increment the default template-pack version to `0.5.1` and update its contract assertion.
+- [x] Run the 19 focused template-pack tests and confirm the `AGENTS.md` word budget remains satisfied (`unittest`; `pytest` is unavailable).
+- [x] Run all 14 test modules with `python -m unittest`; all 92 tests pass.
+- [x] Attempt `python -m build` and the local wheel fallback; record the environment's missing `build` and `wheel` tools in `notes.md`.
+- [x] Validate the manifest with `python -m json.tool ai_workflow_bootstrap/template_packs/default/manifest.json`.
+- [x] Update `docs/product/README.md` with the verified generated wait-policy contract.
+- [x] Update `docs/architecture/README.md` with base-template and Rust-fragment ownership.
+- [x] Update capability evidence and clear the approved target/active change only after successful validation.
+- [x] Run both living-document checkers and `git diff --check` after documentation closeout.
+- [x] Inspect the final diff for duplicated policy, unconditional Cargo classification, unrelated changes and accidental edits to root/project-owned agent instructions.
+- [x] Validate every acceptance criterion; no implementation deviation was required.
+- [x] Confirm the touched area remains cohesive and no dependency, runtime supervision or persistence change was introduced.
+- [x] Summarize changed behavior, files, validation and limitations.

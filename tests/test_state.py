@@ -101,7 +101,7 @@ class StateTests(unittest.TestCase):
                 state.files["AGENTS.md"]["applied_content_hash"],
                 content_hash("managed\n"),
             )
-            self.assertEqual(state.files["AGENTS.md"]["applied_version"], "0.5.0")
+            self.assertEqual(state.files["AGENTS.md"]["applied_version"], "0.5.1")
 
     def test_state_round_trip(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
