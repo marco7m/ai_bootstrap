@@ -7,7 +7,7 @@ active change. Unapproved possibilities belong in the idea inbox.
 
 ## Now
 
-- _Most important approved outcome and link._
+- _No approved outcome is currently active._
 
 ## Next
 

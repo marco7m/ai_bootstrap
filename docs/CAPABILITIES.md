@@ -18,7 +18,8 @@ Detailed behavior and design remain in their owning documents.
 
 | Capability | Product contract | Architecture | Current state | Evidence | Approved target | Active change |
 | --- | --- | --- | --- | --- | --- | --- |
-| Bootstrap file application and upgrade | [Product](product/README.md) | [Architecture](architecture/README.md) | `verified` | The 92-test suite passes, including rendered Python/Rust contracts for generic long waits, interactive exceptions and conditional Cargo examples; lifecycle, manifest, state, planner/applier, CLI/TUI, incident and semantic checks remain covered. | — | — |
+| Bootstrap file application and upgrade | [Product](product/README.md) | [Architecture](architecture/README.md) | `verified` | The 103-test suite passes, including rendered Python/Rust audit and wait-policy contracts; lifecycle, manifest, state, planner/applier, CLI/TUI, incident and semantic checks remain covered. | — | — |
+| Integrated maintainability and knowledge audit | [Current audit contract](product/README.md#generated-maintainability-and-knowledge-audit) | [Audit boundary](architecture/README.md#generated-maintainability-audit-boundary) | `verified` | [Eleven focused audit contracts](../tests/test_maintainability_audit.py) cover scope, deterministic advisory output, size, missing/orphan/concentrated owners, closeout signals, sensitive exclusions, generated workflow integration and fresh Python/Rust execution; the full 103-test suite, compile validation, manifest validation and [generated skill validation](../ai_workflow_bootstrap/template_packs/default/templates/.agents/skills/maintainability-audit/SKILL.md) pass. | — | — |
 
 ## Rules
 

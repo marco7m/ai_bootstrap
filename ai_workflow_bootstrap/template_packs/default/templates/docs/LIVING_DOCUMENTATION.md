@@ -38,6 +38,25 @@ maintenance and does not authorize replacing that knowledge with seed text.
 5. Record `verified` only with safe relevant evidence.
 6. At closeout, distill durable facts, remove stale active links and validate links.
 
+## Knowledge maintainability
+
+Keep indexes and area README files as compact navigation hubs. Move detail into
+focused product, architecture or decision pages when a real responsibility
+gains its own owner and doing so lowers retrieval cost for humans and agents.
+Do not split merely because a line or byte threshold was crossed.
+
+Use the maintainability audit to surface advisory size, orphan, capability-route
+concentration and incomplete-closeout signals. Review those signals
+semantically: a large cohesive vision may remain intact, while a short page
+with mixed responsibilities may need separation. Ensure focused pages are
+reachable through relative links from their index, capability or decision
+owner.
+
+Change specs, plans, tasks and notes are temporal evidence, not the normal
+current-project explanation. At closeout, move durable facts to their owners
+and evaluate lasting rationale for a decision record. An explicit
+`no-update-needed` disposition requires a reason.
+
 ## Regeneration and recovery
 
 Treat an unexpected downgrade, seed placeholder, sharply reduced capability

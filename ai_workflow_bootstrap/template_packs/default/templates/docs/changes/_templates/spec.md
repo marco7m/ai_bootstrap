@@ -29,6 +29,10 @@
 ### Simplicity
 
 ## 9. Maintainability Impact
+- Scoped audit evidence:
+- Findings and risk:
+- Required in-scope disposition:
+- Separate-spec or advisory disposition:
 - Does this change make future changes easier or harder?
 - Touched architecture:
 - Potential entropy:

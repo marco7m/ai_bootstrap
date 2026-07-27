@@ -99,6 +99,8 @@ By default, the new CLI generates:
 - `docs/changes/_templates/open_questions.md`
 - `docs/changes/_templates/decisions.md`
 - `.agents/skills/spec-driven/SKILL.md`
+- `.agents/skills/maintainability-audit/SKILL.md`
+- `.agents/skills/maintainability-audit/scripts/audit_repository.py`
 - `.agents/skills/living-docs/SKILL.md`
 - `.agents/skills/living-docs/scripts/check_links.py`
 - `.agents/skills/living-docs/scripts/check_living_docs.py`
@@ -172,14 +174,30 @@ Protected project-owned paths are never overwritten or deleted by that option.
 
 Compatible assistants can also use the open Agent Skills under `.agents/skills/`.
 
-## Maintainability Guardrails
+## Maintainability Audit
 
-The generated workflow includes guardrails for code quality and test quality.
+The generated workflow audits code quality and living-knowledge maintainability
+proportionally around specification, planning, and closeout.
 
 - Tests should protect behavior contracts, not private implementation details.
 - File and function size are review triggers, not hard rules.
-- The `maintainability-audit` skill helps spot brittle tests, mixed responsibilities, duplicated logic, and other signs that a small change should include a small local refactor.
-- If a change needs a larger refactor, the workflow asks for a separate spec instead of hiding the debt.
+- The `maintainability-audit` skill classifies code and documentation findings
+  as local cleanup, planned refactor, separate spec, or accepted advisory
+  observation.
+- The generated script reports stable scoped or explicitly repo-wide signals
+  for large files, missing/orphan/concentrated knowledge owners and incomplete
+  change closeout without printing file contents.
+- Findings discovered after approval cannot silently expand the active spec.
+- Objective living-doc and link regressions remain separate blocking checks.
+
+Inspect selected paths during ordinary work:
+
+```bash
+python .agents/skills/maintainability-audit/scripts/audit_repository.py . \
+  --path src --path docs/architecture
+```
+
+Use `--repo-wide` only for an explicit repository health pass.
 
 ## TUI
 

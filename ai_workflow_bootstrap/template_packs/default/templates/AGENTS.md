@@ -13,8 +13,9 @@ Detected stack: $detected_stacks
   architecture, capability or decision pages relevant to the task.
 - Use the `spec-driven` skill for non-trivial changes. Open
   `docs/SPEC_DRIVEN.md` only when detailed workflow guidance is needed.
-- Use `maintainability-audit` when ownership is unclear, tests are brittle or a
-  small conceptual change is scattered across unrelated files.
+- Use `maintainability-audit` for code or living-knowledge maintainability when
+  ownership is unclear, files are large, tests are brittle, documentation is
+  concentrated or a small conceptual change is scattered.
 - Use `living-docs` when orienting in the project or changing durable project
   knowledge.
 

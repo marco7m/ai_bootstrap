@@ -47,6 +47,29 @@ A good-enough spec states:
 Avoid premature implementation details unless they are genuine constraints.
 If important ambiguity remains, surface it instead of guessing.
 
+## Maintainability routing
+
+Before drafting a non-trivial spec, inspect the smallest relevant code and
+knowledge area. Run the scoped maintainability audit when files are large,
+ownership is unclear, documentation is concentrated or orphaned, tests are
+brittle, current truth appears trapped in change artifacts, or a small concept
+touches many files.
+
+Treat deterministic findings as evidence for review, not automatic refactor
+orders. Record each relevant finding, risk and disposition:
+
+- safe local cleanup;
+- planned local refactor within the approved outcome;
+- separate refactor spec;
+- advisory observation accepted with rationale.
+
+After spec approval, findings cannot cause silent scope expansion. Reconcile a
+material in-scope contract change and obtain the required approval; route broad
+or unrelated debt to a separate spec; keep justified advisory findings visible
+without forcing work. Repeat the scoped audit during planning and against the
+implemented diff and affected knowledge owners at closeout. A clean scoped
+result is not a repository-wide baseline.
+
 ## Planning
 
 After spec approval, inspect relevant code, tests, structure, configuration,
@@ -77,6 +100,7 @@ Before completion:
 - update current capability state only when implementation/evidence supports it;
 - distill durable product, architecture, roadmap and decision facts;
 - validate relative links and close `tasks.md`.
+- fill the living-document and maintainability closeout dispositions.
 
 The final summary reports changed behavior, validation, documentation updates,
 remaining limitations and any architectural concern.

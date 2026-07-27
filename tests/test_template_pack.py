@@ -47,7 +47,7 @@ class TemplatePackTests(unittest.TestCase):
         pack = load_default_template_pack()
 
         self.assertEqual(pack.name, "default")
-        self.assertEqual(pack.version, "0.5.1")
+        self.assertEqual(pack.version, "0.6.0")
         templated_specs = [*pack.files, *pack.context_fragments, *pack.compositions]
         for spec in templated_specs:
             self.assertTrue(pack.template_path(spec.template).exists(), spec.template)
@@ -77,6 +77,10 @@ class TemplatePackTests(unittest.TestCase):
             },
         )
         self.assertTrue(all(spec.migration_target for spec in pack.obsolete_files))
+        self.assertIn(
+            ".agents/skills/maintainability-audit/scripts/audit_repository.py",
+            {spec.path for spec in pack.files},
+        )
 
     def test_workflow_preserves_two_approval_gates_and_single_template_owners(self) -> None:
         pack = load_default_template_pack()
@@ -156,6 +160,10 @@ class TemplatePackTests(unittest.TestCase):
             self.assertIn(str(target / ".agents/skills/living-docs/SKILL.md"), planned)
             self.assertIn(str(target / ".agents/skills/living-docs/scripts/check_links.py"), planned)
             self.assertIn(str(target / ".agents/skills/living-docs/scripts/check_living_docs.py"), planned)
+            self.assertIn(
+                str(target / ".agents/skills/maintainability-audit/scripts/audit_repository.py"),
+                planned,
+            )
             self.assertNotIn(str(target / "docs/AI_CONTEXT.md"), planned)
             self.assertNotIn(str(target / "AGENTS.project.md"), planned)
 

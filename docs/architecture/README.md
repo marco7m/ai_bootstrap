@@ -45,11 +45,34 @@ add only stack-specific examples; the Rust fragment classifies common Cargo
 validation commands while leaving launched-program behavior authoritative.
 Renderer, planner and execution adapters remain policy-agnostic.
 
+### Generated maintainability audit boundary
+
+Default pack `0.6.0` declares
+`.agents/skills/maintainability-audit/scripts/audit_repository.py` as a managed
+standard-library tool. The script owns deterministic advisory collection,
+explicit scoped/repo-wide traversal, sensitive/cache exclusions, Markdown
+knowledge-graph reachability, capability-route concentration, completed-change
+disposition checks and stable text/JSON output. It returns success for review
+findings and never becomes a bootstrap planner or applier concern.
+
+The generated `maintainability-audit` skill owns semantic cohesion, risk and
+finding disposition. `spec-driven` owns the pre-spec, planning and closeout
+timing plus approval-scope routing. `living-docs` owns focused knowledge pages,
+durable fact distillation and ADR evaluation. Its existing semantic/link
+checkers remain separate blocking regression gates, as recorded in
+[the audit-boundary decision](../decisions/0001-separate-advisory-health-from-regression-gates.md).
+
+The default manifest and renderer only distribute these managed artifacts.
+Core planner, lifecycle, applier, state, CLI and TUI modules remain unaware of
+maintainability thresholds and documentation heuristics.
+
 ## Approved target architecture
 
 No further architecture target is currently approved. The current lifecycle
 boundary and provenance flow were introduced by the completed
-[living-knowledge ownership change](../changes/protect-living-knowledge-ownership-v1/spec.md).
+[living-knowledge ownership change](../changes/protect-living-knowledge-ownership-v1/spec.md);
+the audit boundary was introduced by the completed
+[Integrated Maintainability and Knowledge Audit v1](../changes/integrated-maintainability-knowledge-audit-v1/spec.md).
 
 ## Architecture documents
 

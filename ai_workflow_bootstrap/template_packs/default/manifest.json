@@ -1,6 +1,6 @@
 {
   "name": "default",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "directories": [
     { "path": "docs", "group": "spec-driven" },
     { "path": "docs/changes", "group": "spec-driven" },
@@ -10,6 +10,7 @@
     { "path": "docs/decisions", "group": "living-docs" },
     { "path": ".agents/skills/spec-driven", "group": "skill/spec-driven" },
     { "path": ".agents/skills/maintainability-audit", "group": "skill/maintainability-audit" },
+    { "path": ".agents/skills/maintainability-audit/scripts", "group": "skill/maintainability-audit" },
     { "path": ".agents/skills/living-docs", "group": "skill/living-docs" },
     { "path": ".agents/skills/living-docs/scripts", "group": "skill/living-docs" }
   ],
@@ -48,6 +49,7 @@
     { "path": "docs/GLOSSARY.md", "template": "templates/docs/GLOSSARY.md", "group": "living-docs", "lifecycle": "seeded" },
     { "path": ".agents/skills/spec-driven/SKILL.md", "template": "templates/.agents/skills/spec-driven/SKILL.md", "group": "skill/spec-driven", "lifecycle": "managed" },
     { "path": ".agents/skills/maintainability-audit/SKILL.md", "template": "templates/.agents/skills/maintainability-audit/SKILL.md", "group": "skill/maintainability-audit", "lifecycle": "managed" },
+    { "path": ".agents/skills/maintainability-audit/scripts/audit_repository.py", "template": "templates/.agents/skills/maintainability-audit/scripts/audit_repository.py", "group": "skill/maintainability-audit", "lifecycle": "managed" },
     { "path": ".agents/skills/living-docs/SKILL.md", "template": "templates/.agents/skills/living-docs/SKILL.md", "group": "skill/living-docs", "lifecycle": "managed" },
     { "path": ".agents/skills/living-docs/scripts/check_links.py", "template": "templates/.agents/skills/living-docs/scripts/check_links.py", "group": "skill/living-docs", "lifecycle": "managed" },
     { "path": ".agents/skills/living-docs/scripts/check_living_docs.py", "template": "templates/.agents/skills/living-docs/scripts/check_living_docs.py", "group": "skill/living-docs", "lifecycle": "managed" }

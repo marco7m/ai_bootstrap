@@ -26,6 +26,7 @@
 
 ## 6. Architecture Locality
 
+- Finding disposition from the approved scoped audit:
 - Primary module or owner:
 - Files expected to change:
 - Files that should not be touched:

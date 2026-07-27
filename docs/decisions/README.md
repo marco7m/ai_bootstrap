@@ -15,7 +15,7 @@ project guidance.
 
 | Decision | Status | Related product | Related architecture |
 | --- | --- | --- | --- |
-| _Add a relative link when the first durable decision exists_ | — | — | — |
+| [Separate advisory repository health from regression gates](0001-separate-advisory-health-from-regression-gates.md) | accepted | [Audit contract](../product/README.md#generated-maintainability-and-knowledge-audit) | [Audit boundary](../architecture/README.md#generated-maintainability-audit-boundary) |
 
 When replacing a decision, preserve its history and link to the superseding
 record instead of rewriting the original rationale.

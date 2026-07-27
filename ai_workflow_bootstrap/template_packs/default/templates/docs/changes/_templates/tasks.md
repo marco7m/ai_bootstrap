@@ -2,6 +2,7 @@
 
 - [ ] Re-read approved spec and plan
 - [ ] Inspect relevant code paths and conventions
+- [ ] Run the proportional scoped maintainability audit and disposition findings
 - [ ] Confirm module ownership and boundaries
 - [ ] Check maintainability triggers before implementation
 - [ ] Confirm tests protect behavior contracts, not implementation details
@@ -21,3 +22,8 @@
 - [ ] Update docs if behavior, config, commands, or architecture changed
 - [ ] Confirm touched area is at least as maintainable as before
 - [ ] Summarize final result
+
+## Closeout Disposition
+
+- Living documentation: `pending`
+- Maintainability: `pending`

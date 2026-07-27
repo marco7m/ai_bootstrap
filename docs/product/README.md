@@ -44,10 +44,35 @@ interactive or persistent processes retain responsive observation. Rust
 projects also receive conditional Cargo examples without assuming that every
 program launched through Cargo is non-interactive.
 
+### Generated maintainability and knowledge audit
+
+Generated projects receive a local standard-library audit that inspects an
+explicit path set during ordinary work or the whole repository only when
+requested. It reports stable advisory evidence for large files, orphaned
+current-knowledge pages, concentrated capability routing, missing owner
+baselines and completed changes without a living-document disposition. It
+skips common generated, dependency, cache and sensitive local paths and emits
+measurements rather than file contents.
+
+The generated maintainability skill interprets those signals across code and
+living knowledge. It classifies local cleanup, planned refactoring,
+separate-spec work and accepted advisory observations. Spec-driven guidance
+runs that review proportionally before specification, during planning and
+against the implemented diff at closeout. Findings discovered after approval
+cannot silently expand the active contract.
+
+Size remains a cohesion trigger rather than a failure. Existing link and
+living-document regression checks remain the blocking validation surface;
+agents retain responsibility for semantic ownership, intent and whether a
+focused wiki page or ADR is justified.
+
 ## Approved targets
 
-No further product target is currently approved. The lifecycle-aware ownership
-contract was introduced by the completed
+No further product target is currently approved. The generated audit contract
+was introduced by the completed
+[Integrated Maintainability and Knowledge Audit v1](../changes/integrated-maintainability-knowledge-audit-v1/spec.md).
+
+The lifecycle-aware ownership contract was introduced by the completed
 [living-knowledge ownership change](../changes/protect-living-knowledge-ownership-v1/spec.md).
 
 ## Product documents
