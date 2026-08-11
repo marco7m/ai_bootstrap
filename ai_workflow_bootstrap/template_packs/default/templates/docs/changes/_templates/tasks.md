@@ -17,13 +17,17 @@
 - [ ] Validate acceptance criteria
 - [ ] Update current capability state/evidence only when implementation and validation support it
 - [ ] Distill durable facts into their living-doc owners and validate relative links
+- [ ] Account for durable facts added, changed and removed; disposition every removal
 - [ ] Check whether changed files are conceptually related
 - [ ] Document architecture smell if the change is unexpectedly scattered
 - [ ] Update docs if behavior, config, commands, or architecture changed
 - [ ] Confirm touched area is at least as maintainable as before
+- [ ] Run `python .agents/skills/living-docs/scripts/check_docs.py . --closeout docs/changes/<change> --advisory`
 - [ ] Summarize final result
 
 ## Closeout Disposition
 
 - Living documentation: `pending`
-- Maintainability: `pending`
+- Living documentation rationale: `pending`
+- Durable facts added/changed/removed: `pending`
+- Maintainability findings: `pending`

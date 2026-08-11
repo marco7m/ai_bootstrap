@@ -11,6 +11,8 @@ Living docs are compact current project knowledge, not transcripts.
 - [Roadmap](ROADMAP.md) owns ordered approved outcomes.
 - [Decisions](decisions/README.md) owns durable rationale.
 - [Idea inbox](IDEA_INBOX.md) owns unapproved possibilities.
+- [Baseline](LIVING_DOCUMENTATION_BASELINE.md) owns reviewed coverage evidence
+  and explicitly grandfathered historical closeout debt.
 
 One durable fact has one owner; other documents link to it.
 
@@ -22,9 +24,10 @@ maintenance and does not authorize replacing that knowledge with seed text.
 ## Truth and coverage
 
 - `scaffold` is generated structure, not established truth.
-- `incomplete` has reviewed knowledge plus explicit gaps.
-- `baselined` requires reviewed product intent, current architecture and stated
-  evidence. Code can show what exists but cannot alone prove intended behavior.
+- `incomplete` has reviewed, navigable knowledge plus explicit gaps.
+- `baselined` requires navigable reviewed product intent, current architecture,
+  capability routes and stated evidence for a declared scope. Code can show
+  what exists but cannot alone prove intended behavior.
 - Keep current implementation separate from approved targets. A verified current
   capability can have a planned evolution without losing its current state.
 - Investigate conflicts between docs and code/tests/runtime before updating either.
@@ -36,7 +39,23 @@ maintenance and does not authorize replacing that knowledge with seed text.
 3. Identify living-doc owners in the plan/tasks.
 4. Update current state only when implementation supports it.
 5. Record `verified` only with safe relevant evidence.
-6. At closeout, distill durable facts, remove stale active links and validate links.
+6. At closeout, account for durable facts added, changed and removed; every
+   removal needs disposition.
+7. Close living documentation only as `updated` or justified
+   `no-update-needed`; `pending`, `follow-up` and absence keep the change open.
+
+## Navigation and baseline
+
+`docs/INDEX.md` is the canonical entry point. Product and architecture READMEs
+are compact hubs once real responsibilities gain focused owners. Every focused
+current owner remains reachable from the index graph; capability product and
+architecture routes stay within their respective authority areas.
+
+`docs/LIVING_DOCUMENTATION_BASELINE.md` is established only after repository
+review. Grandfathered exact paths remain visible unresolved debt and are exempt
+only from the prospective gate. Bootstrap application never inventories or
+marks historical changes reviewed. Once established, new completed changes
+require a valid living-document disposition.
 
 ## Regeneration and recovery
 
@@ -61,15 +80,17 @@ record `Bootstrap recovery audit:` in `docs/INDEX.md` with the reviewed scope
 and safe evidence reference. This is a disposition marker, not proof that all
 project knowledge is complete.
 
-Run both deterministic checks after recovery or structural closeout:
+This repository's installed managed checks predate pack `0.7.0`; validate the
+current reusable source surface with:
 
 ```bash
-python .agents/skills/living-docs/scripts/check_living_docs.py
-python .agents/skills/living-docs/scripts/check_links.py
+python ai_workflow_bootstrap/template_packs/default/templates/.agents/skills/living-docs/scripts/check_docs.py .
 ```
 
-The semantic checker detects objective contradictions and regression signals;
-it does not certify that the documentation is complete or true.
+Generated/upgraded projects receive the shorter
+`.agents/skills/living-docs/scripts/check_docs.py` path. Blocking checks detect
+objective contradictions and regressions; advisory size/concentration does not
+certify that documentation is complete or true.
 
 Keep foundational pages compact; split only real responsibilities. Never store
 secrets, credentials, private messages, production/customer data or sensitive

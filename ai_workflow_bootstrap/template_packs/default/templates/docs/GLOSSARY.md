@@ -11,4 +11,5 @@ inconsistently.
 
 Keep definitions terse. Detailed behavior belongs in
 [product](product/README.md), and implementation details belong in
-[architecture](architecture/README.md).
+[architecture](architecture/README.md). The Owner column routes to the durable
+fact owner; the glossary must not become a second copy of that fact.

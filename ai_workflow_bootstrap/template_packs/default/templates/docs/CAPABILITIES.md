@@ -31,4 +31,9 @@ Detailed behavior and design remain in their owning documents.
 - Remove completed active-change links after distilling durable facts.
 - Move rejected/superseded intent out of this active map after preserving any
   useful disposition or durable decision.
+- Product contract links must resolve under `docs/product/`; architecture links
+  must resolve under `docs/architecture/`. A change artifact is evidence/history,
+  not the only current owner.
+- Link each significant capability to pertinent safe evidence or use `—` as an
+  explicit evidence gap.
 - Link to safe repository evidence; do not copy source, logs or sensitive data.

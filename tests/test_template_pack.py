@@ -47,7 +47,7 @@ class TemplatePackTests(unittest.TestCase):
         pack = load_default_template_pack()
 
         self.assertEqual(pack.name, "default")
-        self.assertEqual(pack.version, "0.6.0")
+        self.assertEqual(pack.version, "0.7.0")
         templated_specs = [*pack.files, *pack.context_fragments, *pack.compositions]
         for spec in templated_specs:
             self.assertTrue(pack.template_path(spec.template).exists(), spec.template)
@@ -67,6 +67,7 @@ class TemplatePackTests(unittest.TestCase):
             {spec.path for spec in pack.files if spec.lifecycle == "seeded"},
             {
                 "docs/INDEX.md",
+                "docs/LIVING_DOCUMENTATION_BASELINE.md",
                 "docs/CAPABILITIES.md",
                 "docs/product/README.md",
                 "docs/architecture/README.md",
@@ -79,6 +80,14 @@ class TemplatePackTests(unittest.TestCase):
         self.assertTrue(all(spec.migration_target for spec in pack.obsolete_files))
         self.assertIn(
             ".agents/skills/maintainability-audit/scripts/audit_repository.py",
+            {spec.path for spec in pack.files},
+        )
+        self.assertIn(
+            ".agents/skills/living-docs/scripts/documentation_contract.py",
+            {spec.path for spec in pack.files},
+        )
+        self.assertIn(
+            ".agents/skills/living-docs/scripts/check_docs.py",
             {spec.path for spec in pack.files},
         )
 
@@ -136,8 +145,11 @@ class TemplatePackTests(unittest.TestCase):
         self.assertIn("| Current state | Evidence | Approved target | Active change |", capabilities)
         self.assertIn("`verified` now while its next evolution is approved", capabilities)
         self.assertIn("Keep unapproved ideas", capabilities)
-        self.assertIn("Code can show what exists but cannot alone prove intended behavior", policy)
-        self.assertIn("scripts/check_links.py", skill)
+        self.assertIn("Code can show what exists", policy)
+        self.assertIn("prove intended behavior", policy)
+        self.assertIn("LIVING_DOCUMENTATION_BASELINE.md", index)
+        self.assertIn("check_docs.py", skill)
+        self.assertIn("scripts/check_docs.py", skill)
 
     def test_unified_workflow_generates_complete_surface_without_ai_context(self) -> None:
         pack = load_default_template_pack()
@@ -160,6 +172,9 @@ class TemplatePackTests(unittest.TestCase):
             self.assertIn(str(target / ".agents/skills/living-docs/SKILL.md"), planned)
             self.assertIn(str(target / ".agents/skills/living-docs/scripts/check_links.py"), planned)
             self.assertIn(str(target / ".agents/skills/living-docs/scripts/check_living_docs.py"), planned)
+            self.assertIn(str(target / ".agents/skills/living-docs/scripts/check_docs.py"), planned)
+            self.assertIn(str(target / ".agents/skills/living-docs/scripts/documentation_contract.py"), planned)
+            self.assertIn(str(target / "docs/LIVING_DOCUMENTATION_BASELINE.md"), planned)
             self.assertIn(
                 str(target / ".agents/skills/maintainability-audit/scripts/audit_repository.py"),
                 planned,
@@ -482,7 +497,11 @@ class TemplatePackTests(unittest.TestCase):
             self.assertEqual(broken.returncode, 1)
             self.assertIn("missing.md", broken.stderr)
 
-            probe.write_text("```md\n[example](missing.md)\n```\n[anchor](#local)\n[web](https://example.com)\n", encoding="utf-8")
+            probe.write_text(
+                "## Local\n\n```md\n[example](missing.md)\n```\n"
+                "[anchor](#local)\n[web](https://example.com)\n",
+                encoding="utf-8",
+            )
             ignored = subprocess.run([sys.executable, str(checker)], cwd=target, text=True, capture_output=True, check=False)
             self.assertEqual(ignored.returncode, 0, ignored.stderr)
 

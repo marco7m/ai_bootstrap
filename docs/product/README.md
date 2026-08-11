@@ -66,10 +66,16 @@ living-document regression checks remain the blocking validation surface;
 agents retain responsibility for semantic ownership, intent and whether a
 focused wiki page or ADR is justified.
 
+The navigable three-layer knowledge, historical baseline and organic closeout
+contract is owned by the focused
+[living-documentation workflow](living-documentation-workflow.md).
+
 ## Approved targets
 
-No further product target is currently approved. The generated audit contract
-was introduced by the completed
+The active approved target is the
+[Navigable Living Knowledge v1](../changes/navigable-living-knowledge-v1/spec.md)
+workflow. Current capability evidence remains unchanged until implementation
+validation closes it. The generated audit contract was introduced by the completed
 [Integrated Maintainability and Knowledge Audit v1](../changes/integrated-maintainability-knowledge-audit-v1/spec.md).
 
 The lifecycle-aware ownership contract was introduced by the completed
@@ -77,5 +83,8 @@ The lifecycle-aware ownership contract was introduced by the completed
 
 ## Product documents
 
-Create a focused page only when a real product responsibility has enough durable
-detail. Link it here and from the relevant capability row.
+- [Navigable living-documentation workflow](living-documentation-workflow.md)
+  owns the generated navigation, baseline and closeout behavior.
+
+Create another focused page only when a real product responsibility has enough
+durable detail. Link it here and from the relevant capability row.

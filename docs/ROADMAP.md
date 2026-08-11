@@ -7,7 +7,7 @@ active change. Unapproved possibilities belong in the idea inbox.
 
 ## Now
 
-- _No approved outcome is currently active._
+- _No active approved outcome._
 
 ## Next
 

@@ -24,11 +24,13 @@ against the stated evidence.
 - [Idea inbox](IDEA_INBOX.md): unapproved possibilities.
 - [Glossary](GLOSSARY.md): stable project terms.
 - [Living-documentation policy](LIVING_DOCUMENTATION.md): ownership and maintenance.
+- [Living-documentation baseline](LIVING_DOCUMENTATION_BASELINE.md): reviewed
+  historical-debt inventory and prospective closeout boundary.
 
 ## Reading path
 
 1. Read this page and the relevant capability row.
-2. Follow only the needed product or architecture links.
+2. Follow only the needed focused product or architecture links.
 3. Open changes, decisions, tests or source when evidence is required.
 
 Do not use an empty scaffold, one large change spec or a conversation transcript

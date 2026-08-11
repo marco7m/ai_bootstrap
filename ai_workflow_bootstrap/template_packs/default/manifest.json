@@ -1,6 +1,6 @@
 {
   "name": "default",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "directories": [
     { "path": "docs", "group": "spec-driven" },
     { "path": "docs/changes", "group": "spec-driven" },
@@ -31,6 +31,7 @@
     { "path": "docs/changes/_templates/open_questions.md", "template": "templates/docs/changes/_templates/open_questions.md", "group": "spec-driven", "lifecycle": "managed" },
     { "path": "docs/changes/_templates/decisions.md", "template": "templates/docs/changes/_templates/decisions.md", "group": "spec-driven", "lifecycle": "managed" },
     { "path": "docs/INDEX.md", "template": "templates/docs/INDEX.md", "group": "living-docs", "lifecycle": "seeded" },
+    { "path": "docs/LIVING_DOCUMENTATION_BASELINE.md", "template": "templates/docs/LIVING_DOCUMENTATION_BASELINE.md", "group": "living-docs", "lifecycle": "seeded" },
     { "path": "docs/LIVING_DOCUMENTATION.md", "template": "templates/docs/LIVING_DOCUMENTATION.md", "group": "living-docs", "lifecycle": "managed" },
     { "path": "docs/CAPABILITIES.md", "template": "templates/docs/CAPABILITIES.md", "group": "living-docs", "lifecycle": "seeded" },
     { "path": "docs/product/README.md", "template": "templates/docs/product/README.md", "group": "living-docs", "lifecycle": "seeded" },
@@ -51,6 +52,8 @@
     { "path": ".agents/skills/maintainability-audit/SKILL.md", "template": "templates/.agents/skills/maintainability-audit/SKILL.md", "group": "skill/maintainability-audit", "lifecycle": "managed" },
     { "path": ".agents/skills/maintainability-audit/scripts/audit_repository.py", "template": "templates/.agents/skills/maintainability-audit/scripts/audit_repository.py", "group": "skill/maintainability-audit", "lifecycle": "managed" },
     { "path": ".agents/skills/living-docs/SKILL.md", "template": "templates/.agents/skills/living-docs/SKILL.md", "group": "skill/living-docs", "lifecycle": "managed" },
+    { "path": ".agents/skills/living-docs/scripts/documentation_contract.py", "template": "templates/.agents/skills/living-docs/scripts/documentation_contract.py", "group": "skill/living-docs", "lifecycle": "managed" },
+    { "path": ".agents/skills/living-docs/scripts/check_docs.py", "template": "templates/.agents/skills/living-docs/scripts/check_docs.py", "group": "skill/living-docs", "lifecycle": "managed" },
     { "path": ".agents/skills/living-docs/scripts/check_links.py", "template": "templates/.agents/skills/living-docs/scripts/check_links.py", "group": "skill/living-docs", "lifecycle": "managed" },
     { "path": ".agents/skills/living-docs/scripts/check_living_docs.py", "template": "templates/.agents/skills/living-docs/scripts/check_living_docs.py", "group": "skill/living-docs", "lifecycle": "managed" }
   ],

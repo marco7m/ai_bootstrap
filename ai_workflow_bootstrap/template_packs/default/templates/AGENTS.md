@@ -70,6 +70,8 @@ request a compressed workflow when risk is low.
 - One durable fact has one owner. Link to it instead of copying prose.
 - Change artifacts are temporal history. At closeout, distill durable facts
   into their owners and validate relative links.
+- At closeout run the aggregate living-doc check for the active change; only
+  `updated` or justified `no-update-needed` is a closed disposition.
 - A `scaffold` or `incomplete` knowledge base is not proof of complete product
   intent. Surface conflicts between docs and code/tests/runtime before deciding
   which side is stale.

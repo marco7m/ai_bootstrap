@@ -7,7 +7,20 @@ import re
 import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from urllib.parse import unquote
+
+LIVING_DOC_SCRIPTS = Path(__file__).resolve().parents[2] / "living-docs" / "scripts"
+if str(LIVING_DOC_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(LIVING_DOC_SCRIPTS))
+
+from documentation_contract import (  # noqa: E402
+    BASELINE_PATH,
+    closeout_disposition,
+    is_completed_tasks,
+    parse_baseline,
+    parse_capability_rows,
+    reachable_markdown,
+    resolve_local_target,
+)
 
 MARKDOWN_LINE_LIMIT = 250
 MARKDOWN_BYTE_LIMIT = 16 * 1024
@@ -57,27 +70,10 @@ EXCLUDED_DIRS = {
     "venv",
 }
 SENSITIVE_SUFFIXES = {".key", ".pem", ".p12", ".pfx"}
-KNOWLEDGE_ROOTS = (
-    "docs/INDEX.md",
-    "docs/CAPABILITIES.md",
-    "docs/product/README.md",
-    "docs/architecture/README.md",
-    "docs/decisions/README.md",
-)
 PLACEHOLDERS = {
     "docs/product/README.md": "Describe the problem, desired outcome",
     "docs/architecture/README.md": "Document the smallest useful current view",
 }
-MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
-CHECKBOX = re.compile(r"^- \[[ xX]\]", re.MULTILINE)
-UNCHECKED = re.compile(r"^- \[ \]", re.MULTILINE)
-CAPABILITY_LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
-LIVING_DISPOSITION = re.compile(
-    r"^- Living documentation:\s*`([^`]+)`(?:\s*[—–:-]\s*(.+))?\s*$",
-    re.MULTILINE,
-)
-
-
 @dataclass(frozen=True, order=True)
 class Finding:
     code: str
@@ -206,43 +202,18 @@ def _size_findings(root: Path, files: list[Path], repo_wide: bool) -> list[Findi
 
 
 def _normalize_markdown_target(root: Path, source: Path, raw_target: str) -> Path | None:
-    target = raw_target.strip().strip("<>")
-    if not target or target.startswith("#") or "://" in target or target.startswith("mailto:"):
-        return None
-    target = unquote(target.split("#", 1)[0].split("?", 1)[0])
-    if not target:
-        return None
-    candidate = (source.parent / target).resolve()
     try:
-        candidate.relative_to(root)
+        resolved = resolve_local_target(root, source, raw_target)
     except ValueError:
         return None
-    if candidate.is_dir():
-        candidate /= "README.md"
+    if resolved is None:
+        return None
+    candidate, _ = resolved
     return candidate if candidate.suffix.lower() == ".md" else None
 
 
 def _reachable_markdown(root: Path) -> set[Path]:
-    pending = [
-        root / relative
-        for relative in KNOWLEDGE_ROOTS
-        if (root / relative).is_file()
-    ]
-    reachable: set[Path] = set()
-    while pending:
-        current = pending.pop()
-        current = current.resolve()
-        if current in reachable or _is_excluded(root, current):
-            continue
-        reachable.add(current)
-        text = _read_text(current)
-        if text is None:
-            continue
-        for raw_target in MARKDOWN_LINK.findall(text):
-            target = _normalize_markdown_target(root, current, raw_target)
-            if target is not None and target.is_file() and target not in reachable:
-                pending.append(target)
-    return reachable
+    return reachable_markdown(root)
 
 
 def _current_knowledge_pages(root: Path):
@@ -276,19 +247,13 @@ def _capability_targets(root: Path) -> dict[Path, set[str]]:
     targets: dict[Path, set[str]] = {}
     if text is None:
         return targets
-    for line in text.splitlines():
-        if not line.startswith("|"):
-            continue
-        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
-        if len(cells) < 7 or cells[0] in {"Capability", "---", "_Capability_"}:
-            continue
-        for cell in cells[1:3]:
-            match = CAPABILITY_LINK.search(cell)
-            if match is None:
+    for row in parse_capability_rows(text):
+        for raw_target in (row.product_link, row.architecture_link):
+            if raw_target is None:
                 continue
-            target = _normalize_markdown_target(root, capability_path, match.group(1))
+            target = _normalize_markdown_target(root, capability_path, raw_target)
             if target is not None:
-                targets.setdefault(target, set()).add(cells[0])
+                targets.setdefault(target, set()).add(row.name)
     return targets
 
 
@@ -308,7 +273,7 @@ def _concentration_findings(root: Path, scoped_files: set[Path] | None = None) -
         if len(capabilities) < CONCENTRATION_ROUTE_LIMIT or not path.is_file():
             continue
         measured = _is_large(path)
-        if measured is None or not measured[0]:
+        if measured is None:
             continue
         _, lines, size, _ = measured
         findings.append(
@@ -326,24 +291,29 @@ def _concentration_findings(root: Path, scoped_files: set[Path] | None = None) -
 
 
 def _valid_living_disposition(text: str) -> bool:
-    match = LIVING_DISPOSITION.search(text)
-    if match is None:
-        return False
-    value = match.group(1).strip()
-    rationale = (match.group(2) or "").strip()
-    if value == "updated":
-        return True
-    return value in {"no-update-needed", "follow-up"} and bool(rationale)
+    return closeout_disposition(text).valid
 
 
 def _closeout_findings(root: Path, files: list[Path]) -> list[Finding]:
     findings: list[Finding] = []
+    baseline = parse_baseline(root / BASELINE_PATH)
     for path in files:
         relative = _relative(root, path)
         if not relative.startswith("docs/changes/") or path.name != "tasks.md":
             continue
         text = _read_text(path)
-        if text is None or not CHECKBOX.search(text) or UNCHECKED.search(text):
+        if text is None or not is_completed_tasks(text):
+            continue
+        change_path = path.parent.relative_to(root).as_posix()
+        if baseline.status == "established" and change_path in baseline.grandfathered:
+            findings.append(
+                Finding(
+                    code="legacy-closeout-debt",
+                    level="advisory",
+                    path=relative,
+                    evidence="completed change is explicitly grandfathered as unresolved baseline debt",
+                )
+            )
             continue
         if _valid_living_disposition(text):
             continue

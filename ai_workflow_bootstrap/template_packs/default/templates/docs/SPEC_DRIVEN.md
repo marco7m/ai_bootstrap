@@ -82,6 +82,7 @@ identify:
 - risks, rollback and ordered implementation steps;
 - tests that protect the approved contract without freezing internals;
 - living-doc owners, current-state evidence and approved-target links.
+- exact owner paths and durable facts expected to be added, changed or removed.
 
 Then create concrete tasks and request the second approval.
 
@@ -99,8 +100,11 @@ Before completion:
 - ensure secrets and sensitive data stayed out of code, logs and docs;
 - update current capability state only when implementation/evidence supports it;
 - distill durable product, architecture, roadmap and decision facts;
-- validate relative links and close `tasks.md`.
-- fill the living-document and maintainability closeout dispositions.
+- run `check_docs.py . --closeout docs/changes/<change> --advisory`;
+- close living documentation only as `updated` or justified
+  `no-update-needed`; unresolved follow-up work keeps the change open;
+- validate relative links and close `tasks.md` with durable-fact and
+  maintainability dispositions.
 
 The final summary reports changed behavior, validation, documentation updates,
 remaining limitations and any architectural concern.

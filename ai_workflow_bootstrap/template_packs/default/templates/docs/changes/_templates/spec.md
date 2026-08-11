@@ -43,6 +43,10 @@
 
 - Product fact owner(s):
 - Architecture fact owner(s):
+- Potential exact owner paths, when known:
+- Durable facts expected to be added:
+- Durable facts expected to change:
+- Durable facts expected to be removed and required disposition:
 - Current capability state/evidence affected:
 - Approved target and active change:
 - Roadmap or durable decisions affected:

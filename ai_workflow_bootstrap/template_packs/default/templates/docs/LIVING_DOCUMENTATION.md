@@ -11,6 +11,8 @@ Living docs are compact current project knowledge, not transcripts.
 - [Roadmap](ROADMAP.md) owns ordered approved outcomes.
 - [Decisions](decisions/README.md) owns durable rationale.
 - [Idea inbox](IDEA_INBOX.md) owns unapproved possibilities.
+- [Baseline](LIVING_DOCUMENTATION_BASELINE.md) owns reviewed coverage evidence
+  and explicitly grandfathered historical closeout debt.
 
 One durable fact has one owner; other documents link to it.
 
@@ -22,9 +24,12 @@ maintenance and does not authorize replacing that knowledge with seed text.
 ## Truth and coverage
 
 - `scaffold` is generated structure, not established truth.
-- `incomplete` has reviewed knowledge plus explicit gaps.
-- `baselined` requires reviewed product intent, current architecture and stated
-  evidence. Code can show what exists but cannot alone prove intended behavior.
+- `incomplete` has reviewed, navigable knowledge plus explicit gaps for its
+  covered responsibilities.
+- `baselined` requires navigable reviewed product intent, current architecture,
+  capability routes and stated evidence for a declared scope. It is not a claim
+  of exhaustive or permanent truth. Code can show what exists but cannot alone
+  prove intended behavior.
 - Keep current implementation separate from approved targets. A verified current
   capability can have a planned evolution without losing its current state.
 - Investigate conflicts between docs and code/tests/runtime before updating either.
@@ -36,7 +41,12 @@ maintenance and does not authorize replacing that knowledge with seed text.
 3. Identify living-doc owners in the plan/tasks.
 4. Update current state only when implementation supports it.
 5. Record `verified` only with safe relevant evidence.
-6. At closeout, distill durable facts, remove stale active links and validate links.
+6. At closeout, account for durable facts added, changed and removed; every
+   removal needs disposition.
+7. Close living documentation only as `updated` or `no-update-needed` with a
+   change-specific rationale. `pending`, `follow-up` and absence keep the
+   change open.
+8. Remove stale active links and run the targeted aggregate check.
 
 ## Knowledge maintainability
 
@@ -56,6 +66,33 @@ Change specs, plans, tasks and notes are temporal evidence, not the normal
 current-project explanation. At closeout, move durable facts to their owners
 and evaluate lasting rationale for a decision record. An explicit
 `no-update-needed` disposition requires a reason.
+
+## Navigation contract
+
+`docs/INDEX.md` is the canonical entry point. Product and architecture READMEs
+are compact area hubs once durable detail has focused owners. Create a focused
+page only for a real capability, domain, flow, component or cross-cutting
+responsibility; never generate empty domain pages or split solely by size.
+
+Every focused current owner must be reachable by relative links from the index
+graph. Capability product links resolve under `docs/product/`; architecture
+links resolve under `docs/architecture/`. Change artifacts may provide evidence
+but cannot be the only current contract or architecture owner.
+
+## Historical baseline
+
+`docs/LIVING_DOCUMENTATION_BASELINE.md` starts `unestablished`. Establish it
+only after reviewing the actual repository and recording non-placeholder
+evidence. Its grandfathered table lists exact historical change paths that are
+still unresolved debt; listing a path exempts it only from the prospective
+gate and does not declare its content reviewed, correct or current.
+
+Bootstrap application never populates debt rows or invents dispositions. Move
+an entry to reviewed disposition only after real review, without editing the
+historical artifact merely to satisfy validation. Once established, every
+completed change absent from the grandfathered/reviewed inventory must satisfy
+the current closeout contract. A missing/unestablished baseline produces setup
+guidance instead of pretending old debt is solved.
 
 ## Regeneration and recovery
 
@@ -80,15 +117,19 @@ record `Bootstrap recovery audit:` in `docs/INDEX.md` with the reviewed scope
 and safe evidence reference. This is a disposition marker, not proof that all
 project knowledge is complete.
 
-Run both deterministic checks after recovery or structural closeout:
+Run the aggregate check after recovery and target the active change at closeout:
 
 ```bash
-python .agents/skills/living-docs/scripts/check_living_docs.py
-python .agents/skills/living-docs/scripts/check_links.py
+python .agents/skills/living-docs/scripts/check_docs.py .
+python .agents/skills/living-docs/scripts/check_docs.py . \
+  --closeout docs/changes/<change> --advisory
 ```
 
-The semantic checker detects objective contradictions and regression signals;
-it does not certify that the documentation is complete or true.
+The direct `check_living_docs.py` and `check_links.py` commands remain available.
+Blocking checks cover objective links, routes, reachability, baseline and
+closeout regressions. Size, concentration and possible mixed responsibility are
+advisory. No deterministic checker certifies that documentation is complete or
+true.
 
 Keep foundational pages compact; split only real responsibilities. Never store
 secrets, credentials, private messages, production/customer data or sensitive

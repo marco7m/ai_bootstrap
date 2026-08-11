@@ -147,7 +147,7 @@ class MaintainabilityAuditTests(unittest.TestCase):
             {finding["code"] for finding in linked_report["findings"]},
         )
 
-    def test_large_concentrated_owner_is_reported_but_small_owner_is_not(self) -> None:
+    def test_concentration_is_independent_from_size_and_size_remains_advisory(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             _write_knowledge_base(root)
@@ -174,12 +174,20 @@ class MaintainabilityAuditTests(unittest.TestCase):
             )
             large_report = self._json(root, "--repo-wide")
 
-        self.assertNotIn(
+        self.assertIn(
             "knowledge-owner-concentration",
+            {finding["code"] for finding in small_report["findings"]},
+        )
+        self.assertNotIn(
+            "large-file-review",
             {finding["code"] for finding in small_report["findings"]},
         )
         self.assertIn(
             "knowledge-owner-concentration",
+            {finding["code"] for finding in large_report["findings"]},
+        )
+        self.assertIn(
+            "large-file-review",
             {finding["code"] for finding in large_report["findings"]},
         )
 
@@ -214,6 +222,34 @@ class MaintainabilityAuditTests(unittest.TestCase):
             "change-closeout-undispositioned",
             {finding["code"] for finding in justified["findings"]},
         )
+
+    def test_grandfathered_completed_change_remains_visible_as_legacy_debt(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_knowledge_base(root)
+            tasks = root / "docs/changes/old/tasks.md"
+            tasks.parent.mkdir(parents=True)
+            tasks.write_text("# Tasks\n\n- [x] Implement\n", encoding="utf-8")
+            (root / "docs/LIVING_DOCUMENTATION_BASELINE.md").write_text(
+                "# Baseline\n\n"
+                "- Baseline status: `established`\n"
+                "- Baseline evidence: `reviewed fixture`\n\n"
+                "## Grandfathered closeout debt\n\n"
+                "| Change artifact | Debt status | Review evidence or rationale |\n"
+                "| --- | --- | --- |\n"
+                "| `docs/changes/old` | unresolved | fixture |\n\n"
+                "## Reviewed debt dispositions\n\n"
+                "| Change artifact | Disposition | Review evidence or rationale |\n"
+                "| --- | --- | --- |\n"
+                "| _None_ | — | — |\n",
+                encoding="utf-8",
+            )
+
+            report = self._json(root, "--path", "docs/changes/old/tasks.md")
+
+        codes = {finding["code"] for finding in report["findings"]}
+        self.assertIn("legacy-closeout-debt", codes)
+        self.assertNotIn("change-closeout-undispositioned", codes)
 
     def test_scoped_change_does_not_report_unrelated_knowledge_debt(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -275,7 +311,8 @@ class MaintainabilityAuditTests(unittest.TestCase):
         self.assertIn("audit_repository.py", audit_skill)
         self.assertIn("advisory observation", audit_skill)
         self.assertIn("threshold", audit_skill)
-        self.assertIn("retrieval cost", living_skill)
+        self.assertIn("compact hubs", living_skill)
+        self.assertIn("check_docs.py", living_skill)
         self.assertIn("silent scope expansion", guide)
         self.assertIn("Scoped audit evidence", spec_template)
         self.assertIn("Finding disposition", plan_template)

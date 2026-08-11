@@ -95,6 +95,36 @@ class PlannerTests(unittest.TestCase):
             )
             self.assertEqual(next(item for item in drift_plan.results if item.path == index).status, "preserved")
 
+    def test_reviewed_baseline_seed_is_preserved_under_force(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)
+            baseline = target / "docs/LIVING_DOCUMENTATION_BASELINE.md"
+            baseline.parent.mkdir(parents=True)
+            original = "# Reviewed baseline\n\n- Baseline status: `established`\n"
+            baseline.write_text(original, encoding="utf-8")
+            prior = {
+                "docs/LIVING_DOCUMENTATION_BASELINE.md": {
+                    "applied_content_hash": content_hash("old generated baseline\n"),
+                    "applied_version": "0.6.0",
+                }
+            }
+
+            plan = build_plan(
+                target,
+                profile=RepoProfile(project_name="Example", repo_name="example"),
+                pack=load_default_template_pack(),
+                enabled_workflows=["living-docs"],
+                enabled_groups={"living-docs"},
+                force=True,
+                dry_run=False,
+                prior_files=prior,
+            )
+            result = next(item for item in plan.results if item.path == baseline)
+            self.assertEqual(result.status, "preserved")
+
+            apply_plan(plan, dry_run=False)
+            self.assertEqual(baseline.read_text(encoding="utf-8"), original)
+
     def test_managed_only_excludes_seeded_and_obsolete_operations(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             target = Path(tmp)
@@ -114,6 +144,9 @@ class PlannerTests(unittest.TestCase):
 
             self.assertTrue(any(item.path == target / "AGENTS.md" for item in plan.results))
             self.assertFalse(any(item.lifecycle == "seeded" for item in plan.results))
+            self.assertFalse(
+                any(item.path == target / "docs/LIVING_DOCUMENTATION_BASELINE.md" for item in plan.results)
+            )
             self.assertFalse(any(item.kind == "deletion" for item in plan.results))
 
     def test_generated_path_cannot_follow_symlink_outside_target(self) -> None:

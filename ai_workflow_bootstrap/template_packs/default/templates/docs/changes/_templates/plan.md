@@ -70,11 +70,14 @@ Include only the tests that actually protect the approved spec. If a test would 
 
 - Product fact owner(s) to update:
 - Architecture fact owner(s) to update:
+- Exact owner paths:
+- Durable facts to add/change/remove:
 - Current state/evidence changes:
 - Approved target/active-change changes:
 - Roadmap/decision changes:
 - Links/evidence to validate:
 - Why no living-doc update is needed, if applicable:
+- Targeted closeout command:
 
 ## 13. Execution Steps
 

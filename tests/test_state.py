@@ -14,6 +14,29 @@ from ai_workflow_bootstrap.core.template_pack import load_default_template_pack
 
 
 class StateTests(unittest.TestCase):
+    def test_loads_self_host_0_5_1_state_without_inventing_baseline_provenance(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = state_path(Path(tmp))
+            path.parent.mkdir(parents=True)
+            path.write_text(
+                json.dumps(
+                    {
+                        "template_pack": "default",
+                        "template_pack_version": "0.5.1",
+                        "files": {
+                            "docs/INDEX.md": {"status": "preserved", "lifecycle": "seeded"}
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            loaded = load_state(path)
+
+        self.assertIsNotNone(loaded)
+        self.assertEqual(loaded.template_pack_version, "0.5.1")
+        self.assertNotIn("docs/LIVING_DOCUMENTATION_BASELINE.md", loaded.files)
+
     def test_loads_legacy_state_and_ignores_unknown_future_fields(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = state_path(Path(tmp))
@@ -101,7 +124,7 @@ class StateTests(unittest.TestCase):
                 state.files["AGENTS.md"]["applied_content_hash"],
                 content_hash("managed\n"),
             )
-            self.assertEqual(state.files["AGENTS.md"]["applied_version"], "0.6.0")
+            self.assertEqual(state.files["AGENTS.md"]["applied_version"], "0.7.0")
 
     def test_state_round_trip(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -47,7 +47,7 @@ Renderer, planner and execution adapters remain policy-agnostic.
 
 ### Generated maintainability audit boundary
 
-Default pack `0.6.0` declares
+Default pack `0.7.0` declares
 `.agents/skills/maintainability-audit/scripts/audit_repository.py` as a managed
 standard-library tool. The script owns deterministic advisory collection,
 explicit scoped/repo-wide traversal, sensitive/cache exclusions, Markdown
@@ -66,18 +66,27 @@ The default manifest and renderer only distribute these managed artifacts.
 Core planner, lifecycle, applier, state, CLI and TUI modules remain unaware of
 maintainability thresholds and documentation heuristics.
 
+The shared structural parser, blocking adapters, aggregate command and
+prospective baseline boundary are owned by
+[documentation validation](documentation-validation.md).
+
 ## Approved target architecture
 
-No further architecture target is currently approved. The current lifecycle
-boundary and provenance flow were introduced by the completed
+The active approved target is the shared-parser and aggregate-check boundary in
+[Navigable Living Knowledge v1](../changes/navigable-living-knowledge-v1/spec.md).
+Current architecture evidence remains unchanged until validation. The current
+lifecycle boundary and provenance flow were introduced by the completed
 [living-knowledge ownership change](../changes/protect-living-knowledge-ownership-v1/spec.md);
 the audit boundary was introduced by the completed
 [Integrated Maintainability and Knowledge Audit v1](../changes/integrated-maintainability-knowledge-audit-v1/spec.md).
 
 ## Architecture documents
 
-Create a focused page only when a component, cross-cutting concern or flow has
-enough durable detail. Link it here, from capabilities and relevant decisions.
+- [Documentation validation](documentation-validation.md) owns generated parser,
+  checker, baseline and distribution boundaries.
+
+Create another focused page only when a component, cross-cutting concern or flow
+has enough durable detail. Link it here, from capabilities and relevant decisions.
 
 ## Detected commands
 

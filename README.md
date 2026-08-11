@@ -85,6 +85,7 @@ By default, the new CLI generates:
 - `docs/INDEX.md`
 - `docs/CAPABILITIES.md`
 - `docs/LIVING_DOCUMENTATION.md`
+- `docs/LIVING_DOCUMENTATION_BASELINE.md`
 - `docs/product/README.md`
 - `docs/architecture/README.md`
 - `docs/decisions/README.md`
@@ -102,6 +103,8 @@ By default, the new CLI generates:
 - `.agents/skills/maintainability-audit/SKILL.md`
 - `.agents/skills/maintainability-audit/scripts/audit_repository.py`
 - `.agents/skills/living-docs/SKILL.md`
+- `.agents/skills/living-docs/scripts/documentation_contract.py`
+- `.agents/skills/living-docs/scripts/check_docs.py`
 - `.agents/skills/living-docs/scripts/check_links.py`
 - `.agents/skills/living-docs/scripts/check_living_docs.py`
 - `.ai-bootstrap/state.json`
@@ -181,6 +184,7 @@ proportionally around specification, planning, and closeout.
 
 - Tests should protect behavior contracts, not private implementation details.
 - File and function size are review triggers, not hard rules.
+- File size and capability-route concentration are independent advisory signals.
 - The `maintainability-audit` skill classifies code and documentation findings
   as local cleanup, planned refactor, separate spec, or accepted advisory
   observation.
@@ -198,6 +202,32 @@ python .agents/skills/maintainability-audit/scripts/audit_repository.py . \
 ```
 
 Use `--repo-wide` only for an explicit repository health pass.
+
+## Living-Documentation Validation
+
+Generated projects use `docs/INDEX.md` as the navigation entry point, compact
+product/architecture hubs and focused owners for real responsibilities.
+`docs/changes/` remains temporal evidence rather than the normal current-system
+explanation.
+
+Run the aggregate stack-independent check:
+
+```bash
+python .agents/skills/living-docs/scripts/check_docs.py .
+```
+
+At change closeout, target the active change and include advisory findings:
+
+```bash
+python .agents/skills/living-docs/scripts/check_docs.py . \
+  --closeout docs/changes/<change> --advisory
+```
+
+The seeded `docs/LIVING_DOCUMENTATION_BASELINE.md` starts unestablished. A
+reviewer may establish it with exact historical-debt paths and evidence; the
+bootstrap never inventories or marks old changes reviewed automatically. Once
+established, new completed changes require `updated` or justified
+`no-update-needed` living-document disposition.
 
 ## TUI
 
@@ -259,14 +289,15 @@ that an older run already replaced. For a suspected project:
 
 1. Inspect `.ai-bootstrap/state.json` for seeded owners whose last legacy status
    is `overwritten`.
-2. Run the generated `check_living_docs.py`, optionally with
+2. Run the generated `check_docs.py`, optionally passing
    `--baseline-ref <git-ref>`.
 3. Compare prior Git content, current change artifacts, code/tests and safe
    runtime evidence.
 4. Restore the union of still-valid prior facts and later supported increments;
    do not blindly restore an old revision or infer product intent from code.
 5. Give every removed capability/fact an explicit disposition, restore an
-   honest coverage status, then run both semantic and link checkers.
+   honest coverage status, establish historical debt explicitly, then run the
+   aggregate checker.
 
 ## Local Launcher
 

@@ -4,7 +4,8 @@
 [Architecture](../architecture/README.md)
 
 This area owns what the product is, why it exists and how it should behave.
-Implementation mechanisms belong in architecture.
+Implementation mechanisms belong in architecture. Keep this README as a compact
+hub once distinct product responsibilities gain focused owners.
 
 ## Purpose and actors
 
@@ -25,4 +26,5 @@ the current implementation/evidence unchanged until work actually progresses.
 ## Product documents
 
 Create a focused page only when a real product responsibility has enough durable
-detail. Link it here and from the relevant capability row.
+detail to lower retrieval cost. Link it here and from the relevant capability
+row; do not generate empty domain pages or split only because of size.
