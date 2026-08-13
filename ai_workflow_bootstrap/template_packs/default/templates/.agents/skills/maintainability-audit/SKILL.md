@@ -13,6 +13,6 @@ description: Audit code and living-knowledge maintainability before planning or 
    - advisory observation.
 5. Before approval, include directly related requirements in the spec. After approval, do not expand scope silently: reconcile material in-scope changes, route unrelated work to a separate spec, or accept an advisory finding with rationale.
 6. Prefer local refactors that reduce future human/agent context. Flag tests coupled to implementation details.
-7. Re-audit the implemented diff and affected knowledge owners at closeout. Record resolved, accepted-with-rationale, separate-spec or no-findings with inspected scope; a clean scoped result is not a repository baseline.
+7. Re-audit the implemented diff and affected knowledge owners at closeout. Record the exact inspected paths and each stable finding code/path as `resolved`, `accepted` with rationale or `separate-spec` with a spec reference; use `no-findings` only for an explicitly clean scope. A clean scoped result is not a repository baseline.
 
 The audit is advisory; existing correctness, security and living-doc regression gates remain blocking.

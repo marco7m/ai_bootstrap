@@ -72,9 +72,10 @@ prospective baseline boundary are owned by
 
 ## Approved target architecture
 
-The active approved target is the shared-parser and aggregate-check boundary in
-[Navigable Living Knowledge v1](../changes/navigable-living-knowledge-v1/spec.md).
-Current architecture evidence remains unchanged until validation. The current
+There is no active approved architecture target. The project-agnostic
+shared-contract repair was completed by
+[Living Docs Downstream Compatibility v1](../changes/living-docs-downstream-compatibility-v1/spec.md),
+preserving the generated parser/adapters and generic lifecycle boundary. The current
 lifecycle boundary and provenance flow were introduced by the completed
 [living-knowledge ownership change](../changes/protect-living-knowledge-ownership-v1/spec.md);
 the audit boundary was introduced by the completed

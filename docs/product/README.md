@@ -72,10 +72,11 @@ contract is owned by the focused
 
 ## Approved targets
 
-The active approved target is the
-[Navigable Living Knowledge v1](../changes/navigable-living-knowledge-v1/spec.md)
-workflow. Current capability evidence remains unchanged until implementation
-validation closes it. The generated audit contract was introduced by the completed
+There is no active approved target. The project-agnostic fragment, baseline and
+closeout repair was completed by
+[Living Docs Downstream Compatibility v1](../changes/living-docs-downstream-compatibility-v1/spec.md),
+with current behavior owned by the focused workflow page.
+The generated audit contract was introduced by the completed
 [Integrated Maintainability and Knowledge Audit v1](../changes/integrated-maintainability-knowledge-audit-v1/spec.md).
 
 The lifecycle-aware ownership contract was introduced by the completed

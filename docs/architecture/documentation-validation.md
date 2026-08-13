@@ -6,11 +6,17 @@
 
 ## Shared structural contract
 
-Default pack `0.7.0` distributes a managed
+Default pack `0.7.1` distributes a managed
 `documentation_contract.py` beside the living-document checkers. It is the
 single deterministic owner for Markdown links and supported ATX fragments,
 capability rows and authority routes, index reachability, baseline tables and
-closeout dispositions.
+living-document and maintainability closeout dispositions.
+
+Fragment construction implements a bounded GitHub-style character contract and
+offers a diagnostic canonical suggestion without accepting transliterated
+aliases. Baseline parsing retains typed ordered rows long enough to validate
+exact columns, allowed values, evidence, path existence/safety, duplicates and
+overlap before exposing exception sets.
 
 Generated scripts resolve imports from their own installed paths, so direct
 execution works independently of the current working directory. The contract
@@ -23,7 +29,9 @@ uses only the Python standard library and emits no document contents.
 - `check_living_docs.py` blocks objective current-state, navigation,
   capability-route, baseline and prospective-closeout regressions.
 - `check_docs.py` composes the direct checks, targeted closeout and optional
-  advisory output without duplicating parsing.
+  advisory output without duplicating parsing. For targeted closeout it runs
+  the declared audit scope and reconciles stable finding code/path tuples with
+  the shared formal dispositions.
 - `audit_repository.py` imports the shared contract but continues to own
   advisory collection. Size and capability-route concentration are independent
   signals and never fail solely by threshold.
@@ -39,7 +47,8 @@ The seeded baseline is constrained human-readable Markdown. Its explicit
 status, evidence, grandfathered table and reviewed-disposition table are parsed
 without interpreting free prose. Established grandfather paths define the
 legacy exception boundary; timestamps are not trusted as completion evidence.
-Malformed or stale inventory fails actionably and never authorizes mutation.
+Malformed or stale inventory fails actionably, exposes no malformed waiver and
+never authorizes mutation.
 
 Missing or unestablished baseline produces setup guidance rather than silently
 waiving or failing all history. Once established, a completed unlisted change

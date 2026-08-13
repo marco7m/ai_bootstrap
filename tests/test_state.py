@@ -81,7 +81,7 @@ class StateTests(unittest.TestCase):
             prior = new_state(
                 target_path=str(root),
                 template_pack="default",
-                template_pack_version="0.4.0",
+                template_pack_version="0.7.0",
                 enabled_workflows=["spec-driven", "living-docs"],
                 tool_version="0.1.0",
                 files={
@@ -124,7 +124,7 @@ class StateTests(unittest.TestCase):
                 state.files["AGENTS.md"]["applied_content_hash"],
                 content_hash("managed\n"),
             )
-            self.assertEqual(state.files["AGENTS.md"]["applied_version"], "0.7.0")
+            self.assertEqual(state.files["AGENTS.md"]["applied_version"], "0.7.1")
 
     def test_state_round_trip(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

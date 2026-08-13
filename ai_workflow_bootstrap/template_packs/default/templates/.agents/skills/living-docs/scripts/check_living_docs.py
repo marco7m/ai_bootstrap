@@ -19,6 +19,7 @@ from documentation_contract import (
     reachable_markdown,
     read_text,
     resolve_local_target,
+    suggested_fragment,
 )
 
 SEEDED_OWNERS = {
@@ -77,7 +78,9 @@ def _route_problem(root: Path, source: Path, raw: str | None, area: str) -> str 
     except ValueError:
         return f"target must stay under docs/{area}"
     if fragment and not fragment_exists(path, fragment):
-        return "fragment does not match a supported ATX heading"
+        suggestion = suggested_fragment(path, fragment)
+        hint = f"; expected canonical fragment #{suggestion}" if suggestion else ""
+        return f"fragment does not match a supported ATX heading{hint}"
     return None
 
 

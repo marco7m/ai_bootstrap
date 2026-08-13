@@ -31,6 +31,12 @@ historical closeout paths and evidence. Those entries remain visible unresolved
 debt; they are exempt only from the prospective gate and are never populated or
 declared reviewed by bootstrap application.
 
+Established grandfather rows use an existing direct `docs/changes/<change>`
+path, `unresolved` and real inventory evidence. Reviewed exception rows use
+`reviewed` and real review evidence without implying the historical artifact was
+edited. Malformed, missing, unsafe, duplicate or overlapping rows cannot grant
+an exception.
+
 ## Change closeout
 
 A targeted closeout accepts living documentation only as:
@@ -48,6 +54,18 @@ and closeout invariants. Size, capability concentration and semantic cohesion
 remain advisory review signals. Deterministic checks do not claim to prove
 truth, completeness or currency.
 
+Targeted closeout declares explicit audit-scope paths and accounts for every
+current stable finding code/path as accepted with rationale, routed to a
+separate spec, or resolved after disappearance. `no-findings` is valid only for
+a currently clean declared scope. Thresholds remain advisory rather than
+becoming semantic verdicts.
+
+Supported local ATX fragments follow the documented GitHub-style subset: one
+hyphen per ordinary space, punctuation removal without collapsing those
+hyphens, Unicode preservation, percent-decoding, visible inline-link text and
+ordered duplicate suffixes. Diacritic folding and transliteration are not
+accepted as renderer anchors.
+
 ## Compatibility
 
 Managed policies and checks advance under existing update consent. Evolved or
@@ -55,3 +73,6 @@ untracked seeded knowledge remains preserved during ordinary apply and
 `--force`; managed-only application does not create or falsely establish the
 seeded baseline. No migration invents domain facts or rewrites historical
 changes.
+
+Pack `0.7.1` repairs these structural contracts without changing lifecycle or
+making any downstream repository part of the reusable behavior or fixtures.

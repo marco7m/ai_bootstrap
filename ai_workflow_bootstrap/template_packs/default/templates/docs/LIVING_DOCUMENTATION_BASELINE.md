@@ -19,6 +19,9 @@ repository and recording exact evidence.
 
 Entries here remain unresolved debt. They are exempt only from the prospective
 closeout gate and are not declared correct, complete or semantically reviewed.
+Every real row uses an existing direct `docs/changes/<change>` directory,
+`unresolved` status and non-placeholder inventory evidence. Duplicate, unsafe,
+missing or overlapping paths are invalid.
 
 ## Reviewed debt dispositions
 
@@ -28,3 +31,6 @@ closeout gate and are not declared correct, complete or semantically reviewed.
 
 Move an entry out of grandfathered debt only after real review. Do not edit the
 historical artifact merely to make a checker pass.
+Reviewed rows use disposition `reviewed` with non-placeholder review evidence;
+this records review of the exception and does not claim the historical artifact
+was edited. `_None_ | — | —` is valid only as the sole row of an empty table.

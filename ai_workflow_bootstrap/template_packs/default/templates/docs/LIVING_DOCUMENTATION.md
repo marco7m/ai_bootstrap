@@ -79,6 +79,12 @@ graph. Capability product links resolve under `docs/product/`; architecture
 links resolve under `docs/architecture/`. Change artifacts may provide evidence
 but cannot be the only current contract or architecture owner.
 
+Local fragments support the generated ATX subset used by GitHub section links:
+visible inline-link text, case-folding, one hyphen per ordinary space,
+punctuation removal, authored hyphens, Unicode, percent-decoded URI fragments
+and ordered duplicate suffixes. Spaces separated by removed punctuation are not
+collapsed. Diacritic folding and transliteration are not valid aliases.
+
 ## Historical baseline
 
 `docs/LIVING_DOCUMENTATION_BASELINE.md` starts `unestablished`. Establish it
@@ -93,6 +99,24 @@ historical artifact merely to satisfy validation. Once established, every
 completed change absent from the grandfathered/reviewed inventory must satisfy
 the current closeout contract. A missing/unestablished baseline produces setup
 guidance instead of pretending old debt is solved.
+
+Each baseline table has exactly three cells. Grandfathered rows use an existing
+direct `docs/changes/<change>` path, `unresolved` and non-placeholder inventory
+evidence. Reviewed rows use the same path contract, `reviewed` and real review
+evidence; this does not imply that the historical artifact was edited. Duplicate,
+unsafe, missing, symlinked and cross-table paths fail. The empty sentinel is
+valid only as the sole data row, and an unestablished baseline contains no real
+rows.
+
+## Maintainability closeout
+
+Targeted closeout declares one or more existing repository-relative audit-scope
+paths and a disposition row for every current stable finding code/path. Allowed
+values are `accepted` with rationale, `separate-spec` with an existing spec
+reference, and `resolved` only after the finding disappears. Use the sole
+`no-findings` sentinel only when the current declared scope is clean. Thresholds
+remain advisory; the aggregate checker verifies accounting, not semantic
+cohesion or prose quality.
 
 ## Regeneration and recovery
 

@@ -30,4 +30,15 @@
 - Living documentation: `pending`
 - Living documentation rationale: `pending`
 - Durable facts added/changed/removed: `pending`
-- Maintainability findings: `pending`
+
+### Maintainability audit scope
+
+| Repository-relative path |
+| --- |
+| _Pending approved implementation paths_ |
+
+### Maintainability finding dispositions
+
+| Finding code | Path | Disposition | Rationale or reference |
+| --- | --- | --- | --- |
+| _Pending_ | — | pending | Pending implementation and scoped audit |

@@ -318,6 +318,8 @@ class MaintainabilityAuditTests(unittest.TestCase):
         self.assertIn("Finding disposition", plan_template)
         self.assertIn("## Closeout Disposition", tasks_template)
         self.assertIn("Living documentation: `pending`", tasks_template)
+        self.assertIn("### Maintainability audit scope", tasks_template)
+        self.assertIn("### Maintainability finding dispositions", tasks_template)
         self.assertIn("compact navigation hubs", policy)
 
     def test_generated_audit_executes_in_fresh_python_and_rust_projects(self) -> None:

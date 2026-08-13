@@ -13,7 +13,7 @@ description: Navigate and maintain linked product, architecture, capability, dec
 8. If docs conflict with evidence or look regenerated/downgraded, inspect `.ai-bootstrap/state.json` and Git/evidence before recovery.
 9. Preserve capabilities unless explicitly disposed. Recover still-valid facts plus supported increments; never promote unsupported prose to `verified`.
 10. Account for facts added, changed and removed; every removal needs disposition.
-11. Keep `docs/LIVING_DOCUMENTATION_BASELINE.md` unestablished until reviewed. Grandfather exact historical debt without declaring it resolved; reject new debt after establishment.
+11. Keep `docs/LIVING_DOCUMENTATION_BASELINE.md` unestablished until reviewed. Grandfather only exact existing `docs/changes/<change>` rows with `unresolved` and real evidence; reviewed rows use `reviewed`. Never infer or rewrite debt.
 12. Use the maintainability audit for independent size/concentration and cohesion review. Thresholds are advisory.
-13. At closeout run `python .agents/skills/living-docs/scripts/check_docs.py . --closeout docs/changes/<change> --advisory`; only `updated` or justified `no-update-needed` closes living docs.
+13. At closeout record explicit maintainability scope and per-finding dispositions, then run `python .agents/skills/living-docs/scripts/check_docs.py . --closeout docs/changes/<change> --advisory`; only `updated` or justified `no-update-needed` closes living docs.
 14. Never store sensitive payloads. Summarize owners, current/target changes, evidence, findings and gaps.

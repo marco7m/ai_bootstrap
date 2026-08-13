@@ -57,6 +57,24 @@ only from the prospective gate. Bootstrap application never inventories or
 marks historical changes reviewed. Once established, new completed changes
 require a valid living-document disposition.
 
+Grandfather rows require an existing direct `docs/changes/<change>` path,
+`unresolved` and non-placeholder inventory evidence. Reviewed rows require
+`reviewed` and real review evidence without implying that the historical
+artifact was edited. Exact columns, empty sentinels, safe paths, duplicates and
+cross-table overlap are validated before any exception is exposed.
+
+Supported local ATX fragments use the GitHub-style subset distributed by the
+pack: visible inline-link text, case-folding, one hyphen per ordinary space,
+punctuation removal without collapsing surviving hyphens, authored hyphens,
+Unicode, percent-decoded fragments and ordered duplicate suffixes. Diacritic
+folding or transliteration does not create a valid alias.
+
+Targeted closeout lists existing repository-relative audit-scope paths and one
+formal disposition per current stable finding code/path. `accepted` requires a
+rationale, `separate-spec` an existing spec reference, `resolved` requires the
+finding to be absent, and the sole `no-findings` sentinel requires a clean
+scope. Thresholds remain advisory; reconciliation proves accounting only.
+
 ## Regeneration and recovery
 
 Treat an unexpected downgrade, seed placeholder, sharply reduced capability
@@ -80,7 +98,7 @@ record `Bootstrap recovery audit:` in `docs/INDEX.md` with the reviewed scope
 and safe evidence reference. This is a disposition marker, not proof that all
 project knowledge is complete.
 
-This repository's installed managed checks predate pack `0.7.0`; validate the
+This repository's installed managed checks predate pack `0.7.1`; validate the
 current reusable source surface with:
 
 ```bash

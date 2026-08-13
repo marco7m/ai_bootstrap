@@ -70,6 +70,13 @@ without forcing work. Repeat the scoped audit during planning and against the
 implemented diff and affected knowledge owners at closeout. A clean scoped
 result is not a repository-wide baseline.
 
+At closeout list the exact existing repository-relative paths inspected. Record
+each current stable finding code/path as `accepted` with rationale or
+`separate-spec` with an existing spec reference; use `resolved` only when that
+tuple no longer appears, and the sole `no-findings` sentinel only for a clean
+declared scope. These structural checks account for findings without turning
+size or concentration thresholds into semantic verdicts.
+
 ## Planning
 
 After spec approval, inspect relevant code, tests, structure, configuration,

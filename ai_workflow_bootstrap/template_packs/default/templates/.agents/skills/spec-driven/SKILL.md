@@ -15,7 +15,7 @@ description: Guide non-trivial features, bug fixes, refactors and ambiguous chan
 10. Pause for explicit approval of both plan and tasks. Spec approval is not implementation approval.
 11. Implement the approved plan, recording meaningful deviations and stopping on unresolved spec/repository conflicts.
 12. Validate acceptance criteria with contract-level tests and relevant checks.
-13. After implementation, re-audit the diff and affected knowledge owners; account for facts added/changed/removed and run `check_docs.py --closeout` with `updated` or justified `no-update-needed` before updating current evidence.
+13. After implementation, re-audit the declared paths, record each stable finding code/path in the closeout tables, account for facts added/changed/removed and run `check_docs.py --closeout` with `updated` or justified `no-update-needed` before updating current evidence.
 14. Summarize behavior, files, validation, knowledge updates, accepted findings, limitations and architecture concerns.
 
 Open `docs/SPEC_DRIVEN.md` only when detailed workflow guidance is needed.

@@ -47,7 +47,7 @@ class TemplatePackTests(unittest.TestCase):
         pack = load_default_template_pack()
 
         self.assertEqual(pack.name, "default")
-        self.assertEqual(pack.version, "0.7.0")
+        self.assertEqual(pack.version, "0.7.1")
         templated_specs = [*pack.files, *pack.context_fragments, *pack.compositions]
         for spec in templated_specs:
             self.assertTrue(pack.template_path(spec.template).exists(), spec.template)

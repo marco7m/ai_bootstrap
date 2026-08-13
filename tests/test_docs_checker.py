@@ -45,6 +45,22 @@ class DocsCheckerTests(unittest.TestCase):
             check=False,
         )
 
+    @staticmethod
+    def _maintainability_tables(
+        scope: str,
+        rows: str = "| _None_ | — | no-findings | Scoped audit returned no findings |\n",
+    ) -> str:
+        return (
+            "### Maintainability audit scope\n\n"
+            "| Repository-relative path |\n"
+            "| --- |\n"
+            f"| `{scope}` |\n\n"
+            "### Maintainability finding dispositions\n\n"
+            "| Finding code | Path | Disposition | Rationale or reference |\n"
+            "| --- | --- | --- | --- |\n"
+            + rows
+        )
+
     def test_fresh_scaffold_passes_and_reports_unestablished_baseline(self) -> None:
         with tempfile.TemporaryDirectory() as tmp, tempfile.TemporaryDirectory() as other:
             root = Path(tmp)
@@ -140,7 +156,7 @@ class DocsCheckerTests(unittest.TestCase):
                 "# Tasks\n\n- [x] Implement\n\n"
                 "## Closeout Disposition\n\n"
                 "- Living documentation: `no-update-needed` — only fixture content changed\n"
-                "- Maintainability findings: `no-findings in scoped audit`\n",
+                + self._maintainability_tables("docs/changes/active"),
                 encoding="utf-8",
             )
             complete = self._run(checker, root, "--closeout", "docs/changes/active")
@@ -149,6 +165,86 @@ class DocsCheckerTests(unittest.TestCase):
         self.assertIn("closeout-invalid", pending.stderr)
         self.assertIn("closeout-maintainability", pending.stderr)
         self.assertEqual(complete.returncode, 0, complete.stderr)
+
+    def test_targeted_closeout_reconciles_stable_advisory_findings(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            checker = _generate(root)
+            source = root / "src/large.py"
+            source.parent.mkdir()
+            source.write_text("value = 1\n" * 501, encoding="utf-8")
+            change = root / "docs/changes/active"
+            change.mkdir(parents=True)
+            tasks = change / "tasks.md"
+            prefix = (
+                "# Tasks\n\n- [x] Implement\n\n"
+                "## Closeout Disposition\n\n"
+                "- Living documentation: `no-update-needed` — fixture does not change durable behavior\n"
+            )
+            tasks.write_text(
+                prefix
+                + self._maintainability_tables(
+                    "src/large.py",
+                    "| `large-file-review` | `src/large.py` | accepted | Cohesive fixture boundary |\n",
+                ),
+                encoding="utf-8",
+            )
+            accepted = self._run(checker, root, "--closeout", "docs/changes/active", "--advisory")
+
+            tasks.write_text(
+                prefix + self._maintainability_tables("src/large.py"),
+                encoding="utf-8",
+            )
+            hidden = self._run(checker, root, "--closeout", "docs/changes/active")
+
+            tasks.write_text(
+                prefix
+                + self._maintainability_tables(
+                    "src/large.py",
+                    "| `large-file-review` | `src/large.py` | resolved | Removed finding |\n",
+                ),
+                encoding="utf-8",
+            )
+            unresolved = self._run(checker, root, "--closeout", "docs/changes/active")
+
+        self.assertEqual(accepted.returncode, 0, accepted.stderr)
+        self.assertIn("large-file-review", accepted.stdout)
+        self.assertEqual(hidden.returncode, 1)
+        self.assertIn("no-findings cannot close a scope with current findings", hidden.stderr)
+        self.assertEqual(unresolved.returncode, 1)
+        self.assertIn("resolved finding is still present", unresolved.stderr)
+
+    def test_generic_downstream_shaped_fragments_use_canonical_unicode(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            checker = _generate(root)
+            target = root / "docs/product/anchors.md"
+            target.write_text(
+                "# Reliability qualification — 2026-08-07\n\n"
+                "## Interação segura\n",
+                encoding="utf-8",
+            )
+            product = root / "docs/product/README.md"
+            product.write_text(
+                "# Product\n\n"
+                "[Qualification](anchors.md#reliability-qualification--2026-08-07)\n"
+                "[Interaction](anchors.md#intera%C3%A7%C3%A3o-segura)\n",
+                encoding="utf-8",
+            )
+            valid = self._run(checker, root)
+
+            product.write_text(
+                product.read_text(encoding="utf-8").replace(
+                    "#intera%C3%A7%C3%A3o-segura", "#interacao-segura"
+                ),
+                encoding="utf-8",
+            )
+            invalid = self._run(checker, root)
+
+        self.assertEqual(valid.returncode, 0, valid.stderr)
+        self.assertEqual(invalid.returncode, 1)
+        self.assertIn("broken-fragment", invalid.stderr)
+        self.assertIn("expected canonical fragment #interação-segura", invalid.stderr)
 
     def test_invalid_supported_fragment_is_blocking(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

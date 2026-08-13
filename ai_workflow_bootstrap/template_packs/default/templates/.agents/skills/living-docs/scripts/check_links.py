@@ -5,7 +5,12 @@ import argparse
 import sys
 from pathlib import Path
 
-from documentation_contract import fragment_exists, markdown_links, resolve_local_target
+from documentation_contract import (
+    fragment_exists,
+    markdown_links,
+    resolve_local_target,
+    suggested_fragment,
+)
 
 
 def validate(
@@ -43,9 +48,11 @@ def validate(
             if not resolved.exists():
                 errors.append(f"broken-link {source.relative_to(root)} -> {raw}: target does not exist")
             elif fragment and resolved.is_file() and not fragment_exists(resolved, fragment):
+                suggestion = suggested_fragment(resolved, fragment)
+                hint = f"; expected canonical fragment #{suggestion}" if suggestion else ""
                 errors.append(
                     f"broken-fragment {source.relative_to(root)} -> {raw}: "
-                    "fragment does not match a supported ATX heading"
+                    f"fragment does not match a supported ATX heading{hint}"
                 )
     return errors
 

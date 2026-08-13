@@ -2,13 +2,16 @@
 from __future__ import annotations
 
 import argparse
-import re
 import sys
 from pathlib import Path
 
 from check_links import validate as validate_links
 from check_living_docs import check as check_living_docs
-from documentation_contract import BASELINE_PATH, parse_baseline, read_text
+from documentation_contract import (
+    BASELINE_PATH,
+    parse_baseline,
+    parse_maintainability_closeout,
+)
 
 
 def _load_audit():
@@ -20,18 +23,47 @@ def _load_audit():
     return audit
 
 
-def _maintainability_closeout_problem(root: Path, closeout: str) -> str | None:
+def _maintainability_closeout_problems(root: Path, closeout: str, audit):
     candidate = (root / closeout).resolve()
     tasks = candidate / "tasks.md" if candidate.is_dir() else candidate
     if not tasks.is_file():
-        return None
-    match = re.search(r"^- Maintainability findings:\s*`?(.+?)`?\s*$", read_text(tasks), re.MULTILINE)
-    if match is None or match.group(1).strip(" `").casefold() in {"", "pending", "todo", "tbd"}:
-        return (
-            f"closeout-maintainability {tasks.relative_to(root)}: record resolved, accepted with rationale, "
-            "separate-spec, or no-findings with inspected scope"
+        return [], [], None
+    parsed = parse_maintainability_closeout(root, tasks)
+    problems = [
+        f"closeout-maintainability {tasks.relative_to(root)}: {error}"
+        for error in parsed.errors
+    ]
+    if not parsed.scope:
+        return problems, [], None
+
+    findings, scope = audit(root, list(parsed.scope), False)
+    current = {(finding.code, finding.path): finding for finding in findings}
+    declared = {(item.code, item.path): item for item in parsed.dispositions}
+
+    if parsed.no_findings and current:
+        problems.append(
+            f"closeout-maintainability {tasks.relative_to(root)}: "
+            "no-findings cannot close a scope with current findings"
         )
-    return None
+    for key, finding in current.items():
+        item = declared.get(key)
+        if item is None:
+            problems.append(
+                f"closeout-maintainability {tasks.relative_to(root)}: "
+                f"current finding {finding.code!r} at {finding.path!r} lacks a disposition"
+            )
+        elif item.value == "resolved":
+            problems.append(
+                f"closeout-maintainability {tasks.relative_to(root)}: "
+                f"resolved finding is still present: {finding.code!r} at {finding.path!r}"
+            )
+    for key, item in declared.items():
+        if item.value in {"accepted", "separate-spec"} and key not in current:
+            problems.append(
+                f"closeout-maintainability {tasks.relative_to(root)}: "
+                f"{item.value} disposition has no current matching finding: {item.code!r} at {item.path!r}"
+            )
+    return problems, findings, scope
 
 
 def run(
@@ -54,19 +86,27 @@ def run(
     if selected_is_safe and selected is not None and selected.exists():
         blocking.extend(validate_links(root, include_changes=True, selected_change=selected))
     blocking.extend(check_living_docs(root, baseline_ref, closeout))
-    if closeout and selected_is_safe:
-        problem = _maintainability_closeout_problem(root, closeout)
-        if problem:
-            blocking.append(problem)
-
     observations: list[str] = []
     baseline = parse_baseline(root / BASELINE_PATH)
     if baseline.status in {None, "unestablished"}:
         observations.append(
             f"baseline-unestablished {BASELINE_PATH}: establish reviewed evidence before prospective debt gating"
         )
-    if advisory:
-        audit = _load_audit()
+    audit = _load_audit() if advisory or (closeout and selected_is_safe) else None
+    closeout_audit = False
+    if closeout and selected_is_safe and audit is not None:
+        problems, findings, scope = _maintainability_closeout_problems(root, closeout, audit)
+        blocking.extend(problems)
+        if scope is not None:
+            closeout_audit = True
+            observations.append(
+                f"audit-scope mode={scope['mode']} inspected_files={scope['inspected_files']}"
+            )
+            observations.extend(
+                f"{finding.level} {finding.code} {finding.path}: {finding.evidence}"
+                for finding in findings
+            )
+    if advisory and not closeout_audit and audit is not None:
         requested = [closeout] if closeout else [
             "docs/INDEX.md",
             "docs/CAPABILITIES.md",
