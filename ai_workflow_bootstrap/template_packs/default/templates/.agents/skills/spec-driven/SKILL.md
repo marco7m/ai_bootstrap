@@ -1,21 +1,19 @@
 ---
 name: spec-driven
-description: Guide non-trivial features, bug fixes, refactors and ambiguous changes through clarification, spec approval, plan and tasks approval, implementation and validation. Use whenever behavior, architecture, persistence, interfaces, security, dependencies or multiple responsibilities may change.
+description: Route features, repairs, refactors and investigations through existing authority, behavioral novelty, execution risk, approvals and proportionate validation.
 ---
 
-1. Read repository instructions and inspect the smallest relevant code/doc set.
-2. Before drafting the spec, run a proportional maintainability audit when code or knowledge-health triggers are present. Record evidence and route related requirements versus separate-spec or advisory findings.
-3. Clarify the problem, outcome, scope, exclusions, constraints, edge cases and acceptance criteria.
-4. Create `docs/changes/<change>/spec.md` from `docs/changes/_templates/spec.md`.
-5. Identify affected product, architecture and capability owners without duplicating their facts.
-6. Pause for explicit spec approval. Do not create plan/tasks before approval.
-7. After approval, record the approved target and active change without replacing current capability state.
-8. Reconcile audit findings with established boundaries; create `plan.md` and concrete `tasks.md`. A material post-approval scope change needs explicit reconciliation; unrelated debt needs a separate spec.
-9. Include architecture locality, security/privacy, dependencies, risks, validation and living-knowledge impact.
-10. Pause for explicit approval of both plan and tasks. Spec approval is not implementation approval.
-11. Implement the approved plan, recording meaningful deviations and stopping on unresolved spec/repository conflicts.
-12. Validate acceptance criteria with contract-level tests and relevant checks.
-13. After implementation, re-audit the declared paths, record each stable finding code/path in the closeout tables, account for facts added/changed/removed and run `check_docs.py --closeout` with `updated` or justified `no-update-needed` before updating current evidence.
-14. Summarize behavior, files, validation, knowledge updates, accepted findings, limitations and architecture concerns.
+1. Read repository instructions; inspect the smallest relevant knowledge, tests and code.
+2. Locate the best current authority. Treat code/runtime as implementation evidence, not automatic intent. If structured living docs are absent, use available README, ADR, ticket, schema, API, test or supplied contract. When maintainability triggers exist, audit the scoped area before artifact choice and repeat it against the implemented diff at closeout.
+3. Reason separately about behavioral novelty (`none`, `partial`, `material`) and execution risk. State it in one sentence only when it affects artifacts, gates, scope or material validation. Do not create an artifact only to record classification.
+4. New behavior, ambiguity or conflicting authority requires a new/reconciled `spec.md` and explicit approval before planning.
+5. A clear-contract repair or behavior-preserving maintenance does not automatically require a new spec.
+6. Every non-trivial implementation requires proportional `plan.md`, `tasks.md` and explicit approval of both before coding. There is no risk-based exception.
+7. A standalone no-spec repair uses `docs/changes/<repair>/plan.md` and `tasks.md`; link the restored authority, declare novelty `none`, and record reproduction, cause, boundary, risks, regression and validation.
+8. Only genuinely trivial, unequivocal, low-risk work may flow directly. Read-only investigation does not authorize implementation or artifacts.
+9. Stop and return to spec approval if a new behavioral decision, authority conflict or material contract expansion appears.
+10. Implement the narrow approved plan. Keep incidental debt out unless it blocks acceptance or essential safety/correctness.
+11. Validate from cheap focused checks through affected boundaries and real environments only as justified. Keep unavailable external gates pending.
+12. Record meaningful evidence/deviations in `notes.md`, distill durable facts once, validate links and close tasks.
 
-Open `docs/SPEC_DRIVEN.md` only when detailed workflow guidance is needed.
+Open `docs/SPEC_DRIVEN.md` only for the detailed routes, artifact roles, handoff and validation ladder.

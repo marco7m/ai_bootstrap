@@ -44,6 +44,28 @@ interactive or persistent processes retain responsive observation. Rust
 projects also receive conditional Cargo examples without assuming that every
 program launched through Cargo is non-interactive.
 
+### Generated change routing
+
+Generated agents locate the best existing authority before creating artifacts
+and reason separately about behavioral novelty and execution risk. Material
+novelty, ambiguity or conflicting authority requires a new or reconciled spec
+and its approval. Every non-trivial implementation independently requires
+proportional plan/tasks and explicit approval before coding; restoring a clear
+contract removes the redundant product spec, not this second gate. Only work
+that is genuinely trivial, unequivocal and low risk may flow directly.
+
+A standalone non-trivial clear-contract repair uses
+`docs/changes/<repair>/plan.md`, `tasks.md` and non-empty closeout `notes.md`
+when evidence exists; the directory intentionally needs no `spec.md`. Its plan
+links the restored authority, declares no behavioral novelty and captures
+reproduction, cause, repair boundary, risks, regression and validation. A new
+behavioral decision stops the repair and returns it to spec approval.
+
+Classification is internal by default and normally exposed in one sentence
+only when it changes artifacts, gates, scope or material validation. Detailed
+route, progressive-context, compact-handoff and validation-ladder guidance is
+delivered on demand rather than duplicated into every always-read surface.
+
 ### Generated maintainability and knowledge audit
 
 Generated projects receive a local standard-library audit that inspects an
@@ -72,8 +94,10 @@ contract is owned by the focused
 
 ## Approved targets
 
-There is no active approved target. The project-agnostic fragment, baseline and
-closeout repair was completed by
+There is no active approved target. Contract-first proportional routing was
+completed by
+[Contract-First Proportional Workflow v1](../changes/contract-first-proportional-workflow-v1/spec.md).
+The project-agnostic fragment, baseline and closeout repair was completed by
 [Living Docs Downstream Compatibility v1](../changes/living-docs-downstream-compatibility-v1/spec.md),
 with current behavior owned by the focused workflow page.
 The generated audit contract was introduced by the completed

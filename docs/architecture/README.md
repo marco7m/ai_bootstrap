@@ -45,9 +45,25 @@ add only stack-specific examples; the Rust fragment classifies common Cargo
 validation commands while leaving launched-program behavior authoritative.
 Renderer, planner and execution adapters remain policy-agnostic.
 
+### Generated workflow ownership
+
+Default pack `0.8.0` keeps authority-first route invariants in the managed
+`AGENTS.md`, start prompt and compact `spec-driven` skill. The managed
+`docs/SPEC_DRIVEN.md` is the single on-demand owner for the detailed route
+matrix, progressive context, artifact budgets, compact handoff, stop conditions
+and validation ladder. The always-read surfaces stay within explicit word
+budgets and link to that guide instead of copying it.
+
+Existing spec/plan/tasks/notes templates represent both spec-led changes and
+clear-contract repairs. A standalone non-trivial repair may have plan/tasks and
+later notes without a spec. Generated link, living-document, aggregate and
+maintainability checks remain tasks/change-directory oriented and enforce their
+existing closeout contracts without deciding behavioral novelty. No routing
+logic enters renderer, lifecycle, planner, applier, state, CLI or TUI modules.
+
 ### Generated maintainability audit boundary
 
-Default pack `0.7.0` declares
+Since pack `0.7.0`, the default pack (now `0.8.0`) declares
 `.agents/skills/maintainability-audit/scripts/audit_repository.py` as a managed
 standard-library tool. The script owns deterministic advisory collection,
 explicit scoped/repo-wide traversal, sensitive/cache exclusions, Markdown

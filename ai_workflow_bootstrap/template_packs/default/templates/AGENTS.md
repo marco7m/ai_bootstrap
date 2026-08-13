@@ -43,22 +43,24 @@ $stack_agent_instructions
 
 ## Required workflow
 
-A task is non-trivial when it changes behavior, architecture, persistence,
-interfaces, security, dependencies or multiple responsibilities, or when
-guessing would be risky.
+Before creating artifacts, locate the best existing authority and reason about
+behavioral novelty separately from execution risk. State the classification
+briefly when it changes artifacts, approvals, scope or material validation.
 
-For non-trivial work:
+Using `spec-driven` does not automatically require a new spec. Create or
+reconcile `docs/changes/<change>/spec.md` when behavior is new, the contract is
+ambiguous or authorities conflict, then pause for explicit spec approval.
 
-1. Inspect the relevant repository state and clarify the request.
-2. Create `docs/changes/<change>/spec.md` from the repository template.
-3. Pause for explicit spec approval.
-4. Only then create `plan.md` and `tasks.md`.
-5. Pause for explicit approval of both plan and tasks.
-6. Implement, validate against the approved spec and close the checklist.
+Every non-trivial implementation requires proportional `plan.md` and
+`tasks.md` plus explicit approval of both plan and tasks before coding,
+including a repair that only restores an existing contract. A standalone
+no-spec repair uses `docs/changes/<repair>/plan.md` and `tasks.md`; the plan
+links the authority and declares no behavioral novelty. If a new decision
+appears, stop and create or reconcile a spec.
 
-The approved spec, plan and tasks are the handoff contract. Do not treat an
-earlier approval or silence as approval of a later gate. A user may explicitly
-request a compressed workflow when risk is low.
+Only work that is genuinely trivial, unequivocal and low risk may use a direct
+or compressed flow. Read-only diagnosis never implies permission to implement.
+See `docs/SPEC_DRIVEN.md` for routes, artifact roles and validation guidance.
 
 ## Knowledge contract
 

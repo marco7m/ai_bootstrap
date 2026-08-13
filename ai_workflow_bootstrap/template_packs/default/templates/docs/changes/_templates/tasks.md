@@ -1,13 +1,15 @@
 # Tasks: <title>
 
-- [ ] Re-read approved spec and plan
+- [ ] Re-read the applicable approved spec or existing authority and the plan
+- [ ] Confirm plan and tasks were explicitly approved before non-trivial implementation
+- [ ] Stop if behavioral novelty, authority conflict or material contract expansion appears
 - [ ] Inspect relevant code paths and conventions
 - [ ] Run the proportional scoped maintainability audit and disposition findings
 - [ ] Confirm module ownership and boundaries
 - [ ] Check maintainability triggers before implementation
 - [ ] Confirm tests protect behavior contracts, not implementation details
 - [ ] Identify product, architecture, capability, roadmap and decision owners affected by the approved change
-- [ ] Register approved target and active change without replacing current state/evidence
+- [ ] Register an approved target/active change when a spec changed the target; preserve current state/evidence
 - [ ] Replace these generic items with concrete, ordered, checkable tasks
 - [ ] Add only the tests justified by the spec and plan
 - [ ] Leave out fragile tests that only freeze implementation details

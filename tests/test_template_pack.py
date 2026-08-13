@@ -47,7 +47,7 @@ class TemplatePackTests(unittest.TestCase):
         pack = load_default_template_pack()
 
         self.assertEqual(pack.name, "default")
-        self.assertEqual(pack.version, "0.7.1")
+        self.assertEqual(pack.version, "0.8.0")
         templated_specs = [*pack.files, *pack.context_fragments, *pack.compositions]
         for spec in templated_specs:
             self.assertTrue(pack.template_path(spec.template).exists(), spec.template)
@@ -96,11 +96,13 @@ class TemplatePackTests(unittest.TestCase):
         agents = pack.read_template("templates/AGENTS.md")
         guide = pack.read_template("templates/docs/SPEC_DRIVEN.md")
         skill = pack.read_template("templates/.agents/skills/spec-driven/SKILL.md")
+        normalized_guide = " ".join(guide.split())
 
         self.assertIn("explicit spec approval", agents)
         self.assertIn("explicit approval of both plan and tasks", agents)
-        self.assertIn("Spec approval does not approve the implementation approach", guide)
-        self.assertIn("Spec approval is not implementation approval", skill)
+        self.assertIn("Spec approval never approves implementation", normalized_guide)
+        self.assertIn("Every non-trivial implementation", skill)
+        self.assertIn("explicit approval of both before coding", skill)
         self.assertIn("changes/_templates/spec.md", guide)
         self.assertNotIn("# Change Spec: <title>", guide)
         self.assertNotIn("# Implementation Plan: <title>", guide)

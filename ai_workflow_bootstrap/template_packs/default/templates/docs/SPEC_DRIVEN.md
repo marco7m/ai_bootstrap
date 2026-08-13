@@ -1,117 +1,139 @@
 # Spec-Driven Workflow
 
 This is detailed on-demand guidance. The `spec-driven` skill is the normal
-operational entry point.
+operational entry point; `living-docs` owns durable current knowledge.
 
-## Two approval gates
+## Authority and classification before artifacts
 
-For non-trivial work:
+Read local instructions, then start at `docs/INDEX.md` or another compact hub
+when present. Locate the relevant current product contract, approved decision,
+architecture, capability and active change; follow only links needed for the
+next decision. Without structured living docs, use the best available README,
+ADR, ticket, schema, API, invariant test, configuration, code or user-supplied
+contract. Code/runtime proves what exists, not automatically what is intended.
+Surface conflicts instead of choosing silently.
 
-1. Clarify the problem, outcome, scope, constraints and acceptance criteria.
-2. Draft `docs/changes/<change>/spec.md`.
-3. Pause for explicit spec approval.
-4. Inspect code and conventions, then draft `plan.md` and `tasks.md`.
-5. Pause for explicit approval of both plan and tasks.
-6. Implement, validate, update durable knowledge and summarize.
+Reason about two independent axes:
 
-Spec approval does not approve the implementation approach. Silence is not
-approval. The user may explicitly compress the workflow when risk is low.
+- behavioral novelty: `none`, `partial` or `material`;
+- execution risk: affected responsibilities, persistence, interfaces,
+  security/privacy, concurrency, dependencies, reversibility, blast radius,
+  deterministic regression and required real environments.
 
-## Artifact owners
+Do not use a numeric score. Expose the classification when it changes artifacts,
+approval, scope or material validation; one sentence normally suffices. Do not
+print a standard classification block for trivial questions or explanations,
+and do not create a file merely to record it. Risk changes plan and validation
+depth; it never removes the gate for non-trivial implementation.
 
-Use the standalone templates; do not reproduce them here:
+## Routes
 
-- [spec template](changes/_templates/spec.md): what must become true;
-- [plan template](changes/_templates/plan.md): how the approved result will be
-  implemented and validated;
-- [tasks template](changes/_templates/tasks.md): concrete ordered execution;
-- [notes template](changes/_templates/notes.md): meaningful deviations;
-- [open questions](changes/_templates/open_questions.md): unresolved blockers;
-- [change decisions](changes/_templates/decisions.md): change-local rationale.
+### New behavior or contract change
 
-Use kebab-case for the change folder. Rewrite generic template prompts into
-change-specific content.
+Create [spec.md](changes/_templates/spec.md), obtain explicit approval, create
+[plan.md](changes/_templates/plan.md) and [tasks.md](changes/_templates/tasks.md),
+obtain explicit approval of both, then implement.
 
-## Specification
+### Clear-contract bug
 
-A good-enough spec states:
+Cite the authority, reproduce the defect proportionally and diagnose its cause.
+A non-trivial repair uses approved plan/tasks but no new product spec. A truly
+trivial, unequivocal, low-risk repair may flow directly with focused regression
+and validation.
 
-- problem, goal, users and main flow;
-- scope and explicit exclusions;
-- functional and non-functional requirements;
-- important edge cases, constraints and assumptions;
-- maintainability, security, reliability and compatibility concerns;
-- affected living-knowledge owners;
-- testable acceptance criteria and unresolved questions.
+### Ambiguous bug or authority conflict
 
-Avoid premature implementation details unless they are genuine constraints.
-If important ambiguity remains, surface it instead of guessing.
+Do not guess. Preserve current behavior as evidence, create or reconcile a spec,
+and obtain both gates before implementation.
 
-## Maintainability routing
+### Behavior-preserving refactor or maintenance
 
-Before drafting a non-trivial spec, inspect the smallest relevant code and
-knowledge area. Run the scoped maintainability audit when files are large,
-ownership is unclear, documentation is concentrated or orphaned, tests are
-brittle, current truth appears trapped in change artifacts, or a small concept
-touches many files.
+Do not create a product spec automatically. Every non-trivial implementation
+still needs approved plan/tasks and proportional audit/validation. Specify any
+new responsibility, boundary, public contract or material decision.
 
-Treat deterministic findings as evidence for review, not automatic refactor
-orders. Record each relevant finding, risk and disposition:
+### Trivial unequivocal work
 
-- safe local cleanup;
-- planned local refactor within the approved outcome;
-- separate refactor spec;
-- advisory observation accepted with rationale.
+Use direct/compressed flow only when work is also low risk. Create no empty
+temporal artifacts; respect any approval explicitly required by the user.
 
-After spec approval, findings cannot cause silent scope expansion. Reconcile a
-material in-scope contract change and obtain the required approval; route broad
-or unrelated debt to a separate spec; keep justified advisory findings visible
-without forcing work. Repeat the scoped audit during planning and against the
-implemented diff and affected knowledge owners at closeout. A clean scoped
-result is not a repository-wide baseline.
+### Read-only investigation
 
-At closeout list the exact existing repository-relative paths inspected. Record
-each current stable finding code/path as `accepted` with rationale or
-`separate-spec` with an existing spec reference; use `resolved` only when that
-tuple no longer appears, and the sole `no-findings` sentinel only for a clean
-declared scope. These structural checks account for findings without turning
-size or concentration thresholds into semantic verdicts.
+Locate authority, reproduce safely, explain cause and recommend a route. Do not
+infer implementation permission or create change artifacts for a simple
+diagnosis.
 
-## Planning
+A “bug” becomes contract work when it adds an observable result, relaxed
+validation, fallback, retry/cost, authority source, compatibility rule,
+persisted data, access/privacy change or a choice among plausible behaviors.
 
-After spec approval, inspect relevant code, tests, structure, configuration,
-interfaces, persistence and established error/logging patterns. The plan should
-identify:
+## Gates and repair without a new spec
 
-- module ownership and boundaries;
-- expected files and intentionally untouched areas;
-- data/API, security, dependency and operational impact;
-- risks, rollback and ordered implementation steps;
-- tests that protect the approved contract without freezing internals;
-- living-doc owners, current-state evidence and approved-target links.
-- exact owner paths and durable facts expected to be added, changed or removed.
+Every non-trivial implementation requires proportional plan/tasks and explicit
+approval before coding, even with novelty `none`. Spec approval never approves
+implementation; silence approves neither gate.
 
-Then create concrete tasks and request the second approval.
+A standalone repair not covered by active artifacts uses
+`docs/changes/<repair>/plan.md`, `tasks.md` and later [notes.md](changes/_templates/notes.md)
+when evidence exists. It intentionally has no `spec.md`. The plan begins with a
+link to the existing authority, declares novelty `none`, and records
+Reproduction, Diagnosed cause, Repair boundary, risks, regression and
+validation. Tasks are the approved checklist; notes hold material evidence,
+deviations, limitations and closeout. If a new behavioral decision or conflict
+appears, stop, create/reconcile a spec, approve it, then reapprove plan/tasks.
 
-## Implementation and validation
+For a defect inside an active approved change, preserve evidence and reconcile
+the existing plan/tasks when contract, approach, scope, risk and acceptance
+remain covered. Reapprove material changes. Never silently rewrite a closed
+historical change; link its contract and create only the narrow current repair
+record when needed.
 
-Follow the approved artifacts and record meaningful deviations. If repository
-reality contradicts the spec, stop and resolve the conflict rather than hiding
-scope expansion.
+## Progressive context and artifacts
 
-Before completion:
+Search terms and links before opening whole files. Deepen context only for the
+next decision; do not reread unchanged material without cause. Keep a compact
+working map—objective, authority, active change, files, pending decision, gates,
+evidence and blockers—inside existing artifacts when possible, never a mandatory
+diary.
 
-- validate acceptance criteria and relevant edge cases;
-- run proportionate tests/checks or document why they could not run;
-- confirm boundaries remain cohesive and no unrelated behavior changed;
-- ensure secrets and sensitive data stayed out of code, logs and docs;
-- update current capability state only when implementation/evidence supports it;
-- distill durable product, architecture, roadmap and decision facts;
-- run `check_docs.py . --closeout docs/changes/<change> --advisory`;
-- close living documentation only as `updated` or justified
-  `no-update-needed`; unresolved follow-up work keeps the change open;
-- validate relative links and close `tasks.md` with durable-fact and
-  maintainability dispositions.
+Each artifact answers one question: spec = what/why; plan = how; tasks = ordered
+verification; notes = deviations/evidence/limits/result; living owners = current
+durable truth; decisions = durable rationale among material alternatives. Link
+instead of copying requirements. Prefer deltas; create no empty spec, plan or
+notes and do not archive conversations.
 
-The final summary reports changed behavior, validation, documentation updates,
-remaining limitations and any architectural concern.
+## Maintainability, validation and stops
+
+Audit proportionally when ownership is unclear, files are large, tests are
+brittle or a small concept is scattered. Findings are advisory evidence:
+perform safe local cleanup, plan an in-scope refactor, route separate work to an
+approved spec, or accept the observation with rationale. Never expand approved
+scope silently.
+
+Validate in ascending cost: quick pure checks; focused regression/contract;
+affected boundary integration; persistence/migration; relevant consumers;
+proportional format/lint/type checks; broad suite when blast radius or closeout
+requires it; real runtime/hardware/provider/playtest when it is an acceptance
+gate. Use local stack instructions, fail fast, and do not repeat expensive gates
+when relevant inputs are unchanged. Separate deterministic from real evidence;
+leave unavailable external gates pending.
+
+Stop for a new decision, authority conflict, material scope/risk/approach
+change, destructive action/new permission or required P0/P1 playtest stop. Keep
+incidental debt out unless it blocks acceptance, essential safety/correctness or
+is inseparable from the repair.
+
+## Compact handoff and closeout
+
+A compact handoff contains only approved objective, authority links, current
+state, next task, expected files, prohibitions, completed/pending validation and
+worktree/evidence to preserve. Exclude transcripts, duplicated rationale,
+irrelevant inventories and raw output when a reproducible summary suffices.
+Resume from active artifacts and status, not the whole history.
+
+At closeout account for durable facts added, changed and removed; update each
+living owner once and preserve capability evidence until validation supports a
+new state. Record exact audit scope and formal finding dispositions in tasks.
+Run `check_docs.py . --closeout docs/changes/<change> --advisory`; only `updated`
+or justified `no-update-needed` closes living docs. Validate links, close the
+checklist and report behavior, evidence, pending gates and limitations.

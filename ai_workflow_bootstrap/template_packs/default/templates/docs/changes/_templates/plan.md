@@ -1,10 +1,31 @@
 # Implementation Plan: <title>
 
-## 1. Summary
+## 1. Contract Basis
 
-## 2. Relevant Existing Context
+- Route: `approved-spec` or `existing-contract-repair`
+- Approved spec: <relative link or `not required`>
+- Existing authority: <relative link; required for a no-spec repair>
+- Behavioral novelty: <`none`, `partial` or `material`>
+- Execution risk and rationale:
 
-## 3. Existing Conventions Found
+For an existing-contract repair, begin here by linking the authority and
+declaring Behavioral novelty `none`. If planning reveals a new decision or
+conflict, stop and create or reconcile a spec before continuing.
+
+## 2. Summary
+
+## 3. Repair Evidence (when no spec exists)
+
+- Reproduction:
+- Diagnosed cause:
+- Repair boundary:
+- Regression to add or preserve:
+
+Delete this section for a spec-led change. Do not copy the existing contract.
+
+## 4. Relevant Existing Context
+
+## 5. Existing Conventions Found
 
 - Folder structure:
 - Naming style:
@@ -15,16 +36,16 @@
 - External integration pattern:
 - Persistence/data access pattern:
 
-## 4. Proposed Changes
+## 6. Proposed Changes
 
-## 5. Module Boundaries
+## 7. Module Boundaries
 
 - What module owns this responsibility?
 - What module must not know about this change?
 - What interface or adapter boundary should be preserved?
 - What should remain decoupled?
 
-## 6. Architecture Locality
+## 8. Architecture Locality
 
 - Finding disposition from the approved scoped audit:
 - Primary module or owner:
@@ -38,35 +59,36 @@
 - If yes, is that expected or a sign of weak boundaries?
 - Should we refactor before, during, or after this change?
 
-## 7. Data / API / Interface Impact
+## 9. Data / API / Interface Impact
 
-## 8. Security / Privacy Impact
+## 10. Security / Privacy Impact
 
 - Does this touch credentials, tokens, secrets, user data, logs, permissions, network calls, files, or external APIs?
 - Are secrets kept out of Git?
 - Are logs free of sensitive data?
 - Are external inputs validated?
 
-## 9. Dependency Impact
+## 11. Dependency Impact
 
 - Are new dependencies needed?
 - Why are existing tools insufficient?
 - Is the dependency runtime, build-time, or dev-only?
 - What are the maintenance/security implications?
 
-## 10. Risks
+## 12. Risks
 
-## 11. Validation Strategy
+## 13. Validation Strategy
 
-Include only the tests that actually protect the approved spec. If a test would mainly lock down implementation detail, leave it out and explain why.
+Include only tests that protect the approved spec or existing authority. If a
+test would mainly lock down implementation detail, leave it out and explain why.
 
-## 11.1 Test Strategy
+## 13.1 Test Strategy
 - Contract to protect:
 - Tests to add or update:
 - Tests intentionally not added:
 - Why these tests should survive internal refactors:
 
-## 12. Living Documentation Impact
+## 14. Living Documentation Impact
 
 - Product fact owner(s) to update:
 - Architecture fact owner(s) to update:
@@ -79,8 +101,8 @@ Include only the tests that actually protect the approved spec. If a test would 
 - Why no living-doc update is needed, if applicable:
 - Targeted closeout command:
 
-## 13. Execution Steps
+## 15. Execution Steps
 
-## 14. Rollback / Recovery
+## 16. Rollback / Recovery
 
-## 15. Notes
+## 17. Notes
